@@ -78,7 +78,7 @@ if ($access_level == "dpp") {
 <script src="<?php echo base_url().'Scripts/waypoints.js'?>" type="text/javascript"></script> 
 <script src="<?php echo base_url().'Scripts/waypoints-sticky.min.js'?>" type="text/javascript"></script>
 <script src="<?php echo base_url().'Scripts/bootstrap.js'?>" type="text/javascript"></script>
-
+<SCRIPT LANGUAGE="Javascript" SRC="<?php echo base_url();?>Scripts/FusionCharts/FusionCharts.js"></SCRIPT>
 
 
 
@@ -360,7 +360,7 @@ if ($current == "home_controller") {echo "active";
 	<!--<li class="active"><a data-clone="Orders" href="<?php echo base_url();?>rtk_management/rtk_orders">Orders</a></li>-->
 	<li class="active"><a data-clone="Deliveries" href="<?php echo base_url(); ?>stock_expiry_management/county_deliveries">Deliveries</a></li>
 	<li class="active"><a data-clone="Expiries" href="<?php echo base_url(); ?>stock_expiry_management/county_expiries">Expiries</a></li>
-	<li><a data-clone="Commodity List" href="<?php echo base_url(); ?>report_management/get_facility_evaluation_form_results" class="<?php
+	<li><a data-clone="Commodity List" href="<?php echo base_url(); ?>report_management/get_county_evaluation_form_results" class="<?php
 	if ($quick_link == "commodity_list") {echo "active";
 	}
 ?>">Evaluation Forms</a></li>

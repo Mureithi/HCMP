@@ -18,6 +18,24 @@ public function send_stock_update_sms(){
 	   $this->send_sms(substr($phone,0,-1),$message);
 
 	}
+
+public function send_order_sms(){
+	
+
+       $facility_name = $this -> session -> userdata('full_name');
+	   $facility_code=$this -> session -> userdata('news');
+	   $data=User::getUsers($facility_code)->toArray();
+
+	   $message= $facility_name." has submitted an order. HCMP";
+       
+	   $phone=$this->get_facility_phone_numbers($facility_code);
+	   $phone .=$this->get_ddp_phone_numbers($data[0]['district']);
+
+	   
+	   $this->send_sms(substr($phone,0,-1),$message);
+
+	}
+
 public function send_stock_decommission_email($message,$subject,$attach_file){
 	
 	   $facility_code=$this -> session -> userdata('news');
@@ -104,7 +122,7 @@ public function send_sms($phones,$message) {
  	$phone_numbers=explode("+", $spam_sms);
 	
 	foreach($phone_numbers as $key=>$user_no):
-		
+	
 	file("http://41.57.109.242:13000/cgi-bin/sendsms?username=clinton&password=ch41sms&to=$user_no&text=$message");
 		
 	endforeach;

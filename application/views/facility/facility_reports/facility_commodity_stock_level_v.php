@@ -1,6 +1,6 @@
 <script type="text/javascript">
 $(function() {
-        $('#stock_status').highcharts({
+        $('#container').highcharts({
             chart: {
                 type: 'bar'
             },
@@ -42,4 +42,4 @@ $(function() {
 		</script>
 
 		
-		<div id="container" style="height: auto; width: auto; margin: 0 auto"></div>
+		<div id="container"  style="height: <?php echo $height; ?>; width: <?php echo $width; ?>; margin: 0 auto"></div>

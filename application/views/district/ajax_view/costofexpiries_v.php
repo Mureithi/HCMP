@@ -6,7 +6,7 @@ $url_data=base_url()."report_management/generate_costofexpiries_chart/".$county;
 echo <<<HTMLCHART
 	<script type="text/javascript">
 jQuery(document).ready(function() {
-		var chart = new FusionCharts("$url_swf", "ChartId1", "100%", "100%", "0", "0");
+		var chart = new FusionCharts("$url_swf", "ChartId1", "100%", "80%", "0", "0");
 		var url = '$url_data'; 
 		chart.setDataURL(url);
 		chart.render("chart_exp");

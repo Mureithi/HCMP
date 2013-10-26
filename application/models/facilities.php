@@ -355,7 +355,8 @@ return $q;
 
 public static function get_facilities_which_went_online_($district_id,$date_of_activation){
 $q = Doctrine_Manager::getInstance()->getCurrentConnection()->fetchAll("
-SELECT count(facility_code) as total from facilities f, districts d where f.district=d.id and d.id=$district_id and DATE_FORMAT(  `date_of_activation` ,  '%M %Y' ) = '$date_of_activation'");
+SELECT count(facility_code) as total ,(select count(id) from facilities f where f.district='$district_id') as total_facilities
+ from facilities f, districts d where f.district=d.id and d.id=$district_id and DATE_FORMAT(  `date_of_activation` ,  '%M %Y' ) = '$date_of_activation'");
 return $q;		
 }
 public static function get_facilities_reg_on_($district_id,$date_of_activation){

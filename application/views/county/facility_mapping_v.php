@@ -11,6 +11,8 @@
 		<script type="text/javascript" charset="utf-8">
 			
 			$(document).ready(function() {
+			  //default action 
+	    
 					        //$('.accordion').accordion({defaultOpen: ''});
          //custom animation for open/close
     $.fn.slideFadeToggle = function(speed, easing, callback) {
@@ -45,9 +47,15 @@
 		$(".ajax_call").click(function(){
 		var url = "<?php echo base_url().'report_management/get_district_facility_mapping_/'?>";	
 		var id  = $(this).attr("id"); 
-		ajax_request_special_(url+id,'main_div','');				
+		ajax_request_special_(url+id,'main_div','');					
+	    });
+	    
+	  
+	    
+	    $("#section_2").click(function(){
+		var url = "<?php echo base_url().'report_management/get_county_facility_mapping_ajax_request/'?>";	
 
-	
+		ajax_request_special_(url,'main_div','');					
 	    });
 	
 	
@@ -100,9 +108,6 @@
           }
         }); 
 }
-  
-		
-
 
 	});
 	</script>
@@ -204,6 +209,11 @@ code {
 <div class="leftpanel">
 
 <div class="dash_menu">
+	
+	<h3 class="accordion" id="section_2" >Roll Out At A glance<span></span>
+	<h3>
+
+
 <h3 class="accordion" id="section1" >Districts in the county<span></span><h3>
 <div class="container">
 	<div id="content">
@@ -222,15 +232,14 @@ echo "<li>
 </ol>		
 	</div>
 </div>
-
 </div>
 
 </div>
 <div id="dialog"></div> 
 <div class="dash_main" id = "dash_main">
 <div id="test_a" style="overflow: scroll; height: 51em; min-height:100%; margin: 0; width: 100%">
+<?php echo $data ?>
 
-<?php echo $county_data;?>
 
 		</div>
 </div>

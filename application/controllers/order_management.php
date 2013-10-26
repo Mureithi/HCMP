@@ -542,7 +542,7 @@ else{
 		$myobj->order_no = $order_no;
         $myobj->save();
 		
-	
+	$this->send_order_sms();
 	$this->session->set_flashdata('system_success_message', 'Your order has been saved');	
 	redirect('Order_Management/#tabs-1');
 	

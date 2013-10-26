@@ -15,12 +15,26 @@ class Stock_Expiry_Management extends auto_sms {
 		$data['quick_link'] = "Emergecy";
 		$this -> load -> view("template", $data);
 	}
-	public function default_expiries(){
-		$facility_c=$this -> session -> userdata('news');
-		$data['report']=Facility_Stock::expiries($facility_c);
-	    $mycount= count(Facility_Stock::expiries($facility_c));
+	public function default_expiries($facility_code=null){
+		
+		$facility_c=isset($facility_code)? $facility_code :$this -> session -> userdata('news');
+		
+		$facility_detail=Facilities::get_facility_name_($facility_c);
+        $data['facility_data']=$facility_detail;
+		$data['title'] = "Potential expiries";;
+        $data['banner_text'] = "Potential expiries";
+		$facility_data=Facility_Stock::expiries($facility_c);
+		$data['report']=$facility_data;
+		$data['facility_code']=$facility_c;
+		
+		$data['content_view'] = "potential_expiries_v";
+		
+	    $mycount= count($facility_data);
 		if ($mycount>0) {
-			$this -> load -> view("potential_expiries_v", $data);
+			
+			isset($facility_code)? $this -> load -> view("template", $data)  :$this -> load -> view("potential_expiries_v", $data);
+		
+			
 		} else {
 			echo '<div class="norecord"></div>';
 		}
@@ -42,10 +56,13 @@ class Stock_Expiry_Management extends auto_sms {
 		}
 				
 	}
-public function get_expiries(){
+public function get_expiries($facility_code=null){
 		$checker=$_POST['id'];
 		//echo $checker;
-		$facility=$this -> session -> userdata('news');
+		$facility=isset($facility_code)? $facility_code :$this -> session -> userdata('news');
+		
+		$facility_detail=Facilities::get_facility_name_($facility_c);
+        $data['facility_data']=$facility_detail;
 		
 			switch ($checker)
 			{
@@ -248,7 +265,7 @@ public function county_expiries() {
 		$date= date('Y-m-d');
 		$county=$this -> session -> userdata('county_id');
 		$data['title'] = "Expired Products";
-		$data['content_view'] = "county/county_expiries_v";
+		$data['content_view'] = "county/county_stock_data/county_expiries_v";
 		$data['banner_text'] = "Expired Products";
 		$data['potential_expiries']=Counties::get_potential_expiry_summary($county);
 		$data['expired2']=Counties::get_county_expiries($date,$county);		
@@ -364,11 +381,10 @@ public function county_expiries() {
 		$date= date('Y-m-d');
 		$county=$this -> session -> userdata('county_id');
 		$data['title'] = "Deliveries";
-		$data['content_view'] = "county/county_deliveries_v";
+		$data['content_view'] = "county/county_stock_data/county_deliveries_v";
 		$data['banner_text'] = "Deliveries";
 		$data['delivered']=Counties::get_county_received($county);
 		$data['order_counts']=Counties::get_county_order_details($county);
-		$data['order_details']=Ordertbl::get_county_orders($county);
 		$data['link'] = "county/county_deliveries_v";
 		$data['quick_link'] = "county/county_deliveries_v";
 
@@ -399,10 +415,16 @@ public function district_deliveries($district=NULL) {
 	
 		$this -> load -> view("county/district_deliveries_v", $data);
 	}
-public function facility_report_expired() {
+public function facility_report_expired($facility_code=null,$district_id=null) {
 		$date= date('Y-m-d');
-		$facility=$this -> session -> userdata('news');
-		$district=$this -> session -> userdata('district');
+		
+		$facility=isset($facility_code)? $facility_code :$this -> session -> userdata('news');
+		$district=isset($district_id)? $facility_code :$this -> session -> userdata('district');
+		
+		$facility_detail=Facilities::get_facility_name_($facility);
+        $data['facility_data']=$facility_detail;
+
+		
 		$data['dpp_array']=User::get_dpp_details($district);
 		$data['title'] = "Expired Products";
 		$data['content_view'] = "facility_report_expired_v";
@@ -411,7 +433,10 @@ public function facility_report_expired() {
 		
 		$data['link'] = "facility_report_expired_v";
 		$data['quick_link'] = "facility_report_expired_v";
-		$this -> load -> view("facility_report_expired_v", $data);
+		
+		isset($facility_code)? $this -> load -> view("template", $data) :$this -> load -> view("facility_report_expired_v", $data);
+		
+		
 	}
 	public function get_decommission_report_pdf() {
 		$facilityCode= $this-> session-> userdata('news');

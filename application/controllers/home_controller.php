@@ -140,10 +140,10 @@ else if($access_level == "county_facilitator"){
 	//$active_logs=Log::get_active_login($option,$option_id);
 	
 	$data['stats']=$this->get_dash_board_stats("county");
-	$data['content_view'] = "county/county_v";
+	$data['content_view'] = "county/county_v_2";
 	$data['banner_text'] = "Home";
 	$data['link'] = "home";
-		
+	$data['coverage_data']=$this->get_county_dash_board_district_coverage();
 
 }
 /* go to application/controllers/home_controller.php and check for this if statement */
@@ -568,6 +568,37 @@ $data['strXML_e1']=$strXML_e1;
 		$data['link'] = "home";
 		$this -> load -> view("template", $data);
 		
+     }
+     public function get_county_dash_board_district_coverage(){
+     	$county_id=$this -> session -> userdata('county_id');
+		$district_data=districts::getDistrict($county_id);
+		
+		
+		
+     		$table="<table class='data-table'><thead><tr>
+     		<th>District</th><th># of Facilities</th><th># using tool</th><th>% coverage</th>
+     		</tr></thead><tbody>";
+     		
+     		  foreach($district_data as $district_detail):
+	    
+		      $district_id=$district_detail->id;
+		      $more_data=districts::get_district_coverage($district_id);
+			  $table .="<tr>";
+			  foreach($more_data as $data):
+				  $coverage=0;	
+			
+		@$coverage =round((($data['total_2']/$data['total']))*100,1);	
+		
+				  
+			  $table .="<td>$data[district]</td>
+			  <td>$data[total]</td>
+			  <td>$data[total_2]</td>
+			  <td> $coverage %</td>";
+			  endforeach;
+			   $table .="</tr>";
+				  endforeach;
+			
+     	return $table."</tbody></table>";
      }
  
 

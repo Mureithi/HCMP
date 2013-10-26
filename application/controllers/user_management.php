@@ -321,13 +321,7 @@ else{
 		    $user_level="Facility Level";
 		}
 		
-        if($facility_code!=null && $facility_code!=0){
- $q = Doctrine_Manager::getInstance()->getCurrentConnection()
- ->execute('update facilities f, (select distinct facility, min(`created_at`) 
- as date from user u where facility='.$facility_code.') as temp set `using_hcmp`=1,
- `date_of_activation`=temp.date where unix_timestamp(`date_of_activation`)=0 
- and facility_code=temp.facility');
-		}
+       
 		
 		
 		
@@ -369,6 +363,16 @@ else{
 		$u->facility = $facility_code;
 		
 		$u->save();
+		
+		 if($facility_code!=null && $facility_code!=0){
+        	
+ $q = Doctrine_Manager::getInstance()->getCurrentConnection()
+ ->execute('update facilities f, (select  facility, min(`created_at`) 
+ as date from user u where facility='.$facility_code.' group by facility) as temp set `using_hcmp`=1,
+ `date_of_activation`=temp.date where unix_timestamp(`date_of_activation`)=0 
+ and facility_code=temp.facility');
+ 
+		}
 		
 		$message='Hello '.$f_name.',You have been registered. Check your email for login details. HCMP';
 		$message_1='Hello '.$f_name.', <br> <br> Thank you for registering on the Health Commodities Management Platform (HCMP).

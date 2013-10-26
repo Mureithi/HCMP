@@ -144,72 +144,73 @@
     	var new_value=value+"x";
     	
     	var array_value=new_value.split("x");
-    	var array_0=array_value[0];
-    	
+    	var array_0=array_value[0].toLowerCase();
+    	//////
     	
 ///////////////////////////////////////////////////////////////
     	
     	var array_1=array_0.replace( /[\s\n\r]+/g, '' );
-    	
-    	
-    	
+	
     	switch(array_1)    
 	 
 {
   case '250g':
   return  1;
   break;
-  case '500mL':
+  
+  case '500ml':
   return  1;
   break;
-  case '100mL':
+  
+  case '100ml':
   return  1;
   break;
-  case '250mL':
+  
+  case '250ml':
   return  1;
   break;
-  case '50mL':
+  
+  case '50ml':
   return  1;
   break;
-  case '75mL':
+  
+  case '75ml':
+  return  1;  
+  break;
+  
+  case '30ml':
   return  1;
   break;
-  case '30mL':
-  return  1;
-  break;
+  
   case 'pack':
    return  1;
-  case 'Piece':
-   return  1;
-  break;
+
   case 'piece':
    return  1;
   break;
-  case 'Pair':
-   return  1;
-  break;
+  
+
    case 'pair':
    return  1;
   break;
+  
   case 'tube':
    return  1;
   break;
+  
   case 'tubes':
    return  1;
   break;
-   case 'Tubes':
-   return  1;
-  break;
-  case 'Roll':
-   return  1;
-  break;
+
    case 'roll':
    return  1;
   break;
-  case 'Ampoule':
+  
+  case 'ampoule':
    return  1;
   break;
-  case 'Each':
+  
+  case 'each':
    return  1;
   break;
   case 'bottle':
@@ -221,28 +222,28 @@
   case "5's":
    return  1;
   break;
-  case 'Jar':
+  case 'jar':
    return  1;
   break;
-  case '5L':
+  case '5l':
    return  1;
   break;
-    case 'Satchets':
+    case 'satchets':
    return  1;
   break;
-  case 'Tablets':
+  case 'tablets':
    return  1;
   break;
-  case 'Caps':
+  case 'caps':
    return  1;
   break;
-  case 'Bottles':
+  case 'bottles':
    return  1;
   break;
-  case 'Vials':
+  case 'vials':
    return  1;
   break;
-   case "Packof3's":
+   case "packof3's":
    return  3;
    break;
     case "3x21":
@@ -254,34 +255,34 @@
    case "4*5L":
    return  4;
   break;
-  case 'Boxof10':
+  case 'boxof10':
    return  10;
   break;
-     case 'Packof10':
+     case 'packof10':
   return  10;
   break;
     case '10sets':
   return  10;
   break;
-   case 'Pack(10)':
+   case 'pack(10)':
    return  10;
   break;
-   case 'Dozen':
+   case 'dozen':
    return  12;
   break;
-  case 'Boxof25':
+  case 'boxof25':
   return  25;
   break;
-   case "Blistersof6's":
+   case "blistersof6's":
    return  30;
   break;
-  case "Blistersof12's":
+  case "blistersof12's":
    return  30;
   break;
-  case "Blistersof18's":
+  case "blistersof18's":
    return  30;
   break;
-  case "Blistersof24's":
+  case "blistersof24's":
    return  30;
   break;
   case '50 pairs':
@@ -290,10 +291,10 @@
   case '50 sets':
   return  50;
   break;
-   case 'Packof50': 
+   case 'packof50': 
    return  50;
   break;
-   case 'Packof50pairs': 
+   case 'packof50pairs': 
    return  50;
   break;
   case '100 Vials':
@@ -301,7 +302,7 @@
   case 'Boxof100':
    return  100;
   break;
-    case 'Kit(100vials)':
+    case 'kit(100vials)':
    return  100;
     case '100mL*100':
    return  100;
@@ -312,13 +313,13 @@
    case '100*30mL':
    return  100;
   break;
-  case 'Packof100':
+  case 'packof100':
    return  100;
   break;
-  case 'Pack(200)':
+  case 'pack(200)':
    return  200;
   break;
-  case 'Packof200':
+  case 'packof200':
    return  200;
   break;
   

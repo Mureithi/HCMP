@@ -78,7 +78,7 @@ return;
 		document.getElementsByName("cost["+x+"]")[0].value='';
 		//get the data from the row the user is at
 		var price= document.getElementsByName("price["+x+"]")[0].value;
-       
+     //  price=price.replace(/\,/g,'');
         var draw=0;
         //alert(draw);
         var newTotal=0; 
@@ -572,10 +572,13 @@ function update_transaction(baseUrl,data_array){
 								for($i=0;$i<$j;$i++){?>
 						<tr>
 							<td><?php echo $facility_order[$i]['category_name'];?></td>
-							<?php echo form_hidden('drugCode['.$count.']', $facility_order[$i]['drug_code']);
+							<?php 
+							      $price=$facility_order[$i]['unit_cost'];
+								  $price=str_replace(",", '',$price);
+							      echo form_hidden('drugCode['.$count.']', $facility_order[$i]['drug_code']);
 							      echo form_hidden('kemsaCode['.$count.']', $facility_order[$i]['kemsa_code']);
 							      echo form_hidden('drugName['.$count.']', $facility_order[$i]['drug_name']);
-							      echo form_hidden('price['.$count.']'  ,$facility_order[$i]['unit_cost']);
+							      echo form_hidden('price['.$count.']'  , $price);
 							      echo form_hidden('unit_size['.$count.']'  ,$facility_order[$i]['unit_size']);
 								  echo form_hidden('historical['.$count.']'  ,$facility_order[$i]['historical']);
 								  echo form_hidden('closing_stock_['.$count.']'  ,$facility_order[$i]['closing_stock']);

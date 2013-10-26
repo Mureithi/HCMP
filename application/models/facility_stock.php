@@ -244,11 +244,25 @@ ORDER BY d.drug_name ASC  ");
 		
 	
 }
+ return $inserttransaction ;}  
+
+     public static function get_county_drug_consumption_level($county_id){
      	
-     
+	$inserttransaction = Doctrine_Manager::getInstance()->getCurrentConnection()
+		->fetchAll("SELECT d.drug_name, CEIL( SUM( fs.qty_issued / d.total_units ) ) AS total
+FROM facility_issues fs, drug d, facilities f, districts di, counties c
+WHERE fs.facility_code = f.facility_code
+AND f.district = di.id
+AND fs.availability ='1'
+AND di.county = c.id
+AND year(fs.date_issued)=year(now())
+AND c.id =  '$county_id'
+AND d.id = fs.kemsa_code
+GROUP BY fs.kemsa_code having total >1
+ORDER BY d.drug_name ASC ");		
+     	
 
-
-        return $inserttransaction ;}     
+ return $inserttransaction ;}    
         
         /////getting cost of exipries 
             public static function get_district_cost_of_exipries($distict){

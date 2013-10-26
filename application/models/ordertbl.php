@@ -22,6 +22,9 @@ class Ordertbl extends Doctrine_Record {
 		$this -> hasColumn('workload', 'int',11);
 		$this -> hasColumn('bedcapacity', 'int',11);
 		$this -> hasColumn('order_no', 'int',11);
+		/*compute this*/
+		$this -> hasColumn('total_delivered', 'int',11);
+		
 	}
 
 	public function setUp() {

@@ -76,7 +76,7 @@ padding: 5px;
        <span style="margin-left:100px;  font-family: arial,helvetica,clean,sans-serif;display: block; font-weight: bold; font-size: 15px;">
      Ministry of Health</span><br>
        <span style=" font-size: 12px;  margin-left:100px;">Health Commodities Management Platform</span><span style="text-align:center;" >
-       	<h2 style="text-align:center; font-size: 20px;">Expired Commodities as of <?php 
+       	<h2 style="text-align:center; font-size: 20px;"><?php echo $facility_data['facility_name'].' MFL '.$facility_data['facility_code']?> Expired Commodities as of <?php 
 					
 					$today= ( date('d M, Y')); 
 					echo $today;					

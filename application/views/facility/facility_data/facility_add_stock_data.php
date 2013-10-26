@@ -116,8 +116,12 @@ return;
    	var x=x;
    	var status=status;
    	var num = document.getElementsByName("a_stock["+x+"]")[0].value.replace(/\,/g,'');
+   	
+   	
+   	
     var actual_unit_size=get_unit_quantity(document.getElementsByName("u_size["+x+"]")[0].value);
-
+   
+     
    var total_a_stock=actual_unit_size*num;
  
    document.getElementsByName("qreceived["+x+"]")[0].value=total_a_stock; 

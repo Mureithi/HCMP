@@ -173,7 +173,7 @@ $(document).ready(function(){
 		<a href="<?php echo site_url('order_management/new_order');?>">	<h2>Order Commodities</h2></a>
 		</div>
 		<div class="activity update_order">
-		<a href="<?php echo site_url('order_management/#tabs-2');?>"><h2>Update Order Delivery from KEMSA</h2>	</a>
+		<a href="<?php echo site_url('order_management/#tabs-2');?>"><h2>Update Order Delivery</h2>	</a>
 		</div>
 		<?php if($access_level=="facility"): ?>
 		<div class="activity users">
@@ -210,7 +210,7 @@ $(document).ready(function(){
 	<div id="right_content">
 
 		<h2 style="margin-bottom: 1.5em">Commodity Stock Level in Pack Size</h2>
-        <h6>Mouse over to see values</h6>
+        <h4>Mouse over to see values</h4>
 	
 		
 			<div id="stock_status" class='stockstatuschart' style="overflow: scroll; height: 80em; min-height:100%; margin: 0;">
