@@ -246,8 +246,10 @@ ORDER BY d.drug_name ASC  ");
 }
  return $inserttransaction ;}  
 
-     public static function get_county_drug_consumption_level($county_id){
-     	
+     public static function get_county_drug_consumption_level($county_id,$category_id=null){
+   
+  $and_data=isset($category_id) ?	"AND d.drug_category =  '$category_id'" : null;
+    	
 	$inserttransaction = Doctrine_Manager::getInstance()->getCurrentConnection()
 		->fetchAll("SELECT d.drug_name, CEIL( SUM( fs.qty_issued / d.total_units ) ) AS total
 FROM facility_issues fs, drug d, facilities f, districts di, counties c
@@ -258,11 +260,14 @@ AND di.county = c.id
 AND year(fs.date_issued)=year(now())
 AND c.id =  '$county_id'
 AND d.id = fs.kemsa_code
+$and_data
 GROUP BY fs.kemsa_code having total >1
 ORDER BY d.drug_name ASC ");		
+   
      	
 
- return $inserttransaction ;}    
+ return $inserttransaction ;
+ }    
         
         /////getting cost of exipries 
             public static function get_district_cost_of_exipries($distict){
@@ -334,7 +339,12 @@ public static function get_decom_count($district)
 		$stocktake = $query ->execute();
 		
 		return $stocktake;
-		
+	}
+	
+	public static function get_county_max_date($county_id){
+$inserttransaction = Doctrine_Manager::getInstance()->getCurrentConnection()
+		->fetchAll("SELECT MAX(stock_date) as date_ FROM `facility_stock` f_s, districts d, facilities f WHERE f.facility_code=f_s.`facility_code` and f.district=d.id and d.county=$county_id");
+        return  $inserttransaction ;
 	}
 	
 }

@@ -61,7 +61,7 @@ public function submit() {
 	    $user_id=$n['id'];
 		$user_email=$n['email'];
 		$county_id=$n['county_id'];
-
+        $county_name="";
 		if($faci>0){
 		$myobj = Doctrine::getTable('facilities')->findOneByfacility_code($faci);
         $facility_name=$myobj->facility_name ;	
@@ -81,7 +81,7 @@ public function submit() {
 		$kemsa="KEMSA Representative";
 		$rtk="RTK Program Manager";
 		$super_admin="Super Admin";
-		$county= "County Facilitator";
+		$county=   $county_name." County Facilitator";
 		$allocation="Allocation committee";
 		$dpp="District Lab Technologist";
 		
@@ -106,15 +106,14 @@ public function submit() {
 			$session_data = array('county_id'=>$county_id,'phone_no'=>$phone,'user_email'=>$user_email,'user_db_id'=>$user_id,'full_name' =>$rtk,'user_id'=>$user_id,'user_indicator'=>"rtk_manager",'names'=>$namer,'inames'=>$inames,'identity'=>$id_d,'news'=>$faci,'district1'=>$disto,'drawing_rights'=>0, 'county_name'=>$county_name);
 		}	
 		else if($myvalue ==10)  {
-
-			$session_data = array('county_id'=>$county_id,'phone_no'=>$phone,'user_email'=>$user_email,'user_db_id'=>$user_id,'full_name' =>$county,'user_id'=>$user_id,'user_indicator'=>"county_facilitator",'names'=>$namer,'inames'=>$inames,'identity'=>$id_d,'news'=>0,'district'=>'6','drawing_rights'=>0, 'county_name'=>$county_name);
+		$session_data = array('county_id'=>$county_id,'phone_no'=>$phone,'user_email'=>$user_email,'user_db_id'=>$user_id,'full_name' =>$county,'user_id'=>$user_id,'user_indicator'=>"county_facilitator",'names'=>$namer,'inames'=>$inames,'identity'=>$id_d,'news'=>0,'district'=>'6','drawing_rights'=>0, 'county_name'=>$county_name);
 
 		}
 		else if($myvalue ==11)  {
-			$session_data = array('county_id'=>$county_id,'phone_no'=>$phone,'user_email'=>$user_email,'user_db_id'=>$user_id,'full_name' =>$allocation,'user_id'=>$user_id,'user_indicator'=>"allocation_committee",'names'=>$namer,'inames'=>$inames,'identity'=>$id_d,'news'=>0,'district'=>'6','drawing_rights'=>0, 'county_name'=>$county_name);
+		$session_data = array('county_id'=>$county_id,'phone_no'=>$phone,'user_email'=>$user_email,'user_db_id'=>$user_id,'full_name' =>$allocation,'user_id'=>$user_id,'user_indicator'=>"allocation_committee",'names'=>$namer,'inames'=>$inames,'identity'=>$id_d,'news'=>0,'district'=>'6','drawing_rights'=>0, 'county_name'=>$county_name);
 		}
 		else if($myvalue ==12)  {
-			$session_data = array('county_id'=>$county_id,'phone_no'=>$phone,'user_email'=>$user_email,'user_db_id'=>$user_id,'full_name' =>$dpp,'user_id'=>$user_id,'user_indicator'=>"dpp",'names'=>$namer,'inames'=>$inames,'identity'=>$id_d,'news'=>$county,'district1'=>$disto,'drawing_rights'=>0, 'county_name'=>$county_name);			
+		$session_data = array('county_id'=>$county_id,'phone_no'=>$phone,'user_email'=>$user_email,'user_db_id'=>$user_id,'full_name' =>$dpp,'user_id'=>$user_id,'user_indicator'=>"dpp",'names'=>$namer,'inames'=>$inames,'identity'=>$id_d,'news'=>$county,'district1'=>$disto,'drawing_rights'=>0, 'county_name'=>$county_name);			
 		
 		}				
 		$this -> session -> set_userdata($session_data);

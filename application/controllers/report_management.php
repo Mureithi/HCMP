@@ -1787,30 +1787,22 @@ public function get_stock_status($option=NULL,$facility_code=NULL){
 		}
 		
 	elseif($option=="ajax-request_county") {
-	//$county_id=districts::get_county_id($district);
+	
 	$county_name=counties::get_county_name($county_id);
 	$title=$county_name[0]["county"]." County";
-        switch ($facility_code) {
-			   case 'r_h':
-			 $commodity_array=facility_stock::get_county_drug_stock_level($county_id,8);	
-				break;
-				case 'malaria':
-			 $commodity_array=facility_stock::get_county_drug_stock_level($county_id,1);	
-				break;
-
-			default:
-				 $commodity_array=facility_stock::get_county_drug_stock_level($county_id);
-				break;
-		}
 	
-
-        
-		
+	    $commodity_array=isset($facility_code)?
+	    facility_stock::get_county_drug_stock_level($county_id,$facility_code):
+	    facility_stock::get_county_drug_stock_level($county_id);
+       	
 
 	}
 		elseif($option=="consumption"){
 		
-		$commodity_array=facility_stock::get_county_drug_consumption_level($county_id);	
+	 $commodity_array=isset($facility_code)?
+	     facility_stock::get_county_drug_consumption_level($county_id,$facility_code):
+	     facility_stock::get_county_drug_consumption_level($county_id);
+		
 		
 	}
  
@@ -1836,7 +1828,7 @@ echo $chart;
 //////
 public function get_stock_status_ajax($option=NULL,$facility_code=NULL){
 	$district=$this -> session -> userdata('district1');
-	
+	$county_id=$this -> session -> userdata('county_id');
 	
 	$width="100%";
     $height="100%";
@@ -1898,19 +1890,9 @@ public function get_stock_status_ajax($option=NULL,$facility_code=NULL){
 	
 	elseif($option=="ajax-request_county") {
 		
-		switch ($facility_code) {
-			   case 'r_h':
-			 $commodity_array=facility_stock::get_county_drug_stock_level(1,8);	
-				break;
-				case 'malaria':
-			 $commodity_array=facility_stock::get_county_drug_stock_level(1,1);	
-				break;
-
-			default:
-				 $commodity_array=facility_stock::get_county_drug_stock_level(1);
-				break;
-		}
-		
+		 $commodity_array=isset($facility_code)?
+	    facility_stock::get_county_drug_stock_level($county_id,$facility_code):
+	    facility_stock::get_county_drug_stock_level($county_id);
        
         
 		
@@ -1924,9 +1906,11 @@ public function get_stock_status_ajax($option=NULL,$facility_code=NULL){
 	}
 	elseif($option=="consumption"){
 		//$commodity_array=0;
-		$county_id=$this -> session -> userdata('county_id');
-		$commodity_array=facility_stock::get_county_drug_consumption_level($county_id);	
 		
+		
+		 $commodity_array=isset($facility_code)?
+	     facility_stock::get_county_drug_consumption_level($county_id,$facility_code):
+	     facility_stock::get_county_drug_consumption_level($county_id);
 		
 		
 	}
@@ -3093,12 +3077,14 @@ public function get_facility_evaluation_form_results(){
   	
   	$data= Facility_Evaluation::get_people_who_have_responded($facility_code);
 	
+	
 	$table_data='<table  cellspacing="0" border="0" width="100%"><tr><th>Responednt</th><th>Trainer</th><th>Date</th><th>view</th></tr>';
 	
 	foreach($data as $key=>$facility_data):
 		
 	$date=date('d M Y', strtotime($facility_data['date_created']));
-		
+	
+	
 	$table_data .="<tr><td>$facility_data[fname] $facility_data[lname] </td><td>$facility_data[trainer] </td><td>$date</td>
 	<td><a href='".base_url()."report_management/facility_evaluation/$facility_data[facility_code]/$facility_data[assessor]' class='link'>view response</a></td></tr>";
 		

@@ -40,51 +40,38 @@ public function get_dash_board_stats($dash_board_indicator){
 			break;
 	}
 	$stats_data='<div>
-<div style="display: table-row;  ">
-    			<div style="display: table-cell;padding-bottom: 2em; ">
-      				<label style=" font-weight: ">Total No of Facilities in The '.$indicator.' </label>
-            	</div>   				
-    				<div style="display: table-cell;padding-bottom: 2em">
-      				<a class="badge" >'.$facility_data['total_no_of_facilities'].'</a>
-    				</div>
-  				</div>
-  				
-  				<div style="display: table-row; ">
-    			<div style="display: table-cell;padding-bottom: 2em">
-      				<label style="font-weight: ">Total No of Facilities in The '.$indicator.'  Using HCMP </label>
-            		</div>   				
-    				<div style="display: table-cell;padding-bottom: 2em">
-      				<a class="badge">'.$facility_data['total_no_of_facilities_using_hcmp'].'</a>
-    				</div>
-  				</div>
-  				
-  				<div style="display: table-row;">
-    			<div style="display: table-cell; padding-bottom: 2em">
-      				<label style="font-weight: ">Total No of Users in The '.$indicator.' </label>
-            		     				</div>   				
-    				<div style="display: table-cell;padding-bottom: 2em">
-      				<a class="badge" >'.$user_data['total_no_of_users'].'</a>
-    				</div>
-  				</div>
-  				<div style="display: table-row;">
-    			<div style="display: table-cell; padding-bottom: 2em">
-      				<label style="font-weight: ">Total No of Users in The '.$indicator.'  Accessing HCMP last 7 days</label>
-            		     				</div>   				
-    				<div style="display: table-cell;padding-bottom: 2em">
-      				<a class="badge" >'.$user_data['total_no_of_users_7_days'].'</a>
-    				</div>
-    				<div style="display: table-row;">
-    				<div style="display: table-cell; padding-bottom: 2em">
-      				<label style="font-weight: ">Users online in The '.$indicator.'</label>
-            		     				</div>  
-            		     				
-					 				
-    				<div style="display: table-cell;padding-bottom: 2em">
-      				<a class="badge" >'.$user_data['active_users'].'</a>
-    				</div>	 				
-    				</div>
+<table class="data-table">
+    			<tr>
+      			<td>Total No of Facilities in The '.$indicator.'</td>
+            		
+    			<td>
+      				<div class="badge" >'.$facility_data['total_no_of_facilities'].'</div>
+    			</td>
+  				</tr>	
+  				<tr>
+  				<td>Total No of Facilities in The '.$indicator.'  Using HCMP</td>
+           <td>  <div class="badge" >'.$facility_data['total_no_of_facilities_using_hcmp'].'</div></td>
+    				</tr>
+  			<tr>
+  			<td>
+      			Total No of Users in The '.$indicator.' </td>
+           	<td>
+      				<div class="badge" >'.$user_data['total_no_of_users'].'</div>
+  			</td>
+  			
+  			<tr>
+    	<td>
+      			Total No of Users in The '.$indicator.'  Accessing HCMP last 7 days</td>
+            <td>
+      				<div class="badge" >'.$user_data['total_no_of_users_7_days'].'</div>
+      				</td>
+      				</tr>
+      				<tr>
+    				<td>Users online in The '.$indicator.'</td>
+            		<td><div class="badge" >'.$user_data['active_users'].'</div></td>
+    				</tr>
+    				</table>
 					
-  </div>
   </div>';		
 return $stats_data;
 	
@@ -138,12 +125,27 @@ else if($access_level == "super_admin"){
 else if($access_level == "county_facilitator"){
 	
 	//$active_logs=Log::get_active_login($option,$option_id);
-	
+	$county_id=$this -> session -> userdata('county_id');
 	$data['stats']=$this->get_dash_board_stats("county");
 	$data['content_view'] = "county/county_v_2";
 	$data['banner_text'] = "Home";
 	$data['link'] = "home";
 	$data['coverage_data']=$this->get_county_dash_board_district_coverage();
+    $data['max_date']=facility_stock::get_county_max_date($county_id);
+	
+	
+	
+	$drug_category=Drug_Category::getAll();
+    $category_name='';	
+
+		foreach ($drug_category as $category0) {
+			$id=$category0->id;
+			$category3=$category0->Category_Name;
+		
+			 $category_name .="<option value='$id'>$category3;</option>";
+		 }
+		$data['drug_category']=$category_name;
+	
 
 }
 /* go to application/controllers/home_controller.php and check for this if statement */
@@ -573,8 +575,10 @@ $data['strXML_e1']=$strXML_e1;
      	$county_id=$this -> session -> userdata('county_id');
 		$district_data=districts::getDistrict($county_id);
 		
+	$total_facilities=0;	
+	$rolled_out_facilities=0;
 		
-		
+			
      		$table="<table class='data-table'><thead><tr>
      		<th>District</th><th># of Facilities</th><th># using tool</th><th>% coverage</th>
      		</tr></thead><tbody>";
@@ -588,7 +592,9 @@ $data['strXML_e1']=$strXML_e1;
 				  $coverage=0;	
 			
 		@$coverage =round((($data['total_2']/$data['total']))*100,1);	
-		
+		      $total_facilities=$total_facilities+$data['total'];
+	          $rolled_out_facilities=$rolled_out_facilities+$data['total_2'];
+			  
 				  
 			  $table .="<td>$data[district]</td>
 			  <td>$data[total]</td>
@@ -598,7 +604,11 @@ $data['strXML_e1']=$strXML_e1;
 			   $table .="</tr>";
 				  endforeach;
 			
-     	return $table."</tbody></table>";
+     	return $table."<tr>
+     	<td>TOTAL</td><td>$total_facilities</td>
+     	<td>$rolled_out_facilities</td>
+     	<td>
+     	".round((($rolled_out_facilities/$total_facilities))*100,1)." %</td></tr></tbody></table>";
      }
  
 

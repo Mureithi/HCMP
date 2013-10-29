@@ -35,6 +35,22 @@ public function send_order_sms(){
 	   $this->send_sms(substr($phone,0,-1),$message);
 
 	}
+public function send_order_approval_sms(){
+	
+
+       $facility_name = $this -> session -> userdata('full_name');
+	   $facility_code=$this -> session -> userdata('news');
+	   $data=User::getUsers($facility_code)->toArray();
+
+	   $message= $facility_name." order has been approved. HCMP";
+       
+	   $phone=$this->get_facility_phone_numbers($facility_code);
+	   $phone .=$this->get_ddp_phone_numbers($data[0]['district']);
+
+	   
+	   $this->send_sms(substr($phone,0,-1),$message);
+
+	}
 
 public function send_stock_decommission_email($message,$subject,$attach_file){
 	
@@ -134,7 +150,6 @@ public function send_email($email_address,$message,$subject,$attach_file=NULL,$b
 
 		$fromm='hcmpkenya@gmail.com';
 		$messages=$message;
-
   		$config['protocol']    = 'smtp';
         $config['smtp_host']    = 'ssl://smtp.gmail.com';
         $config['smtp_port']    = '465';
