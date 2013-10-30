@@ -57,4 +57,15 @@ WHERE  `action` =  'Logged In'
 AND  `start_time_of_event` < NOW( ) - INTERVAL 1  DAY 
 AND UNIX_TIMESTAMP( `end_time_of_event`) =0");		
 }
+
+public static function get_county_login_count($county_id,$district_id,$date){	
+		$q = Doctrine_Manager::getInstance()->getCurrentConnection()->fetchAll("SELECT DISTINCT ifnull(COUNT( u.id ),0) AS total
+FROM log l, user u
+WHERE u.id = l.user_id
+AND u.county_id =$county_id
+AND u.id=$district_id
+AND DATE_FORMAT( l.start_time_of_event,  '%Y-%m-%d' ) = '$date'
+");
+return $q;
+}
 }

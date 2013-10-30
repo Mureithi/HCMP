@@ -2046,10 +2046,11 @@ public function facility_settings(){
 	}
 	
 	public function get_county_facility_mapping_ajax_request($option=null){
+		
 		$county_id=$this -> session -> userdata('county_id');
 		$district_data=districts::getDistrict($county_id);
 		
-		$table_data="<tbody>";
+	   $table_data="<tbody>";
 	   $district_names="<thead><tr><th>Monthly Activities</th>";
 	   $district_total=array();
 	   $district_total_facilities=array();
@@ -2081,9 +2082,7 @@ public function facility_settings(){
 	
 	    $monthly_total=$monthly_total+$total;
 		$all_facilities=$all_facilities+$total;
-		
-		
-		
+
 		(array_key_exists($district_name,$district_total)) ? 
         $district_total[$district_name]=$district_total[$district_name]+$total
 	    :$district_total=array_merge($district_total,array($district_name=>($total)));
@@ -2131,7 +2130,7 @@ public function facility_settings(){
 		
 		endforeach;
 		
-		$table_data .="<td>$all_facilities</td></tr></tbody>";
+		$table_data .="<td><a href='#' id='total' class='ajax_call_1 link' option='total' date='total'>$all_facilities</a></td></tr></tbody>";
 		$district_names .="<th>TOTAL</th></tr></thead>";
 			
 		$final_coverage_total=0;
@@ -2154,25 +2153,77 @@ public function facility_settings(){
 	public function get_county_facility_mapping(){
 		
 		$county_id=$this -> session -> userdata('county_id');
+		
 		$district_data=districts::getDistrict($county_id);
 		
 		$data['title'] = "Facility Mapping";
 		$data['banner_text'] = "Facility Mapping";
 		$data['content_view'] = "county/facility_mapping_v";
 	    $data['district_data']=$district_data;
-	    $data['data']=$this->get_county_facility_mapping_ajax_request("on_load");
-	    
-
-	
 	   
+	
+	    $this -> load -> view("template",$data);
+	}
+	
+	public function get_county_facility_mapping_data(){
+		
+		$county_id=$this -> session -> userdata('county_id');
+		
+	$first_day_of_the_month=date("Y-m-1", strtotime("this month") );
+	$last_day_of_the_month=date("Y-m-t", strtotime("this month") ) ;
+	
+    $date_1 = new DateTime($first_day_of_the_month);
+    $date_2 = new DateTime($last_day_of_the_month);
 
-	  
-	     $this -> load -> view("template",$data);
+	$district_data=districts::getDistrict($county_id);
+	$series_data=array();
+	$category_data=array();
+	
+	$interval = $date_1->diff($date_2);
+
+	for($i=0;$i<=$interval->d;$i++):
+	
+	$day=1+$i;
+	
+    $new_date=date("Y")."-".date("m")."-".$day;
+	
+     
+      if(date('N', strtotime($new_date)) < 6){
+        	
+	   $date_=date('D d',strtotime($new_date));		  
+	   $category_data =array_merge($category_data, array($date_));	
+			
+       $temp_1=array();	
+       
+		foreach($district_data as $district_):
+			
+		$district_id=$district_->id;
+		$district_name=$district_->district;	
+		$county_data=Log::get_county_login_count($county_id,$district_id,$new_date);	
+
+	    (array_key_exists($district_name,$series_data)) ?
+        $series_data[$district_name]=array_merge($series_data[$district_name],array((int)$county_data[0]['total']))
+	    : $series_data=array_merge($series_data,array($district_name=>array((int) $county_data[0]['total'])));
+
+		endforeach;
+
+        } else {
+         // do nothing
+        }
+	endfor;
+		
+		
+		
+		$data['series_data']=$series_data;
+		$data['category_data']=stripslashes(json_encode($category_data));
+	    $data['data']=$this->get_county_facility_mapping_ajax_request("on_load");	
+	    $this -> load -> view("county/ajax_view/facility_roll_out_at_a_glance_v",$data);
 	}
 	
 	public function get_district_drill_down_detail($district_id,$option,$date_of_activation){
 	
 	$district_data="";
+	$county_id=$this -> session -> userdata('county_id');
 	
 	if($option=='monthly'):
 		
@@ -2208,8 +2259,42 @@ public function facility_settings(){
 		
 		endforeach;
 	
-	endif;
 	
+	
+	elseif($option="total"):
+	
+		
+	$get_facility_data=facilities::get_facilities_online_per_district($county_id);	
+	
+   	$district_data .='
+	<table class="data-table" width="100%">
+	<thead>
+	<tr>
+	<th>District Name</th><th>MFL No</th><th>Facility Name</th><th>Date Activated</th>
+	</tr>
+	</thead>
+	<tbody>';
+	foreach($get_facility_data as $facility_data):
+		
+	$facility_code=$facility_data['facility_code'];
+	$facility_name=$facility_data['facility_name'];
+	$district_name=$facility_data['district'];
+	$date=$facility_data['date'];
+	
+
+	$district_data .="<tr>
+	<td>$district_name</td><td>$facility_code</td><td>$facility_name</td><td>$date</td>
+	<tr>";
+	
+	
+	
+	endforeach;	
+	$district_data .="</tbody></table>";
+		
+	
+		
+		
+	endif;
 	echo $district_data;
 	
 		
@@ -2997,6 +3082,7 @@ public function get_county_evaluation_form_results(){
 		$data['ease_of_use']=historical_stock::get_ease_of_use($county_id);
 		$data['meet_expect']=historical_stock::get_meet_expect($county_id);
 		$data['train_useful']=historical_stock::get_train_useful($county_id);
+		$data['coverage_data']=historical_stock::get_county_coverage_data($county_id);
 		
 		
 
@@ -3094,8 +3180,83 @@ public function get_facility_evaluation_form_results(){
 	
   }
   
-  public function facility_evaluation_data($facility_code,$user_id){
+  public function get_county_district_access_list(){
   	
+  	$first_day_of_the_month=date("Y-m-1", strtotime("this month") );
+	$last_day_of_the_month=date("Y-m-t", strtotime("this month") ) ;
+	
+    $date_1 = new DateTime($first_day_of_the_month);
+    $date_2 = new DateTime($last_day_of_the_month);
+	
+	$county_id=$this -> session -> userdata('county_id');
+	$district_data=districts::getDistrict($county_id);
+		
+	
+	$series_data=array();
+	$category_data=array();
+	
+	$interval = $date_1->diff($date_2);
+
+	for($i=0;$i<$interval->d;$i++):
+	
+	$day=1+$i;
+	
+    $new_date=date("Y")."-".date("m")."-".$day;
+	
+     
+      if(date('N', strtotime($new_date)) < 6){
+        	
+	   $date_=date('D d',strtotime($new_date));		  
+	   $category_data =array_merge($category_data, array($date_));	
+			
+       $temp_1=array();	
+       
+		foreach($district_data as $district_):
+			
+		$district_id=$district_->id;
+		$district_name=$district_->district;	
+		$county_data=Log::get_county_login_count($county_id,$district_id,$new_date);	
+
+	    (array_key_exists($district_name,$series_data)) ?
+        $series_data[$district_name]=array_merge($series_data[$district_name],array((int)$county_data[0]['total']))
+	    : $series_data=array_merge($series_data,array($district_name=>array((int) $county_data[0]['total'])));
+
+		endforeach;
+
+        } else {
+         // do nothing
+        }
+	
+	
+	
+	endfor;
+	            $string=null;
+      
+	  
+	         print_r($series_data);
+					 exit;
+                foreach($series_data as $key=>$raw_data):
+					
+				/*$string .="{
+					name: '$key',
+					data:[
+					 ";*/
+					 
+					print_r($raw_data);
+					exit;
+					 
+					/* foreach ($raw_data as $key_data):
+						
+						$string .="$key_data,";
+						 
+                     endforeach;
+					$string .="]},";*/
+				endforeach;
+                
+				
+				echo $string;
+	
+	
   }
 
 

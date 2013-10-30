@@ -295,4 +295,27 @@ and f.district=d.id and d.county=$county_id
 	
 		
 	}
+
+
+   public function get_county_coverage_data($county_id){
+   	 $query_1 = Doctrine_Manager::getInstance()->getCurrentConnection()->fetchAll("
+SELECT COUNT( f.id ) AS total
+FROM facilities f, districts d
+WHERE f.district = d.id
+AND d.county ='$county_id'
+AND UNIX_TIMESTAMP( f.`date_of_activation` ) >0
+ ");
+ 
+   	 $query_2 = Doctrine_Manager::getInstance()->getCurrentConnection()->fetchAll("
+SELECT COUNT( h_s.id ) AS total
+FROM facilities f, districts d, facility_evaluation h_s
+WHERE f.district = d.id
+AND d.county ='$county_id'
+AND h_s.facility_code=f.facility_code
+
+ ");
+ 
+ 
+   return array("total_facilities"=>$query_1[0]['total'],'total_evaluation'=>$query_2[0]['total']);
+   }
 	}

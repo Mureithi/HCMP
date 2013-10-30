@@ -8,7 +8,7 @@
 
 .column-left { margin-left:5px;margin-top:10px;width: 25%;height:100%; float:left;  }   
 .column-center {margin-top:10px; width: 25%;height:100%; float: left; }   
-.column-right { margin-right:2px;width: 49%; height:100%; float: left; }
+.column-right { margin-right:2px;width: 49%; height:650px; float: left; }
 
 
 
@@ -166,7 +166,7 @@
 	<div id="chart_2"></div>
 	</div>
  
-	<div class="column-right ">
+	<div class="column-right">
 		<div class="div-row">
 		<div class="left-div" >
 		<h3>Expired Commodities - Trend <?php echo $year ?></h3>
@@ -188,8 +188,8 @@
 		</div>
 		</div>
 		
-		<div class="div-row">
-			<div class="div-full">
+		<div class="div-row" >
+			<div class="div-full" style="overflow: auto">
 				<h3>System coverage</h3>
 			<?php echo $coverage_data;  ?>
 			</div>

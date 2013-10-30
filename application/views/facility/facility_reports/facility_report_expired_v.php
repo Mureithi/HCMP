@@ -97,21 +97,27 @@ padding: 5px;
 		<th>Manufacturer</th>
 		<th>Expiry Date</th>
 		<th>Unit size</th>
-		<th>Stock Expired(Unit Size)</th>
+		<th>Stock Expired (Packs)</th>
+		<th>Unit Cost</th>
+		<th>Total Cost(KSH)</th>
 	</tr>
 	
 			
 		<tbody>
 		
-		<?php 
+		<?php    $total=0;
 				foreach ($expired as $drug ) { ?>
 					
-					<?php foreach($drug->Code as $d){ 
+					<?php foreach($drug->Code as $d){
+						        $total_units=$d->total_units ;
 								$name=$d->Drug_Name;
 								$code=$d->Kemsa_Code;
 					            $unitS=$d->Unit_Size; 
 								$unitC=$d->Unit_Cost;
 								$calc=$drug->balance;
+								$balance=round($calc/$total_units,1);
+								$total_expired=$unitC*$balance;
+								$total=$total+$total_expired;
 								$thedate=$drug->expiry_date;
 								$formatme = new DateTime($thedate);
 								 $myvalue= $formatme->format('d M Y');
@@ -125,12 +131,15 @@ padding: 5px;
 							<td><?php echo $drug->manufacture;?> </td>
 							<td><?php echo $myvalue;?></td>
 							<td><?php echo $unitS;?></td>
-							<td><?php echo $drug->quantity;?></td>
+							<td><?php echo $balance;?></td>
+							<td><?php echo $unitC;?></td>
+							<td><?php echo $total_expired;?></td>
 							
 							
 						</tr>
 					<?php }
-							?>		
+							?>	
+							<tr><td colspan="7" ></td><td><b>TOTAL (KSH) </b></td><td><b><?php echo $total; ?></b></td></tr>	
 		</tbody>
 		
 		<?php }

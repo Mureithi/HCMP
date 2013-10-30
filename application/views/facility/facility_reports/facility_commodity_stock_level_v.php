@@ -9,8 +9,6 @@ $(function() {
             },
             xAxis: {
                 categories: <?php echo $commodity_name; ?>
-
-
             },
             yAxis: {
                 min: 0,

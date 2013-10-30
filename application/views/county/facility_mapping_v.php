@@ -34,44 +34,27 @@
 					"bJQueryUI": true,
 					"bPaginate": false
 				} );
-				
-	     $( "#dialog" ).dialog({
-	     	
-         	
-         	autoOpen: false,
-			height: 650,
-			width:900,
-			modal: true
-		});	
+		
+		var url = "<?php echo base_url().'report_management/get_county_facility_mapping_data/'?>";	
+		ajax_request_special(url,'main_div','');				
+	   
 
 		$(".ajax_call").click(function(){
 		var url = "<?php echo base_url().'report_management/get_district_facility_mapping_/'?>";	
 		var id  = $(this).attr("id"); 
-		ajax_request_special_(url+id,'main_div','');					
+		ajax_request_special(url+id,'main_div','');					
 	    });
 	    
 	  
 	    
 	    $("#section_2").click(function(){
-		var url = "<?php echo base_url().'report_management/get_county_facility_mapping_ajax_request/'?>";	
-
-		ajax_request_special_(url,'main_div','');					
+		var url = "<?php echo base_url().'report_management/get_county_facility_mapping_data/'?>";	
+		ajax_request_special(url,'main_div','');		
 	    });
 	
 	
-		$(".ajax_call_1").click(function(){
-			
-		var url = "<?php echo base_url().'report_management/get_district_drill_down_detail'?>";	
-		var id  = $(this).attr("id"); 				
-        var option=$(this).attr("option"); 
-        var date1=$(this).attr("date"); 
-        var  date=encodeURI(date1);
-      
-	    ajax_request_special_(url+"/"+id+"/"+option+"/"+date,'district_div', date1);	
-	    
-	    });
-
-    function ajax_request_special_(url,checker,date){
+		
+    function ajax_request_special(url,checker,date){
 	var url =url;
 	var checker=checker;
 	
@@ -235,10 +218,10 @@ echo "<li>
 </div>
 
 </div>
-<div id="dialog"></div> 
+
 <div class="dash_main" id = "dash_main">
 <div id="test_a" style="overflow: scroll; height: 51em; min-height:100%; margin: 0; width: 100%">
-<?php echo $data ?>
+
 
 
 		</div>

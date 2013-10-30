@@ -427,7 +427,7 @@ public function facility_report_expired($facility_code=null,$district_id=null) {
 		
 		$data['dpp_array']=User::get_dpp_details($district);
 		$data['title'] = "Expired Products";
-		$data['content_view'] = "facility_report_expired_v";
+		$data['content_view'] = "facility/facility_reports/facility_report_expired_v";
 		$data['banner_text'] = "Expired Products";
 		$data['expired']=Facility_Stock::getexp($date,$facility);
 		

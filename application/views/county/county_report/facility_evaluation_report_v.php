@@ -73,9 +73,15 @@ color: #fff; }
 	
 </script>
 <div class="leftpanel">
-<h3 class="accordion" id="leftpanel"><span></span></h3>
+<h3 class="accordion" id="leftpanel"><span> Evaluation Forms Analysis</span></h3>
 </div>
 <div class="dash_main" style="overflow: auto">
+	<div class='label label-info'>The below analysis is retrieved from  <?php echo $coverage_data['total_evaluation'] ?>  
+		out of <?php echo $coverage_data['total_facilities'] ?> facilities that underwent the Evaluation process. – 
+		Coverage <?php
+		$total=0;
+		$total=@round(($coverage_data['total_evaluation']/$coverage_data['total_facilities'])*100);
+		 echo $total ?>%</div>
 	 <table width="100%" class="table table-bordered">
 	<tr class="accordion"><td colspan="4">1. FACILITY INFORMATION</td></tr>
 	<tr>
