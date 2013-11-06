@@ -18,30 +18,51 @@ public function get_dash_board_stats($dash_board_indicator){
 	$county_id = $this -> session -> userdata('county_id');
 	$district_id = $this -> session -> userdata('district1');
 	$district_id = $this -> session -> userdata('district');
+	$base_url=base_url();
 	$indicator='';
 	switch ($dash_board_indicator) {
 		case 'county':
 	$indicator ="County";
 	$facility_data=facilities::get_no_of_facilities_hcmp($county_id);
 	$user_data=user::get_no_of_users_using_hcmp($county_id);
+	$pending_orders = Ordertbl::get_pending_o_count($county_id);
 	
 	
+	
+	$decommissioned_items=facility_stock::get_decommisioned_count($county_id);
+	
+	$decommissioned_items[0]['total']=(count($decommissioned_items)==0)?0:$decommissioned_items[0]['total'];
+	
+	$facility_data='	<tr>
+      			<td>Total No of Facilities in The '.$indicator.'</td>
+            		
+    			<td>
+      				<a href="'.$base_url.'report_management/get_county_facility_mapping"><div class="badge" >'.$facility_data['total_no_of_facilities'].'</div></a>
+    			</td>
+  				</tr>	
+  				<tr>
+  				<td>Total No of Facilities in The '.$indicator.'  Using HCMP</td>
+           <td>  <a href="'.$base_url.'report_management/get_county_facility_mapping"><div class="badge" >'.$facility_data['total_no_of_facilities_using_hcmp'].'</div></a></td>
+    		</tr>
+    	  <tr>
+  				<td>% Coverage</td>
+           <td>  <a href="'.$base_url.'report_management/get_county_facility_mapping"><div class="badge" >'.round(($facility_data['total_no_of_facilities_using_hcmp']/$facility_data['total_no_of_facilities'])*100,1).'%</div></a></td>
+    		</tr>
+    		<tr>
+  				<td># of pending orders</td>
+           <td> <a href="'.$base_url.'stock_expiry_management/county_deliveries"> <div class="badge" >'.$pending_orders.'</div></a></td>
+    		</tr>
+    		<tr>
+  				<td># of decommissioned items</td>
+           <td> <a href="'.$base_url.'stock_expiry_management/county_expiries"> <div class="badge" >'.$decommissioned_items[0]['total'].'</div></a></td>
+    		</tr>
+    		';
 	 break;
 	 case 'district':
 		 $indicator ='District';
 	$facility_data=facilities::get_no_of_facilities_hcmp($county_id,$district_id);
 	$user_data=user::get_no_of_users_using_hcmp($county_id,$district_id);	
-	
-	
-			break;		
-		
-		default:
-			return NULL;
-			break;
-	}
-	$stats_data='<div>
-<table class="data-table">
-    			<tr>
+	$facility_data='	<tr>
       			<td>Total No of Facilities in The '.$indicator.'</td>
             		
     			<td>
@@ -51,7 +72,17 @@ public function get_dash_board_stats($dash_board_indicator){
   				<tr>
   				<td>Total No of Facilities in The '.$indicator.'  Using HCMP</td>
            <td>  <div class="badge" >'.$facility_data['total_no_of_facilities_using_hcmp'].'</div></td>
-    				</tr>
+    		</tr>';
+	
+			break;		
+		
+		default:
+			return NULL;
+			break;
+	}
+	$stats_data='<div>
+<table class="data-table">
+    		'.$facility_data.'
   			<tr>
   			<td>
       			Total No of Users in The '.$indicator.' </td>
@@ -519,7 +550,7 @@ $data['strXML_e1']=$strXML_e1;
 			$district =$this -> session -> userdata('district1');
 			
 	
-			$data['pending_orders'] = Ordertbl::get_pending_o_count($district);
+			$data['pending_orders'] = Ordertbl::get_pending_o_count(null,$district);
 			$data['decommisioned'] = Facility_stock::get_decom_count($district);
 			$data['drugs_array'] = Drug::getAll();
 			$data['facilities']=Facilities::getFacilities($district);

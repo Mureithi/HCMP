@@ -61,7 +61,7 @@
   <script type="text/javascript" charset="utf-8">
       
       $(document).ready(function() {
-  
+    
 		var url = "<?php $year=date('Y'); echo base_url()."report_management/get_stock_status_ajax/consumption" ?>";			
 		 div="#chart_1";
 		
@@ -126,16 +126,21 @@
 }
     
 
-            var chart = new FusionCharts("<?php echo base_url()."scripts/FusionCharts/Line.swf"?>", "ChartId4", "100%", "80%", "0", "0");
+    var chart = new FusionCharts("<?php echo base_url()."scripts/FusionCharts/Line.swf"?>", "ChartId4", "100%", "80%", "1", "1");
     var url = '<?php echo base_url()."report_management/generate_costofordered_County_chart"?>'; 
     chart.setDataURL(url);
     chart.render("chart_4");
 
       
-     var chart = new FusionCharts("<?php echo base_url()."scripts/FusionWidgets/HLinearGauge.swf"?>", "ChartId8", "100%", "20%", "0", "0");
+     var chart = new FusionCharts("<?php echo base_url()."scripts/FusionWidgets/HLinearGauge.swf"?>", "ChartId8", "100%", "50", "0", "0");
     var url = '<?php echo base_url()."report_management/lead_time_chart_county"?>'; 
     chart.setDataURL(url);
       chart.render("chart_5");
+      
+      var chart = new FusionCharts("<?php echo base_url()."scripts/FusionWidgets/HLinearGauge.swf"?>", "ChartId8", "100%", "50", "0", "0");
+    var url = '<?php echo base_url()."report_management/lead_time_chart_county"?>'; 
+    chart.setDataURL(url);
+      chart.render("chart_6");
   });
   </script>
 <div class="dash_container">
@@ -184,7 +189,10 @@
 		</div>
 		<div class="right-div" >
 			<h3>Lead Time</h3>
+			<div class='label label-info'>District Level(Placement-Approval)</div>
 			<div id="chart_5" ></div>
+			<div class='label label-info'>Distribution Level(Approval-Delivery)</div>
+			<div id="chart_6" ></div>
 		</div>
 		</div>
 		

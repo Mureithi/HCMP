@@ -2186,7 +2186,7 @@ public function facility_settings(){
 	$day=1+$i;
 	
     $new_date=date("Y")."-".date("m")."-".$day;
-	
+	$new_date=date('Y-m-d', strtotime($new_date));
      
       if(date('N', strtotime($new_date)) < 6){
         	
@@ -2532,11 +2532,9 @@ echo $strXML;
 }
 //county charts  6
 public function cummulative_fill_rate_chart(){
-$district=$this -> session -> userdata('district');
-
-$county_id=districts::get_county_id($district);
-$county_name=counties::get_county_name($county_id[0]['county']);	
-$chart_raw_data=ordertbl::get_county_fill_rate($county_name[0]['id']);					
+$county_id=$this->session->userdata('county_id');
+$county_name=counties::get_county_name($county_id);	
+$chart_raw_data=ordertbl::get_county_fill_rate($county_id);					
 			
 		
 	
@@ -3203,9 +3201,11 @@ public function get_facility_evaluation_form_results(){
 	
     $new_date=date("Y")."-".date("m")."-".$day;
 	
+	$new_date=date('Y-m-d', strtotime($new_date));
+	
      
       if(date('N', strtotime($new_date)) < 6){
-        	
+        //echo $new_date."<BR>";	
 	   $date_=date('D d',strtotime($new_date));		  
 	   $category_data =array_merge($category_data, array($date_));	
 			

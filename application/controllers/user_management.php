@@ -25,11 +25,14 @@ public function change_password(){
 		$this -> load -> view("login_v", $data);
 	}
 	public function logout(){
+		//$this->load->driver('cache', array('adapter' => 'apc', 'backup' => 'file'));
 		$data = array();
 		
 		Log::update_log_out_action($this -> session -> userdata('identity'));
 		
 		$this->session->sess_destroy();
+		//$this->cache->clean();
+		$this->db->cache_delete_all();
 		
 		$data['title'] = "Login";		
 		$this -> load -> view("login_v", $data);
@@ -46,7 +49,7 @@ public function submit() {
 			$this->index();
 			return;
 		}
-		
+		//$this->load->driver('cache', array('adapter' => 'apc', 'backup' => 'file'));
 		$reply=User::login($username, $password);
 		$n=$reply->toArray();
 		//echo($n['username']);

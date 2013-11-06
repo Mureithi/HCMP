@@ -9,7 +9,7 @@ if (!isset($quick_link)) {
 	$quick_link = null;
 }
 $access_level = $this -> session -> userdata('user_indicator');
-$drawing_rights = $this -> session -> userdata('drawing_rights');
+$drawing_rights =0;
 
 $user_is_facility = false;
 $user_is_moh = false;
@@ -23,6 +23,7 @@ $user_is_county_facilitator = FALSE;
 $user_is_allocation_committee = FALSE;
 $user_is_dpp = FALSE;
 if ($access_level == "facility" || $access_level == "fac_user") {
+	$drawing_rights = $this -> session -> userdata('drawing_rights');
 	$user_is_facility = true;
 }
 if ($access_level == "moh") {
@@ -150,6 +151,43 @@ if (isset($styles)) {
     </style>
 <script type="text/javascript">
 
+/*
+ * Auto logout
+ */
+var timer = 0;
+function set_interval() {
+	showTime()
+	// the interval 'timer' is set as soon as the page loads
+	timer = setInterval("auto_logout()", 3600000);
+	// the figure '1801000' above indicates how many milliseconds the timer be set to.
+	// Eg: to set it to 5 mins, calculate 3min = 3x60 = 180 sec = 180,000 millisec.
+	// So set it to 180000
+}
+
+function reset_interval() {
+	showTime()
+	//resets the timer. The timer is reset on each of the below events:
+	// 1. mousemove   2. mouseclick   3. key press 4. scroliing
+	//first step: clear the existing timer
+
+	if(timer != 0) {
+		clearInterval(timer);
+		timer = 0;
+		// second step: implement the timer again
+		timer = setInterval("auto_logout()", 3600000);
+		// completed the reset of the timer
+	}
+}
+
+function auto_logout() {
+
+	// this function will redirect the user to the logout script
+	window.location = "<?php echo base_url(); ?>user_management/logout";
+}
+
+/*
+* Auto logout end
+*/
 	function showTime()
 {
 var today=new Date();
@@ -162,6 +200,9 @@ m=checkTime(m);
 s=checkTime(s);
 $("#clock").text(h+":"+m);
 t=setTimeout('showTime()',1000);
+
+
+
 }
 function checkTime(i)
 {
@@ -172,11 +213,11 @@ if (i<10)
 return i;
 }
 
-		
+	
 </script>
 </head>
  
-<body onload="showTime()">
+<body onload="set_interval()" onmouseover="reset_interval()" onclick="reset_interval()">
 
 <div id="wrapper">
 	<div id="top-panel" style="margin:0px;">
@@ -205,13 +246,6 @@ return i;
 	<?php $facility = $this -> session -> userdata('news'); ?>
  <div id="top_menu"> 
 
- 	<?php
-	//Code to loop through all the menus available to this user!
-	//Fet the current domain
-	$menus = $this -> session -> userdata('menu_items');
-	$current = $this -> router -> class;
-	$counter = 0;
-?>
 <nav id="navigate">
 <ul>
  	
@@ -219,7 +253,7 @@ return i;
 if($user_is_facility){
 ?>
 <li class="<?php
-if ($current == "home_controller") {echo "active";
+if (@$current == "home_controller") {echo "active";
 }
 ?>"><a  href="<?php echo base_url(); ?>home_controller">Home </a></li>
  	<li><a  href="<?php echo base_url(); ?>order_management" class="<?php
@@ -228,7 +262,7 @@ if ($current == "home_controller") {echo "active";
 ?>"> Orders </a></li> 
 
 <li><a  href="<?php echo base_url(); ?>Issues_main" class="<?php
-if ($current == "Issues_main") {echo "active";
+if (@$current == "Issues_main") {echo "active";
 }
 ?>">Issues </a></li>	
 <!--<a href="<?php echo base_url();?>order_management/all_deliveries/<?php echo $facility?>" class="top_menu_link<?php
@@ -236,7 +270,7 @@ if ($current == "Issues_main") {echo "active";
 	}
 	?>">Deliveries</a>-->
 <li><a  href="<?php echo base_url(); ?>report_management/reports_Home"  class="<?php
-if ($current == "report_management") {echo "active";
+if (@$current == "report_management") {echo "active";
 }
 ?>">Reports </a></li>
 <li><a  href="<?php echo base_url(); ?>report_management/commodity_list" class="<?php
@@ -259,7 +293,7 @@ if ($quick_link == "user_facility_v") {echo "active";
 	
 	
 		<li class="<?php
-		if ($current == "home_controller") {echo "active";
+		if (@$current == "home_controller") {echo "active";
 		}
 	?>"><a data-clone="Home" href="<?php echo base_url(); ?>home_controller">Home </a></li>
 	<!--<li><a data-clone="Actions" href="<?php echo base_url();?>dp_facility_list/actions"  class="<?php
@@ -277,7 +311,7 @@ if ($quick_link == "new_order") {echo "active";
 ?>">District Facilities</a></li>
 
 	 	<li><a data-clone="Users" href="<?php echo base_url(); ?>user_management/dist_manage"  class="<?php
-		if ($current == "user_management") {echo "active";
+		if (@$current == "user_management") {echo "active";
 		}
 	?>">Users</a></li>
 	
@@ -329,7 +363,7 @@ if ($quick_link == "new_order") {echo "active";
 	?>
 
 <li class="<?php
-if ($current == "home_controller") {echo "active";
+if (@$current == "home_controller") {echo "active";
 }
 ?>"><a data-clone="Home" href="<?php echo base_url(); ?>home_controller">Home </a></li>
 
@@ -393,13 +427,13 @@ if ($current == "home_controller") {echo "active";
 	?>
 	
 <li class="<?php
-if ($current == "home_controller") {echo "active";
+if (@$current == "home_controller") {echo "active";
 }
 ?>"><a data-clone="Home" href="<?php echo base_url(); ?>home_controller">Home </a></li>
 	
 		
 		<li><a data-clone="Users" href="<?php echo base_url(); ?>user_management/moh_manage" class="<?php
-		if ($current == "user_management") {echo "active";
+		if (@$current == "user_management") {echo "active";
 		}
 	?>">Users</a></li>
 	

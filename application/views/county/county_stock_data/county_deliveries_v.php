@@ -65,12 +65,12 @@ table.data-table td {
      var chart = new FusionCharts("<?php echo base_url()."scripts/FusionWidgets/AngularGauge.swf"?>", "ChartId5", "100%", "80%", "0", "0");
     var url = '<?php echo base_url()."report_management/cummulative_fill_rate_chart"?>'; 
     chart.setDataURL(url);
-    chart.render("chart8");
+   // chart.render("chart8");
 
        var chart = new FusionCharts("<?php echo base_url()."scripts/FusionWidgets/HLinearGauge.swf"?>", "ChartId8", "100%", "20%", "0", "0");
     var url = '<?php echo base_url()."report_management/lead_time_chart_county"?>'; 
     chart.setDataURL(url);
-    chart.render("chart9");
+  //  chart.render("chart9");
     });
        
 
@@ -88,7 +88,43 @@ table.data-table td {
 	</tr>
 	</thead>
 	<tbody>
-		<?php foreach ($order_counts as $item) {
+		<?php 
+		$year=date("Y");
+		
+		$delivery_data='';
+				
+		foreach($delivered as $delivered_details):
+			$mfl=$delivered_details['facility_code'];
+			$name=$delivered_details['facility_name'];
+			$order_date=$delivered_details['orderDate'];
+			$district=$delivered_details['district'];
+			$year=$delivered_details['mwaka'];
+			$order_total=$delivered_details['orderTotal'];
+			$order_total=number_format($order_total, 2, '.', ',');
+			$delivery_total=$delivered_details['total_delivered'];
+			$delivery_total=number_format($delivery_total, 2, '.', ',');
+			$fill_rate=$delivered_details['fill_rate'];
+			$link=base_url().'order_management/moh_order_details/'.$delivered_details['id'];
+		$delivery_data .= <<<HTML_DATA
+<tr>
+<td>$district</td>
+<td>$name</td>
+<td>$mfl</td>
+<td>$year</td>
+<td>$order_total</td>
+<td>$delivery_total</td>
+<td>$fill_rate %</td>
+<td></td>
+<td><a href='$link' class='link'>View</a></td>
+</tr>
+HTML_DATA;
+			
+			endforeach;
+		
+		
+	
+		
+		foreach ($order_counts as $item) {
 			$pending_orders=$item['pending_orders'];
 			$approved_orders=$item['approved_orders'];
 			$delivered_orders=$item['delivered_orders'];
@@ -104,15 +140,15 @@ table.data-table td {
 </table>
 
 </div>
-<div class='label label-info'>Orders Fill Rate</div>
+<div class='label label-info'>Orders Fill Rate For the financial year <?php echo $year ?></div>
 <div id="chart8"></div>
-<div class='label label-info'>Orders Lead Time</div>
+<div class='label label-info'>Orders Lead Time For the financial year <?php echo $year ?></div>
 <div id="chart9"></div>
 </div>
 
 
 <div class="dash_main" style="overflow: scroll">
-	<div class='label label-info'> Below are deliveries made for oders placed</div>
+	<div class='label label-info'> Below are deliveries made for oders placed For the financial year <?php echo $year ?></div>
 	<table width="100%" id="expiry">
 		<thead>
 		<tr>
@@ -127,37 +163,7 @@ table.data-table td {
 			<th>Action</th>
 		</tr>
 		</thead>
-		<?php
-		foreach($delivered as $delivered_details):
-			$mfl=$delivered_details['facility_code'];
-			$name=$delivered_details['facility_name'];
-			$order_date=$delivered_details['orderDate'];
-			$district=$delivered_details['district'];
-			$year=$delivered_details['mwaka'];
-			$order_total=$delivered_details['orderTotal'];
-			$order_total=number_format($order_total, 2, '.', ',');
-			$delivery_total=$delivered_details['total_delivered'];
-			$delivery_total=number_format($delivery_total, 2, '.', ',');
-			$fill_rate=$delivered_details['fill_rate'];
-			$link=base_url().'order_management/moh_order_details/'.$delivered_details['id'];
-		echo <<<HTML_DATA
-<tr>
-<td>$district</td>
-<td>$name</td>
-<td>$mfl</td>
-<td>$year</td>
-<td>$order_total</td>
-<td>$delivery_total</td>
-<td>$fill_rate</td>
-<td></td>
-<td><a href='$link' class='link'>View</a></td>
-</tr>
-HTML_DATA;
-			
-			endforeach;
-		
-		
-		?>
+<?php echo $delivery_data; ?>
 		
 		<tbody>
 			

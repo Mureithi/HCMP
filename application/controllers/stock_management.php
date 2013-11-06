@@ -493,16 +493,6 @@ public function update_facility_stock_details(){
 	 $access_level = $this -> session -> userdata('user_type_id');
 	 $facility_code=$this -> session -> userdata('news');
 
-		
-		 
-	
-	
-
-	 
-
-	 
-	
-	 
 	 foreach ( $id as $key => $value) {
 	
 	if($delete[$key]==1):
@@ -528,11 +518,7 @@ public function update_facility_stock_details(){
          $myobj->save(); 
 		
 	 endif;
-	 		
-	 	
-	 
-	 	
-	 	
+
 	 }
 
 	$this->session->set_flashdata('system_success_message', 'Stock Details Have Been Updated');

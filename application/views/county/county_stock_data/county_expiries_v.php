@@ -102,11 +102,90 @@ table.data-table td {
 
 	
 </script>
+<?php
+  $total_expiry=0;
+  $expired_data='';
+  $year=date("Y");
+  
+ foreach($expired2 as $facility_expiry_data):
+	 $district=$facility_expiry_data['district'];
+	 $name=$facility_expiry_data['facility_name'];
+	 $mfl=$facility_expiry_data['facility_code'];
+	 $total=$facility_expiry_data['total'];
+	 
+	 $total_expiry=$total_expiry+$total;
+	 $year=date('Y');
+	 $total=number_format($total, 2, '.', ',');
+	
+	 $district_id=$facility_expiry_data['district_id'];
+	  $link=base_url()."stock_expiry_management/facility_report_expired/".$mfl;
+	  
+$expired_data .= <<<HTML_DATA
+<tr>
+<td>$district</td>
+<td>$name</td>
+<td>$mfl</td>
+<td>$total</td>
+<td><a href='$link' class='link'>View</a></td>
+</tr>
+HTML_DATA;
+	 
+	 endforeach;
+	   $total_expiry=number_format($total_expiry, 2, '.', ',');
+	$expired_data .=  <<<HTML_DATA
+<tr>
+<td></td>
+<td></td>
+<td>TOTAL for the year $year</td>
+<td>$total_expiry</td>
+<td></td>
+</tr>
+HTML_DATA;
 
+
+$total_potential=0;
+$potential_data='';
+ foreach($potential_expiries as $facility_potential_expiries_data):
+	 $district=$facility_potential_expiries_data['district'];
+	 $name=$facility_potential_expiries_data['facility_name'];
+	 $mfl=$facility_potential_expiries_data['facility_code'];
+	 $total=$facility_potential_expiries_data['total'];
+	 $total_potential=$total_potential+ $total;
+	 $total=number_format($total, 2, '.', ',');
+	 
+	 $link=base_url()."stock_expiry_management/default_expiries/".$mfl;
+	 
+$potential_data .= <<<HTML_DATA
+<tr>
+<td>$district</td>
+<td>$name</td>
+<td>$mfl</td>
+<td>$total</td>
+<td><a href='$link' class='link'>View</a></td>
+</tr>
+HTML_DATA;
+	 
+	 endforeach;
+	    $total_potential=number_format($total_potential, 2, '.', ',');
+	$potential_data .= <<<HTML_DATA
+<tr>
+<td></td>
+<td></td>
+<td>TOTAL</td>
+<td>$total_potential</td>
+<td></td>
+</tr>
+HTML_DATA;
+ 
+
+ ?>
 <div class="leftpanel">
 <h3 class="accordion" id="leftpanel">Expiries<span></span></h3>
-<h3>Expired Commodities - Trend <?php echo date("Y"); ?></h3>
-			<div  style="overflow:auto; height: 50%; width: 80%" id="chart_3"></div>	
+<div class='label label-info'>Expired Commodities - Trend <?php echo date("Y"); ?></div>
+			<div style="height: 200px">
+				<div id="chart_3"></div>	
+			</div>
+			
 
 </div>
 
@@ -125,7 +204,7 @@ table.data-table td {
 
 
 <div id="tab-1">
-
+<div class='label label-info'>Expired Commodities - Trend <?php echo date("Y")." TOTAL ".$total_expiry; ?></div>
 <table width='100%' id='expiry'>
 	<thead>
 <tr>
@@ -138,41 +217,8 @@ table.data-table td {
 </thead>	
 <tbody>
  <?php
-  $total_expiry=0;
- foreach($expired2 as $facility_expiry_data):
-	 $district=$facility_expiry_data['district'];
-	 $name=$facility_expiry_data['facility_name'];
-	 $mfl=$facility_expiry_data['facility_code'];
-	 $total=$facility_expiry_data['total'];
-	 
-	 $total_expiry=$total_expiry+$total;
-	 
-	 $total=number_format($total, 2, '.', ',');
-	
-	 $district_id=$facility_expiry_data['district_id'];
-	  $link=base_url()."stock_expiry_management/facility_report_expired/".$mfl;
-	  
-echo <<<HTML_DATA
-<tr>
-<td>$district</td>
-<td>$name</td>
-<td>$mfl</td>
-<td>$total</td>
-<td><a href='$link' class='link'>View</a></td>
-</tr>
-HTML_DATA;
-	 
-	 endforeach;
-	   $total_expiry=number_format($total_expiry, 2, '.', ',');
-	 echo <<<HTML_DATA
-<tr>
-<td></td>
-<td></td>
-<td>TOTAL</td>
-<td>$total_expiry</td>
-<td></td>
-</tr>
-HTML_DATA;
+
+ echo $expired_data;
  
  ?>
   
@@ -183,7 +229,7 @@ HTML_DATA;
 
 <div id="tab-2">
 	
-<h3 id="notification">Commodities Expiring between <?php echo date('jS F, Y'); ?> and <?php echo date('jS F, Y', strtotime('+6 months')); ?></h3>
+<div class='label label-info'>Commodities Expiring between <?php echo date('jS F, Y'); ?> and <?php echo date('jS F, Y', strtotime('+6 months'))." TOTAL ".$total_potential ; ?></div>
 <table width='100%' id='potential'>
 	<thead>
 <tr>
@@ -196,39 +242,7 @@ HTML_DATA;
 </thead>	
 <tbody>
  <?php
-  $total_potential=0;
- foreach($potential_expiries as $facility_potential_expiries_data):
-	 $district=$facility_potential_expiries_data['district'];
-	 $name=$facility_potential_expiries_data['facility_name'];
-	 $mfl=$facility_potential_expiries_data['facility_code'];
-	 $total=$facility_potential_expiries_data['total'];
-	 $total_potential=$total_potential+ $total;
-	 $total=number_format($total, 2, '.', ',');
-	 
-	 $link=base_url()."stock_expiry_management/default_expiries/".$mfl;
-	 
-echo <<<HTML_DATA
-<tr>
-<td>$district</td>
-<td>$name</td>
-<td>$mfl</td>
-<td>$total</td>
-<td><a href='$link' class='link'>View</a></td>
-</tr>
-HTML_DATA;
-	 
-	 endforeach;
-	    $total_potential=number_format( $total_potential, 2, '.', ',');
-	 echo <<<HTML_DATA
-<tr>
-<td></td>
-<td></td>
-<td>TOTAL</td>
-<td>$total_potential</td>
-<td></td>
-</tr>
-HTML_DATA;
- 
+  echo $potential_data;
  ?>
   
 </tbody>		 

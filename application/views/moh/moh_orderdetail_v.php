@@ -1,8 +1,7 @@
 <script type="text/javascript" language="javascript" src="<?php echo base_url();  ?>Scripts/jquery.dataTables.js"></script>
 <script type="text/javascript" charset="utf-8" src="<?php echo base_url(); ?>DataTables-1.9.3/extras/TableTools-2.0.0/media/js/ZeroClipboard.js"></script>
 <script type="text/javascript" charset="utf-8" src="<?php echo base_url(); ?>DataTables-1.9.3/extras/TableTools-2.0.0/media/js/TableTools.js"></script>
-		<style type="text/css" title="currentStyle">
-			
+		<style type="text/css" title="currentStyle">			
 			@import "<?php echo base_url(); ?>DataTables-1.9.3 /media2/css/jquery.dataTables.css";
 			@import "<?php echo base_url(); ?>DataTables-1.9.3/extras/TableTools-2.0.0/media/css/TableTools.css";
 		</style>	
@@ -32,11 +31,19 @@ $table_body="";
 $total_fill_rate=0;
 $order_value =0;
 
-   $dStart = new DateTime(date($dates["orderDate"]));
-   $dEnd  = new DateTime(date($dates["deliverDate"]));
-   $dDiff = $dStart->diff($dEnd);
+ //  $dStart = new DateTime(date($dates["orderDate"]));
+   //$dEnd  = new DateTime(date($dates["deliverDate"]));
+   //$dDiff = $dStart->diff($dEnd);
   // echo $dDiff->format('%R'); // use for point out relation: smaller/greater
-   $date_diff= $dDiff->days;
+   //$date_diff= $dDiff->days;
+
+   
+$ts1 = strtotime(date($dates["orderDate"]));
+$ts2 = strtotime(date($dates["deliverDate"]));
+
+$seconds_diff = $ts2 - $ts1;
+
+$date_diff= floor($seconds_diff/3600/24);
 
  $tester= count($detail_list);
 
@@ -61,8 +68,7 @@ $order_value =0;
 		     if($ordered==0){
 				$ordered=1;
 			}
-		    $fill_rate=round(($received/$ordered)*100,0,PHP_ROUND_HALF_UP);
-	        $total_fill_rate=$total_fill_rate+$fill_rate;
+		   
 		 
 		
 		 foreach($rows->Code as $drug) {
@@ -70,12 +76,17 @@ $order_value =0;
 			 $drug_name=$drug->Drug_Name;
 			 $kemsa_code=$drug->Kemsa_Code;
 			 $unit_size=$drug->Unit_Size;
+			 $total_units=$drug->total_units;
 			 
 			foreach($drug->Category as $cat){
 				
 			$cat_name=$cat;		
 			}	 
 		}
+		   $received=round($received/$total_units);
+		    $fill_rate=round(($received/$ordered)*100);
+	        $total_fill_rate=$total_fill_rate+$fill_rate;
+			
 		 switch ($fill_rate) {
 		case $fill_rate==0:
 		 $table_body .="<tr style=' background-color: #FBBBB9;'>";

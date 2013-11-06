@@ -48,7 +48,7 @@ include_once('auto_sms.php');
 	public function update_order(){
 		 ini_set('memory_limit','32M'); 
 		$this->load->library('mpdf');
-exit;
+
 		$this->load->helper('file');
 		$this->load->helper('url');
 		

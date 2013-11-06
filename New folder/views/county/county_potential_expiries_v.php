@@ -1,3 +1,66 @@
+<script type="text/javascript" language="javascript" src="<?php echo base_url();  ?>Scripts/jquery.dataTables.js"></script>
+<style type="text/css" title="currentStyle">
+			
+			@import "<?php echo base_url(); ?>DataTables-1.9.3 /media2/css/jquery.dataTables.css";
+		</style>
+
+<script type="text/javascript" language="javascript">
+$(document).ready(function(){
+	 //default call
+    $("#3months").click(function(){
+      var url = "<?php echo base_url().'stock_expiry_management/get_expiries'?>";
+      var id  = $(this).attr("id");
+      //alert (id);
+        $.ajax({
+          type: "POST",
+          data: {'id':  $(this).attr("id"),},
+          url: url,
+          beforeSend: function() {
+            $(".reportDisplay").html("");
+          },
+          success: function(msg) {
+            $(".reportDisplay").html(msg);
+            
+             }
+         });
+    });
+    $("#6months").click(function(){
+      var url = "<?php echo base_url().'stock_expiry_management/get_expiries'?>";
+      var id  = $(this).attr("id");
+      //alert (id);
+        $.ajax({
+          type: "POST",
+          data: {'id':  $(this).attr("id"),},
+          url: url,
+          beforeSend: function() {
+            $(".reportDisplay").html("");
+          },
+          success: function(msg) {
+            $(".reportDisplay").html(msg);
+            
+             }
+         });
+    });
+    $("#12months").click(function(){
+      var url = "<?php echo base_url().'stock_expiry_management/get_expiries'?>";
+      var id  = $(this).attr("id");
+      //alert (id);
+        $.ajax({
+          type: "POST",
+          data: {'id':  $(this).attr("id"),},
+          url: url,
+          beforeSend: function() {
+            $(".reportDisplay").html("");
+          },
+          success: function(msg) {
+            $(".reportDisplay").html(msg);
+            
+             }
+         });
+    });
+        });  
+</script>
+
 <style>
 table.data-table1 {
 	border: 1px solid #000033;
@@ -52,63 +115,13 @@ table.data-table1 td {
 	}
 	
 </style>
-<script>
-$(document).ready(function(){
-	 //default call
-    $("#3months").click(function(){
-      var url = "<?php echo base_url().'stock_expiry_management/get_expiries/'.$facility_code?>";
-      var id  = $(this).attr("id");
-      //alert (id);
-        $.ajax({
-          type: "POST",
-          data: {'id':  $(this).attr("id"),},
-          url: url,
-          beforeSend: function() {
-            $(".reportDisplay").html("");
-          },
-          success: function(msg) {
-            $(".reportDisplay").html(msg);
-            
-             }
-         });
-    });
-    $("#6months").click(function(){
-      var url = "<?php echo base_url().'stock_expiry_management/get_expiries/'.$facility_code?>";
-      var id  = $(this).attr("id");
-      //alert (id);
-        $.ajax({
-          type: "POST",
-          data: {'id':  $(this).attr("id"),},
-          url: url,
-          beforeSend: function() {
-            $(".reportDisplay").html("");
-          },
-          success: function(msg) {
-            $(".reportDisplay").html(msg);
-            
-             }
-         });
-    });
-    $("#12months").click(function(){
-      var url = "<?php echo base_url().'stock_expiry_management/get_expiries/'.$facility_code?>";
-      var id  = $(this).attr("id");
-      //alert (id);
-        $.ajax({
-          type: "POST",
-          data: {'id':  $(this).attr("id"),},
-          url: url,
-          beforeSend: function() {
-            $(".reportDisplay").html("");
-          },
-          success: function(msg) {
-            $(".reportDisplay").html(msg);
-            
-             }
-         });
-    });
-        });  
-</script>
-
+<?php
+foreach ($report as $item) {
+	foreach ($item->Coder as $coder) {
+		$facility_name=$coder->facility_name;
+	}
+}
+if ($mycount>0) {?>
 <fieldset>
 
 		<legend></legend>
@@ -119,7 +132,7 @@ $(document).ready(function(){
 	
 	
 </fieldset>
-<div class="whole_report">e]
+<div class="whole_report">
 	<!--<div class="try">
 <button class="button">Download PDF</button>
 </div>-->
@@ -129,7 +142,7 @@ $(document).ready(function(){
        <span style="margin-left:100px;  font-family: arial,helvetica,clean,sans-serif;display: block; font-weight: bold; font-size: 15px;">
      Ministry of Health</span><br>
        <span style=" font-size: 12px;  margin-left:100px;">Health Commodities Management Platform</span><span style="text-align:center;" >
-       	<h2 style="text-align:center; font-size: 20px;"><?php echo $facility_data['facility_name'].' MFL '.$facility_data['facility_code']?> Potential Expiries</h2>
+       	<h2 style="text-align:center; font-size: 20px;">Potential Expiries in <?php echo $facility_name; ?></h2>
        
        
       
@@ -165,10 +178,6 @@ $(document).ready(function(){
 					            $unitS=$d->Unit_Size; 
 								$unitC=$d->Unit_Cost;
 								$calc=$drug->balance;
-								$actual_units=$d->total_units;
-						
-								$calc=round($calc/$actual_units);
-								
 								$thedate=$drug->expiry_date;
 								$formatme = new DateTime($thedate);
 								 $myvalue= $formatme->format('d M Y');
@@ -178,8 +187,8 @@ $(document).ready(function(){
 							
 							<td><?php echo $code;?> </td>
 							<td><?php echo $name;?></td>
-							<td> <?php echo $unitS;?> </td>
-							<td> <?php echo $unitC;?> </td>
+							<td><?php echo $unitS;?> </td>
+							<td><?php echo $unitC;?> </td>
 							<td><?php echo $drug->batch_no;?> </td>
 							<td><?php echo $myvalue;?></td>
 							
@@ -215,3 +224,6 @@ if ($option1=' ') { ?>
 
 
 		</div>
+		<?php } else {
+			echo '<div class="norecord"></div>';
+		} ?>
