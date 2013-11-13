@@ -7,7 +7,8 @@ if (!defined('BASEPATH'))
 class Stock extends auto_sms {
     function __construct() {
         parent::__construct();
-        $this->load->helper('url');
+        $this->load->helper(array('form','url','file'));
+		$this->load->library('mpdf');
     }
 
     public function index() {
@@ -353,8 +354,185 @@ SET price=".$pushed_items_from_kemsa[$i]['unit_cost']." , quantityRecieved =".$p
 		
 		   
 		$this->session->set_flashdata('system_success_message', 'Stock details have been updated');
-		$test=	$this->send_stock_update_sms();
+		$this->send_stock_update_sms();
 		
+$detail_list=Orderdetails::get_order($order);
+$dates=Ordertbl::get_dates($order);
+		
+$table_body="";
+$total_fill_rate=0;
+$order_value =0;
+
+$ts1 = strtotime(date($dates["orderDate"]));
+$ts2 = strtotime(date($dates["deliverDate"]));
+
+$seconds_diff = $ts2 - $ts1;
+
+$date_diff= floor($seconds_diff/3600/24);
+
+ $tester= count($detail_list);
+
+      if($tester==0){
+      	
+      }
+	  else{
+	  	
+
+      
+		foreach($detail_list as $rows){
+			//setting the values to display
+			 $received=$rows->quantityRecieved;
+			 $price=$rows->price;
+			 $ordered=$rows->quantityOrdered;
+			 $code=$rows->kemsa_code;
+			 
+			 $total=$price* $ordered;
+			 
+			 
+			 
+		     if($ordered==0){
+				$ordered=1;
+			}
+
+		 foreach($rows->Code as $drug) {
+		 	
+			 $drug_name=$drug->Drug_Name;
+			 $kemsa_code=$drug->Kemsa_Code;
+			 $unit_size=$drug->Unit_Size;
+			 $total_units=$drug->total_units;
+			 
+			foreach($drug->Category as $cat){
+				
+			$cat_name=$cat;		
+			}	 
+		}
+		   $received=round($received/$total_units);
+		    $fill_rate=round(($received/$ordered)*100);
+	        $total_fill_rate=$total_fill_rate+$fill_rate;
+			
+		 switch ($fill_rate) {
+		case $fill_rate==0:
+		 $table_body .="<tr style=' background-color: #FBBBB9;'>";
+		 $table_body .= "<td>$cat_name</td>";
+	     $table_body .= '<td>'.$drug_name.'</td><td>'. $kemsa_code.'</td>'.'<td>'.$unit_size.'</td>';
+		 $table_body .='<td>'. $price.'</td>';
+		 $table_body .='<td>'.$ordered.'</td>';
+		 $table_body .='<td>'.number_format($total, 2, '.', ',').'</td>';
+		 $table_body .='<td>'.$received.'</td>';	
+		 $table_body .='<td>'.$fill_rate .'% '.'</td>';
+		 $table_body .='</tr>'; 
+				 break;  	
+				 
+		 case $fill_rate<=60:
+		 $table_body .="<tr style=' background-color: #FAF8CC;'>";
+		 $table_body .= "<td>$cat_name</td>";
+	     $table_body .= '<td>'.$drug_name.'</td><td>'. $kemsa_code.'</td>'.'<td>'.$unit_size.'</td>';
+		 $table_body .='<td>'. $price.'</td>';
+		 $table_body .='<td>'.$ordered.'</td>';
+		 $table_body .='<td>'.number_format($total, 2, '.', ',').'</td>';
+		 $table_body .='<td>'.$received.'</td>';	
+		 $table_body .='<td>'.$fill_rate .'% '.'</td>';
+		 $table_body .='</tr>'; 
+				 break;  
+				 
+				 case $fill_rate==100.01 || $fill_rate>100.01:
+		 $table_body .="<tr style=' background-color: #FBBBB9;'>";
+		 $table_body .= "<td>$cat_name</td>";
+	     $table_body .= '<td>'.$drug_name.'</td><td>'. $kemsa_code.'</td>'.'<td>'.$unit_size.'</td>';
+		 $table_body .='<td>'. $price.'</td>';
+		 $table_body .='<td>'.$ordered.'</td>';
+		 $table_body .='<td>'.number_format($total, 2, '.', ',').'</td>';
+		 $table_body .='<td>'.$received.'</td>';	
+		 $table_body .='<td>'.$fill_rate .'% '.'</td>';
+		 $table_body .='</tr>'; 
+				 break;
+				  
+			 case $fill_rate==100:
+		 $table_body .="<tr style=' background-color: #C3FDB8;'>";
+		 $table_body .= "<td>$cat_name</td>";
+	     $table_body .= '<td>'.$drug_name.'</td><td>'. $kemsa_code.'</td>'.'<td>'.$unit_size.'</td>';
+		 $table_body .='<td>'. $price.'</td>';
+		 $table_body .='<td>'.$ordered.'</td>';
+		 $table_body .='<td>'.number_format($total, 2, '.', ',').'</td>';
+		 $table_body .='<td>'.$received.'</td>';	
+		 $table_body .='<td>'.$fill_rate .'% '.'</td>';
+		 $table_body .='</tr>'; 
+				 break;
+				 
+				 default :
+		 $table_body .="<tr>";
+		 $table_body .= "<td>$cat_name</td>";
+	     $table_body .= '<td>'.$drug_name.'</td><td>'. $kemsa_code.'</td>'.'<td>'.$unit_size.'</td>';
+		 $table_body .='<td>'. $price.'</td>';
+		 $table_body .='<td>'.$ordered.'</td>';
+		 $table_body .='<td>'.number_format($total, 2, '.', ',').'</td>';
+		 $table_body .='<td>'.$received.'</td>';	
+		 $table_body .='<td>'.$fill_rate .'% '.'</td>';
+		 $table_body .='</tr>'; 
+				 break;
+			
+		 }
+		 
+				  } 
+	
+	$order_value  = round(($total_fill_rate/count($detail_list)),0,PHP_ROUND_HALF_UP);
+	}
+	
+	$message=<<<HTML_DATA
+<table id="main1" width="100%">
+	<thead>
+		<tr>
+		<th colspan='9'>
+         <p style="letter-spacing: 1px;font-weight: bold;text-shadow: 0 1px rgba(0, 0, 0, 0.1);font-size: 14px;">
+         Facility Order No $order| KEMSA Order No | Total Order FIll Rate $order_value %;| Order lead Time $date_diff; day(s)</p>
+		</th>
+		</tr>
+		<tr>
+		<th width="50px" style="background-color: #C3FDB8; "></th>
+		<th>Full Delivery 100%</th>
+		<th width="50px" style="background-color:#FFFFFF"></th>
+		<th>Ok Delivery 60%-less than 100%</th>
+		<th width="50px" style="background-color:#FAF8CC;"></th> 
+		<th>Partial Delivery less than 60% </th>
+		<th width="50px" style="background-color:#FBBBB9;"></th>
+		<th>Problematic Delivery 0% or over 100%</th>
+		<th></th>
+		</tr>
+		<tr>
+		<th><strong>Category</strong></th>
+		<th><strong>Description</strong></th>
+		<th><strong>KEMSA&nbsp;Code</strong></th>
+		<th><strong>Unit Size</strong></th>
+		<th><strong>Unit Cost Ksh</strong></th>
+		<th><strong>Quantity Ordered</strong></th>
+		<th><strong>Total Cost</strong></th>
+		<th><strong>Quantity Received</strong></th>
+		<th><strong>Fill rate</strong></th>	
+		</tr>
+	</thead>
+	<tbody>
+	
+		 $table_body;
+	
+	</tbody>
+</table>
+HTML_DATA;
+
+        $ts1 = date('d M y',strtotime(date($dates["orderDate"])));
+        $ts2 = date('d M y');
+		
+		$message_1='<br>The Order Made for '.$this -> session -> userdata('full_name').' on  '.$ts1.'  has been received at the facility on. '.$ts2.'
+		<br>
+		Order Fill Rate = '.$order_value.'%
+		<br>
+		Order Lead Time (from placement – receipt) = '.$date_diff.'% days
+		<br>
+		<br>
+		<br>';		
+		
+		$subject='Order Report For '.$fac_name;
+		
+		$this->send_order_delivery_email($message_1.$message,$subject,null);
 		redirect('order_management/new_order');
 
 		//$this -> load -> view("template", $data);

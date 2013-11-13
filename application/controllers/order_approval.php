@@ -2,8 +2,11 @@
 include_once('auto_sms.php');
  class Order_Approval  extends auto_sms {
  	
- 	function _construct(){
- 		parent::_construct();
+ 	
+	function __construct() {
+		parent::__construct();
+		$this->load->helper(array('form','url'));
+	
 	}
 	
 	public function district_approval(){
@@ -46,38 +49,38 @@ include_once('auto_sms.php');
 		$this -> load -> view("template", $data);
 	}
 	public function update_order(){
-		 ini_set('memory_limit','32M'); 
-		$this->load->library('mpdf');
-
-		$this->load->helper('file');
-		$this->load->helper('url');
 		
+		$this->load->helper('file');
+		$this->load->library('mpdf');
 		
 		$new_value=$_POST['quantity'];
+		$price=$_POST['price'];
 		$order_id=$_POST['order_id'];
 		$value=count($new_value);
 		$code=$_POST['f_order_id'];
+		$s_quantity=$_POST['actual_quantity'];
 		$order_total=0;
 		$user_id=$facility_c=$this -> session -> userdata('user_id');
 		$from_ordertbl=Ordertbl::get_order($code,$user_id);
-		
-		
-		
+
 		$from_order_details=Orderdetails::get_order($code);
+		$total=0;
 		
 		//update the order based on how the district pham has rationalized it
 		$checker=1;
 		for($i=0;$i<$value;$i++){
-			if ($new_value[$i]>0){		
+				
 		$myobj = Doctrine::getTable('Orderdetails')->find($order_id[$i]);
         $myobj->quantityOrdered = $new_value[$i];
+		$myobj->s_quantity =$s_quantity[$i];
         $myobj->save();
-			}
+		//$total=$total*($new_value[$i]*$price[$i]);
 			//echo $new_value[$i];
 		}
 		
 		
-		$in = Doctrine_Manager::getInstance()->getCurrentConnection()->fetchAll("SELECT a.category_name, b.drug_name, b.kemsa_code, b.unit_size, b.unit_cost, 
+		
+		$in = Doctrine_Manager::getInstance()->getCurrentConnection()->fetchAll("SELECT a.category_name, b.drug_name,b.total_units, b.kemsa_code, b.unit_size, b.unit_cost, 
 		c.quantityOrdered, c.price, c.orderNumber, c.quantityRecieved,
 		c.o_balance, c.t_receipts, c.t_issues, c.adjust, c.losses, c.days, c.comment, c.c_stock,c.s_quantity
 FROM drug_category a, drug b, orderdetails c
@@ -180,15 +183,16 @@ else if( $in[$i]['category_name']!=$in[$i-1]['category_name']){
 		 $t_re=$in[$i]['t_receipts'];
 		 $t_issues=$in[$i]['t_issues'];
 		 $losses=$in[$i]['losses'];
+		 $total=$o_t*$in[$i]['total_units'];
 		 
-		 if($o_bal==0 && $t_re==0 && $t_issues>0){
+		/* if($o_bal==0 && $t_re==0 && $t_issues>0){
 		 	$adj=$t_issues;
 		 }
 		 $c_stock=$o_bal+$t_re+$adj-$losses-$t_issues;
 		 
 		 if($c_stock<0){
 		 	$adj=$c_stock*-1;
-		 }
+		 }*/
 		  $c_stock=$o_bal+$t_re+$adj-$losses-$t_issues;
 		 $html_body .="<tr>";
 		 $html_body .="<td>".$in[$i]['kemsa_code']."</td>"; 	
@@ -206,7 +210,7 @@ else if( $in[$i]['category_name']!=$in[$i-1]['category_name']){
 		  $html_body .="<td>".$c_stock."</td>";
 		  $html_body .="<td>".$in[$i]['days']."</td>"; 
 		  $html_body .="<td>$o_t</td>";
-		  $html_body .="<td>".$in[$i]['s_quantity']."</td>"; 
+		  $html_body .="<td>$total</td>"; 
 		  $html_body .="<td>$ot</td>"; 
 		  $html_body .="<td>".$in[$i]['comment']."</td></tr>"; }
 
@@ -240,7 +244,9 @@ else if( $in[$i]['category_name']!=$in[$i-1]['category_name']){
 		   </tr>
 		   </table>';
 		   
-		
+		 $myobj = Doctrine::getTable('Ordertbl')->find($code);
+        $myobj->orderTotal =$order_total;
+        $myobj->save();
 		//now ganerate an order pdf from the generated report
             $this->mpdf = new mPDF('', 'A4-L', 0, '', 15, 15, 16, 16, 9, 9, '');
             $this->mpdf->WriteHTML($html_title);
@@ -248,44 +254,35 @@ else if( $in[$i]['category_name']!=$in[$i-1]['category_name']){
             $this->mpdf->simpleTables = true;
             $this->mpdf->WriteHTML($html_body);
             $this->mpdf->AddPage();
-			$this->mpdf->WriteHTML( $html_body1);
+			$this->mpdf->WriteHTML($html_body1);
+			
 			$report_name='facility_order_no'.$code;
+			
            		  
-			if( !write_file( './pdf/'.$report_name.'.pdf',$this->mpdf->Output('$report_name','S')))
+			if(!write_file( './pdf/'.$report_name.'.pdf',$this->mpdf->Output('$report_name','S')))
 			{
 				
 		$this->session->set_flashdata('system_error_message', 'An error occured');			
         redirect("order_approval/district_orders");
  
-	
-     //   $this->district_orders();
              }
                   else{
-                  	
-					
-  $all_facility_users=user::get_user_info(get_user_info);
-  
-  $email_address =$facility=$this -> session -> userdata('user_email').",";
-
-
- foreach($all_facility_users as $user_detail){
- 	$email_address .=$user_detail->email.",";
- }			  				
-                  	
-					  
-  $subject='Order Report For '.$fac_name;
+			  
+  $subject='Approved Order Report For '.$fac_name;
   
   $attach_file='./pdf/'.$report_name.'.pdf';
-  
-  $bcc_email='kariukijackson@gmail.com';
-  
+    
   $message=$html_title.$html_body;
   
- //$response= $this->send_email(substr($email_address,0,-1),$message,$subject,$attach_file,$bcc_email);
+  $message_1='<br>Please find the approved Order for  '.$fac_name.' for processing.
+		<br>
+		<br>';	
+  
+  $response= $this->send_order_approval_email($message_1.$message,$subject,$attach_file,$mfl);
 
- //if($response){
- 	//delete_files('./pdf/'.$report_name.'.pdf');
- //}
+ if($response){
+ 	delete_files('./pdf/'.$report_name.'.pdf');
+ }
 					
   }
 

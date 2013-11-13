@@ -137,9 +137,8 @@ return $stats_data;
             $data['percentage_complete'] = Historical_Stock::historical_stock_rate($facility_c);	
             $data['total_drugs']=count(Drug::getAll());  
 		    $data['diff']=$difference;			
-			$data['exp']=Facility_Stock::get_exp_count($date,$facility_c);
-		   // $data['historical_stock'] = Historical_Stock::historical_stock_rate($facility_c);	
-			$data['exp_count']=Facility_Stock::get_exp_count($date,$facility_c);
+			$data['exp']=Facility_Stock::get_exp_count($facility_c);
+			$data['exp_count']=Facility_Stock::get_potential_count($facility_c);
 			$data['stock']=Facility_Stock::count_facility_stock_first($facility_c);
 		    $data['pending_orders'] = Ordertbl::get_pending_count($facility_c);
 			$count=Ordertbl::getPending_d($facility_c)->count();
@@ -147,7 +146,7 @@ return $stats_data;
 			$data['dispatched'] = NULL;//Ordertbl::get_dispatched_count($facility_c);
 			$data['incomplete_order']=Facility_Transaction_Table::get_undated_records($facility_c);
 /*************************************************************************************************/			
-			$data['content_view'] = "facility_home_v";
+			$data['content_view'] = "facility/facility_home_v";
 			$data['scripts'] = array("FusionCharts/FusionCharts.js"); 
 		}
 else if($access_level == "super_admin"){

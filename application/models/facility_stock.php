@@ -109,12 +109,17 @@ GROUP BY fs.kemsa_code*/
 		$stocks= $query -> execute();
 		return $stocks[0];
 	}
-	public static function getexp($facility){
-		$query=Doctrine_query::create()->select("f_s.kemsa_code,ROUND( (
+	public static function getexp($facility,$status=NULL){
+		
+		$query=($status!='decommission')? Doctrine_query::create()->select("f_s.kemsa_code,ROUND( (
 SUM( f_s.balance ) / d.total_units ) * d.unit_cost, 1
 ) AS total")->from("Facility_Stock f_s, drug d")->where ("facility_code='$facility' and `expiry_date` <= NOW( ) and f_s.kemsa_code=d.id and STATUS =( 1
-OR 2 ) and balance >0")->groupby("f_s.kemsa_code");	
+OR 2 ) and balance >0")->groupby("f_s.kemsa_code") : Doctrine_query::create()->select("f_s.kemsa_code,ROUND( (
+SUM( f_s.balance ) / d.total_units ) * d.unit_cost, 1) AS total")->from("Facility_Stock f_s, drug d")->where ("facility_code='$facility' and `expiry_date` <= NOW( ) and f_s.kemsa_code=d.id and STATUS =1 and balance >0")->groupby("f_s.kemsa_code");
+
+		
 		$expire=$query->execute();
+		
 		return $expire;
 	}
 	public static function get_facility_expired_stuff($date,$facility){
@@ -130,12 +135,22 @@ OR 2 ) and balance >0")->groupby("f_s.kemsa_code");
 		return $stocks;	
 	}
 	
-	public static function get_exp_count($date,$facility){
+	public static function get_exp_count($facility){
 		$query=Doctrine_query::create()->select("batch_no")->from("Facility_Stock")
-		->where ("facility_code='$facility' and expiry_date<='$date'")
+		->where ("facility_code='$facility' and expiry_date<=NOW() and balance >0")
 		->andWhere("status='1'")->groupBy("batch_no");
-		$expire=$query->count();
-		return $expire;
+		$expire=$query->execute();
+		
+		return count($expire);
+	}
+	
+		public static function get_potential_count($facility){
+		$query=Doctrine_query::create()->select("batch_no")->from("Facility_Stock")
+		->where ("facility_code='$facility' and expiry_date BETWEEN CURDATE()AND DATE_ADD(CURDATE(), INTERVAL 6 MONTH) and balance >0")
+		->andWhere("status='1'")->groupBy("batch_no");
+		$expire=$query->execute();
+		
+		return count($expire);
 	}
 	public static function getAll1($facility)
 		  {

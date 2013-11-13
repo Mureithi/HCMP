@@ -144,10 +144,69 @@ public function send_sms($phones,$message) {
 	endforeach;
  		
 	}
+public function send_order_submission_email($message,$subject,$attach_file){
+	 
 
-public function send_email($email_address,$message,$subject,$attach_file=NULL,$bcc_email=NULL){
-      
+	  $cc_email='anganga.pmo@gmail.com,sochola06@yahoo.com';
+	// $cc_email="kariukijackson@gmail.com";
+		
+	   $facility_code=$this -> session -> userdata('news');
+	   
+	   $data=User::getUsers($facility_code)->toArray();
+	   
+	   $email_address=$this->get_facility_email($facility_code);
+	   
+	   $email_address .=$this->get_ddp_email($data[0]['district']);
+		
+		
+		return $this->send_email(substr($email_address,0,-1),$message, $subject,$attach_file,null,$cc_email);
+	
+}
+public function send_order_approval_email($message,$subject,$attach_file,$facility_code){
+	  
 
+		
+	   $cc_email='anganga.pmo@gmail.com,sochola06@yahoo.com,';
+	   //$cc_email="kariukijackson@gmail.com,kariukijackson@gmail.com,";
+	   
+	   $email_address="
+shamim.kuppuswamy@kemsa.co.ke,
+samuel.wataku@kemsa.co.ke,
+jmunyu@kemsa.co.ke,
+imugada@kemsa.co.ke,
+laban.okune@kemsa.co.ke,
+samuel.wataku@kemsa.co.ke,
+";
+	   //$email_address="kariukijackson@gmail.com,kariukijackson@gmail.com,";
+	   $data=User::getUsers($facility_code)->toArray();
+	   
+	   $cc_email .=$this->get_ddp_email($data[0]['district']);
+	   $cc_email .=$this->get_facility_email($facility_code);
+	   
+	   
+		
+		
+		return $this->send_email(substr($email_address,0,-1),$message, $subject,$attach_file,null,substr($cc_email,0,-1));
+	
+}
+public function send_order_delivery_email($message,$subject,$attach_file=null){
+
+	   $cc_email='anganga.pmo@gmail.com,sochola06@yahoo.com,';
+		// $cc_email="kariukijackson@gmail.com,kariukijackson@gmail.com,";
+	   $facility_code=$this -> session -> userdata('news');
+	   
+	   $data=User::getUsers($facility_code)->toArray();
+	   
+	   $cc_email .=$this->get_facility_email($facility_code);
+	   
+		
+		
+	return $this->send_email(substr($this->get_ddp_email($data[0]['district']),0,-1),$message,$subject,null,null,substr($cc_email,0,-1));
+	
+}
+
+public function send_email($email_address,$message,$subject,$attach_file=NULL,$bcc_email=NULL,$cc_email=NULL){
+        	return true;
 		$fromm='hcmpkenya@gmail.com';
 		$messages=$message;
   		$config['protocol']    = 'smtp';
@@ -168,10 +227,41 @@ public function send_email($email_address,$message,$subject,$attach_file=NULL,$b
   		$this->email->from($fromm,'Health Commodities Management Platform'); // change it to yours
   		$this->email->to($email_address); // change it to yours
   		
+  		isset($cc_email)? $this->email->cc($cc_email): //
+  		
   		(isset($bcc_email))?
-  		$this->email->bcc("nmaingi@strathmore.edu,bwariari@clintonhealthaccess.org,kyalocatherine@gmail.com,ashminneh.mugo@gmail.com,smutheu@clintonhealthaccess.org,kariukijackson@gmail.com,kelvinmwas@gmail.com,".$bcc_email)	
+  		$this->email->bcc("
+  		rkihoto@clintonhealthaccess.org,
+  		eunicew2000@yahoo.com,
+  		gmacharia@clintonhealthaccess.org,
+  		Jhungu@clintonhealthaccess.org,
+  		nmaingi@strathmore.edu,
+  		bwariari@clintonhealthaccess.org,
+  		kyalocatherine@gmail.com,
+  		ashminneh.mugo@gmail.com,
+  		smutheu@clintonhealthaccess.org,
+  		kariukijackson@gmail.com,
+  		kelvinmwas@gmail.com,".$bcc_email)
+  		/*$this->email->bcc('
+kariukijackson@gmail.com,kariukijackson@gmail.com,
+  		kelvinmwas@gmail.com')	*/
   		:
-  		$this->email->bcc('nmaingi@strathmore.edu,bwariari@clintonhealthaccess.org,kyalocatherine@gmail.com,ashminneh.mugo@gmail.com,smutheu@clintonhealthaccess.org,kariukijackson@gmail.com,kelvinmwas@gmail.com');
+  		$this->email->bcc('
+		rkihoto@clintonhealthaccess.org,
+  		eunicew2000@yahoo.com,
+		Jhungu@clintonhealthaccess.org,
+		gmacharia@clintonhealthaccess.org,
+  		nmaingi@strathmore.edu,
+  		bwariari@clintonhealthaccess.org,
+  		kyalocatherine@gmail.com,
+  		ashminneh.mugo@gmail.com,
+  		smutheu@clintonhealthaccess.org,
+  		kariukijackson@gmail.com,
+  		kelvinmwas@gmail.com')
+		/*$this->email->bcc('
+kariukijackson@gmail.com,kariukijackson@gmail.com,
+  		kelvinmwas@gmail.com')*/
+		;
   		
 		 (isset($attach_file))? $this->email->attach($attach_file) :	'';
 			

@@ -68,6 +68,8 @@
 			buttons: {
 				"Confirm": function() {
            $('#formEditData').submit();
+           $(this).dialog( "close" );
+           $('#user_processing').modal({ keyboard: false });
 				},
 				Cancel: function() {
 					$( this ).dialog( "close" );
@@ -108,7 +110,8 @@
                      		return
                      		break;
                      		default:
-                     		 alert(msg);
+                     		window.location = "<?php echo base_url(); ?>user_management/moh_manage";
+                     		break;
                      	}
                      	
               
@@ -283,8 +286,8 @@ color: #B70000;
 			</thead>
 			<tbody>
 			<?php foreach( $moh_users as $row):
-				if($row['status']==1){
-					 echo '<tr id="'.$row['id'].'" >
+				
+		echo '<tr id="'.$row['id'].'" >
 				<td>'.$row['level'].'</td>
 				<td>'.$row['facility_name'].'</td>
 				<td>'.$row['county'].'</td>
@@ -296,47 +299,39 @@ color: #B70000;
 					echo 'Active </td>';
 				}else{
 					echo 'In Active </td>';
-				}?><?php 
-				echo'
-				<td><a id="'.$row['id'].'" title="reset" href="#" class="ulink">Reset Password</a>|
-				<a class="table-action-EditData link" >Edit</a>
-				'?>|<?php if ($row['status']==1){
-					echo '<a id="'.$row['id'].'" title="deactive" href="#" class="ulink">Deactivate</a>';
-				}else{
-					echo '<a id="'.$row['id'].'" title="active" href="#" class="ulink">Activate</a>';
-				}?><?php echo '</td>
+				}?>
+				<?php 
+		echo "<td><a href='#' class='user_profile link' id='user_profile' user_id='".$row['id']."'>Edit</a> | 
+		<a href='#' class='ulink link' id='".$row['id']."' title='reset'>Reset Password</a> | <a href='#' class='ulink link' id='".$row['id']."' title='delete'>DELETE</a> |" ?>
+		
+		<?php if ($row['status']==1) {
+			echo "<a href='#' class='ulink link' id='".$row['id']."' title='deactive'>Deactivate</a>";
+		} else {
+			echo "<a href='#' class='ulink link' id='".$row['id']."' title='active'>Activate</a>";
+		}?><?php echo '</td>
 				
 			</tr>';
-			}else{
-				echo '<tr id="'.$row['id'].'"  style="background-color:#D3D3D3">
-				<td>'.$row['level'].'</td>
-				<td>'.$row['facility_name'].'</td>
-				<td>'.$row['county'].'</td>
-				<td>'.$row['district'].'</td>
-				<td>'.$row['fname'].'</td><td> '.$row['lname'].' </td>
-				<td>'.$row['email'].'</td>
-				<td>'.$row['telephone'].'</td> 
-				<td>'?><?php if ($row['status']==1){
-					echo 'Active </td>';
-				}else{
-					echo 'In Active </td>';
-				}?><?php 
-				echo'
-				<td><a id="'.$row['id'].'" title="reset" href="#" class="ulink">Reset Password</a>|
-				<a class="table-action-EditData link" >Edit</a>
-				'?>|<?php if ($row['status']==1){
-					echo '<a id="'.$row['id'].'" title="deactive" href="#" class="ulink">Deactivate</a>';
-				}else{
-					echo '<a id="'.$row['id'].'" title="active" href="#" class="ulink">Activate</a>';
-				}?><?php echo '</td>
-				
-			</tr>';
-			}?>
-		<?php
+	
  endforeach;
 	?>
 	</tbody>
 		</table>
     
-
+<!--------order processing data---------->
+<div class="modal fade" id="user_processing" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+       
+        <h2 class="modal-title">User Creation....</h2>
+      </div>
+      <div class="modal-body">
+    
+        <h2 class="label label-info">Please wait as the user is being created </h2><img src="<?php echo base_url().'Images/processing.gif' ?>" />
+      </div>
+      <div class="modal-footer">       
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 

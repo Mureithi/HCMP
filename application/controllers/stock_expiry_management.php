@@ -243,19 +243,22 @@ public function Decommission1(){
 
 public function expired($facility_code=NULL) {
 		$date= date('Y-m-d');
-		if (!isset($facility_code)) {			
-			$facility=$this -> session -> userdata('news');
-		}else{
-			$facility=$facility_code;
-		}
+		
+		$facility= (!isset($facility_code))?		
+		$this -> session -> userdata('news')
+		:$facility_code;
+		
 		$district=$this -> session -> userdata('district');
-		$data['dpp_array']=User::get_dpp_details($district);
+		$district=$this -> session -> userdata('district');
+		
+		
+		$data['dpp_array']=User::get_dpp_details($district)->toArray();
+		
 		//echo $date;
 		$data['title'] = "Expired Products";
-		$data['content_view'] = "expire_v";
+		$data['content_view'] = "facility/facility_reports/expire_v";
 		$data['banner_text'] = "Expired Products";
-		$data['expired']=Facility_Stock::getexp($date,$facility);
-		$data['county_view'] = "County View";
+		$data['expired']=Facility_Stock::getexp($facility,'decommission');
 		$data['link'] = "expire_v";
 		$data['quick_link'] = "expire_v";
 		$this -> load -> view("template", $data);
@@ -529,6 +532,7 @@ public function generate_decommission_report_pdf($report_name,$title,$html_data)
 }
 public function Decommission() {
 	//Change status of commodities to decommissioned
+
 	$date= date('Y-m-d');
 	$facility=$this -> session -> userdata('news');
 	$facility_code=$this -> session -> userdata('news');

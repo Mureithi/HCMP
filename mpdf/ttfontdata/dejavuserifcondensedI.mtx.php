@@ -1,5 +1,5 @@
 <?php
-$name='DejaVuSerifCondensedItalic';
+$name='DejaVuSerifCondensed-Italic';
 $type='TTF';
 $desc=array (
   'Ascent' => 928,
@@ -13,13 +13,14 @@ $desc=array (
 );
 $up=-63;
 $ut=44;
-$ttffile='C:/wamp/www/Disease-Surveillance/mpdf/ttfonts/DejaVuSerifCondensed-Italic.ttf';
+$ttffile='C:/xampp/htdocs/mnh/application/libraries/mpdf/ttfonts/DejaVuSerifCondensed-Italic.ttf';
 $TTCfontID='0';
 $originalsize=302444;
 $sip=false;
 $smp=false;
 $BMPselected=true;
 $fontkey='dejavuserifcondensedI';
-$panose='0 0 2 6 6 6 5 3 5 11 2 4';
+$panose=' 0 0 2 6 6 6 5 3 5 b 2 4';
 $haskerninfo=false;
+$unAGlyphs=false;
 ?>

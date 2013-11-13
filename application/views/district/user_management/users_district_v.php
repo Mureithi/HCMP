@@ -9,13 +9,39 @@
         
         <script type="text/javascript" charset="utf-8">
 		    $(document).ready(function () {
+		    	
+		    	
+		    	 $(".user_profile" ).click(function() {	
+		    	 		var id  = $(this).attr("user_id");   	
+		  
+          var url = "<?php echo base_url().'user_management/get_user_profile/' ?>"+id
+         
+          $.ajax({
+          type: "POST",
+          data: "ajax=1",
+          url: url,
+          beforeSend: function() {
+            $("#dialog").html("");
+          },
+          success: function(msg) {
+         
+            $("#dialog").html(msg);
+           
+           
+          }
+        });
+        return false;
+        
+                
+            });
+		    	
 		    	$( "#dialog1" ).dialog({
 			height: 140,
 			modal: true
 		});
 	
 		    	
-		    	 $("#formEditData").validate({
+		$("#formEditData").validate({
       rules: {
          f_name:  "required",
           o_name:  "required",
@@ -80,7 +106,9 @@
                      		return
                      		break;
                      		default:
-                     		 alert(msg);
+                     		
+                     		window.location = "<?php echo base_url(); ?>user_management/dist_manage";
+                     		break;
                      	}
                      	
               
@@ -106,6 +134,8 @@
 			buttons: {
 				"Confirm": function() {
            $('#formEditData').submit();
+           $(this).dialog( "close" );
+           $('#user_processing').modal({ keyboard: false });
 				},
 				Cancel: function() {
 					$( this ).dialog( "close" );
@@ -121,6 +151,7 @@
 			.button()
 			.click(function() {
 				$( "#formEditData" ).dialog( "open" );
+				 
 			});
 				
                 
@@ -169,10 +200,8 @@ color: #B70000;
 			}
 			
 		</style>  
-			<?php if(isset($pop_up_msg)):
-			echo '<div id="dialog1">'.$pop_up_msg.'</div>';
- endif;  
-unset($msg) ?>
+		<div id="dialog"></div>
+	
 		<?php $attributes = array( 'name' => 'myform', 'id'=>'formEditData','class'=>'form_settings', 'title'=>'Create New User');
 	 echo form_open('user_management/create_new_facility_user',$attributes); ?>
 		
@@ -214,59 +243,8 @@ unset($msg) ?>
       </p>
 				
 </form>
-
-<!-- <form id="formAddNewRow"  action="#"  title="Add new User">
- 	 <label for="name">First Name</label><br />
- 	 <input type="hidden" rel="0" />
-	<input type="text" name="f_name" size="40" id="f_name"  rel="1" />
-        <br />
-        <label for="name">Other Name</label><br />
-	<input type="text" name="o_name" id="o_name" size="40"  rel="2" />
-        <br />
-         <label for="desc">Email</label><br />
-	<input type="text" name="email" size="50"  id="email" rel="5"/>
-        <br />
-        <label for="desc">User Name</label><br />
-	<input type="text" name="user_name" size="50"  id="user_name" rel="6"/>
-	<label id="feedback"></label>
-        <br />
-        <label for="product name">Facility Name</label><br />
-        
-	<select name="facility_code" class="dropdownsize" rel="3" />
-		<?php 
-		foreach($facilities as $facility){
-			echo "<option value=$facility->facility_code>$facility->facility_name</option>";
-			
-		}
-		?>
-	</select>
-        <br />
-         <label for="desc">User Type</label><br />
-	<select name="user_type" id="user_type" rel="4">
-		<?php 
-		foreach($user_type as $data){
-			echo "<option value=$data->id>$data->level</option>";
-			
-		}
-		?>
-		</select>
-        <br />
-     <label for="version">Phone No</label><br />
-       <input type="text" name="phone_no"  id="phone_no" rel="7" value="254"/>
-        <br />
-        
-          <label for="desc">Status</label><br />
-	<select name="status" id="status" rel="8">
-                <option value="1">Active</option>
-                <option value="0">Inactive</option>
-        </select>
-        <br />
-				<span class="datafield" style="display:none" rel="9"><a class="table-action-EditData">Edit</a></span>
-				
-</form>-->
-		
-
-
+<input  class="btn btn-primary" id="new_user" style="margin-bottom: 1em;"  value="Add A New User" >
+<br />
 <table width="100%" id="example">
 	<thead>
 	<tr>
@@ -279,8 +257,7 @@ unset($msg) ?>
 		<th>Username</th>
 		<th>Telephone</th>
 		<th>Status</th>
-		<th>Actions</th>
-		
+		<th>Actions</th>		
 	</tr>
 	</thead>
 	<tbody>
@@ -312,7 +289,17 @@ unset($msg) ?>
 		 ?></td>
 		
 		
-		<td><a class="table-action-EditData link" >Edit</a></td>
+		<td><?php echo "<a href='#' class='user_profile link' id='user_profile' user_id='$row->id'>Edit</a> | 
+		<a href='#' class='ulink link' id='$row->id' title='reset'>Reset Password</a> | <a href='#' class='ulink link' id='$row->id' title='delete'>DELETE</a> |" ?>
+		
+		<?php if ($row->status==1) {
+			echo "<a href='#' class='ulink link' id='$row->id' title='deactive'>Deactivate</a>";
+		} else {
+			echo "<a href='#' class='ulink link' id='$row->id' title='active'>Activate</a>";
+		}
+		 ?>
+		
+		</td>
 		
 		
 	</tr> 
@@ -321,5 +308,21 @@ unset($msg) ?>
 	?>
 	</tbody>
 </table>
-<input  class="button" id="new_user"  value="Add A New User" >
+<!--------order processing data---------->
+<div class="modal fade" id="user_processing" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+       
+        <h2 class="modal-title">User Creation....</h2>
+      </div>
+      <div class="modal-body">
+    
+        <h2 class="label label-info">Please wait as the user is being created </h2><img src="<?php echo base_url().'Images/processing.gif' ?>" />
+      </div>
+      <div class="modal-footer">       
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 

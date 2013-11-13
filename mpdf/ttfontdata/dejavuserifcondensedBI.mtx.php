@@ -1,5 +1,5 @@
 <?php
-$name='DejaVuSerifCondensedBoldItalic';
+$name='DejaVuSerifCondensed-BoldItalic';
 $type='TTF';
 $desc=array (
   'Ascent' => 939,
@@ -13,13 +13,14 @@ $desc=array (
 );
 $up=-63;
 $ut=44;
-$ttffile='mpdf/ttfonts/DejaVuSerifCondensed-BoldItalic.ttf';
+$ttffile='C:/xampp/htdocs/mnh/application/libraries/mpdf/ttfonts/DejaVuSerifCondensed-BoldItalic.ttf';
 $TTCfontID='0';
 $originalsize=294584;
 $sip=false;
 $smp=false;
 $BMPselected=true;
 $fontkey='dejavuserifcondensedBI';
-$panose='0 0 2 6 8 6 5 3 5 11 2 4';
+$panose=' 0 0 2 6 8 6 5 3 5 b 2 4';
 $haskerninfo=false;
+$unAGlyphs=false;
 ?>

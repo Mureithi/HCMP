@@ -253,7 +253,7 @@ return i;
 if($user_is_facility){
 ?>
 <li class="<?php
-if (@$current == "home_controller") {echo "active";
+if (@@$current == "home_controller") {echo "active";
 }
 ?>"><a  href="<?php echo base_url(); ?>home_controller">Home </a></li>
  	<li><a  href="<?php echo base_url(); ?>order_management" class="<?php
@@ -262,7 +262,7 @@ if (@$current == "home_controller") {echo "active";
 ?>"> Orders </a></li> 
 
 <li><a  href="<?php echo base_url(); ?>Issues_main" class="<?php
-if (@$current == "Issues_main") {echo "active";
+if (@@$current == "Issues_main") {echo "active";
 }
 ?>">Issues </a></li>	
 <!--<a href="<?php echo base_url();?>order_management/all_deliveries/<?php echo $facility?>" class="top_menu_link<?php
@@ -270,7 +270,7 @@ if (@$current == "Issues_main") {echo "active";
 	}
 	?>">Deliveries</a>-->
 <li><a  href="<?php echo base_url(); ?>report_management/reports_Home"  class="<?php
-if (@$current == "report_management") {echo "active";
+if (@@$current == "report_management") {echo "active";
 }
 ?>">Reports </a></li>
 <li><a  href="<?php echo base_url(); ?>report_management/commodity_list" class="<?php
@@ -293,7 +293,7 @@ if ($quick_link == "user_facility_v") {echo "active";
 	
 	
 		<li class="<?php
-		if (@$current == "home_controller") {echo "active";
+		if (@@$current == "home_controller") {echo "active";
 		}
 	?>"><a data-clone="Home" href="<?php echo base_url(); ?>home_controller">Home </a></li>
 	<!--<li><a data-clone="Actions" href="<?php echo base_url();?>dp_facility_list/actions"  class="<?php
@@ -311,7 +311,7 @@ if ($quick_link == "new_order") {echo "active";
 ?>">District Facilities</a></li>
 
 	 	<li><a data-clone="Users" href="<?php echo base_url(); ?>user_management/dist_manage"  class="<?php
-		if (@$current == "user_management") {echo "active";
+		if (@@$current == "user_management") {echo "active";
 		}
 	?>">Users</a></li>
 	
@@ -363,7 +363,7 @@ if ($quick_link == "new_order") {echo "active";
 	?>
 
 <li class="<?php
-if (@$current == "home_controller") {echo "active";
+if (@@$current == "home_controller") {echo "active";
 }
 ?>"><a data-clone="Home" href="<?php echo base_url(); ?>home_controller">Home </a></li>
 
@@ -427,13 +427,13 @@ if (@$current == "home_controller") {echo "active";
 	?>
 	
 <li class="<?php
-if (@$current == "home_controller") {echo "active";
+if (@@$current == "home_controller") {echo "active";
 }
 ?>"><a data-clone="Home" href="<?php echo base_url(); ?>home_controller">Home </a></li>
 	
 		
 		<li><a data-clone="Users" href="<?php echo base_url(); ?>user_management/moh_manage" class="<?php
-		if (@$current == "user_management") {echo "active";
+		if (@@$current == "user_management") {echo "active";
 		}
 	?>">Users</a></li>
 	

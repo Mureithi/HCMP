@@ -118,6 +118,14 @@ public static function activate_deactivate_user($id,$option){
 		$myobj->save();
 		return true;
 }
+public static function delete_user($id){
+	$q = Doctrine_Manager::getInstance()->getCurrentConnection()->execute("
+delete from user where id=$id
+");
+
+return true;
+}
+
 //////get the dpp details 
 public static function get_dpp_details($distirct){
 	$query = Doctrine_Query::create() -> select("*") -> from("user")->where("district=$distirct and usertype_id='3' ");

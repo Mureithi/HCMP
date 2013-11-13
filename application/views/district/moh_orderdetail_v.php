@@ -4,13 +4,13 @@
 			
 			@import "<?php echo base_url(); ?>DataTables-1.9.3 /media2/css/jquery.dataTables.css";
 			.user{
-	width:70px;
+	width:50px;
 	background : none;
 	border : none;
 	text-align: center;
 	}
 				.user2{
-	width:70px;
+	width:50px;
 	background-color:#FCEFA1;
 	
 	text-align: center;
@@ -108,13 +108,15 @@ return;
 			//document.myform.submit();
 			//alert($('input:hidden[name=f_order_id]').val())
 			$('#myform').submit();
+        
+           $('#order_processing').modal();
 			});	
 
 	});	
 			
 
 	   $(document).ready(function() {
-
+ 
         $("input[name^=quantity]").each(function(index, value) {
   	var chr=false;
   	suggest_order_value(index);
@@ -139,7 +141,7 @@ return;
 	<span ><b > Total Order Value </b><b id="t" >  0</b></span> |<span> Drawing Rights Available Balance :<b id="drawing"> </b><br />
 	</p></caption>
 <?php $attributes = array( 'name' => 'myform', 'id'=>'myform');
-	 echo form_open('Order_Approval/update_order',$attributes); ?>	
+	 echo form_open('order_approval/update_order',$attributes); ?>	
 <?php echo form_hidden('f_order_id', $this->uri->segment(3));?>	 
 <table id="main1" width="100%">
 	<thead>
@@ -170,7 +172,9 @@ return;
 		
 	<?php $count=0; $thr=true; 
 	
-		foreach($detail_list as $rows){
+	
+	
+		foreach($detail_list  as $rows){
 			
 			
 			//setting the values to display
@@ -178,14 +182,14 @@ return;
 			 $code=$rows->kemsa_code;
 			 $t_issues=$rows->t_issues;
 			 $c_stock=$rows->c_stock;
-			 $value=(($t_issues*4)/3)-$c_stock;
+			 $value=0;
 			 if($value<0){
 			 	$value=0;
 			 }
 			?>
 			
 	<tr>
-		<?php echo form_hidden('order_id[]', $rows->id);?>
+		<?php echo form_hidden('order_id['.$count.']', $rows->id);?>
 		<?php foreach($rows->Code as $drug)
 		foreach($drug->Category as $cat){
 				
@@ -212,17 +216,36 @@ return;
 		<td><input class="user2" type="text" value="<?php echo $ordered;?>" <?php echo 'name="quantity['.$count.']"';?> onkeyup="<?php echo 'checker('.$count.','.$thr.')';?>"/></td>
 		<td><input class="user" readonly="readonly" style="border: none" type="text" <?php echo 'name="actual_quantity['.$count.']"';?> value="0"/></td>
 		<td><input class="user2" type="text" value="<?php echo  ceil($t_cost);?>" <?php echo 'name="cost['.$count.']"';?>/></td>
-		<td><?php echo $rows->comment;?></td>
+		<td><input class="user2" type="text" value="<?php echo $rows->comment;?>"/></td>
 			
 	</tr> 
 	<?php
-	$count++;	}
+	$count=$count+1;;	}
 	?>
 	</tbody>
 </table>
 
 <br>
 <br />
+
+
 <button class="btn btn-primary"  id="approve">Approve Order</button>
 <?php echo form_close(); ?>
+<!--------order processing data---------->
+<div class="modal fade" id="order_processing" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+       
+        <h2 class="modal-title">Processing Order....</h2>
+      </div>
+      <div class="modal-body">
+    
+        <h2 class="label label-info">Please wait as the order is being processed </h2><img src="<?php echo base_url().'Images/processing.gif' ?>" />
+      </div>
+      <div class="modal-footer">       
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 

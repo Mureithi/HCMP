@@ -48,15 +48,17 @@ class Ordertbl extends Doctrine_Record {
 		return $order;
 	}
 	//getting the order details 
-	public static function get_order($code,$id){
+	public static function get_order($code,$id=NULL){
 
-
-		$myobj = Doctrine::getTable('Ordertbl')->find($code);
-        $myobj->approvalDate = date('y-m-d');
+if(isset($id)){
+         $myobj = Doctrine::getTable('Ordertbl')->find($code);
+         $myobj->approvalDate = date('y-m-d');
 		 $myobj->orderStatus='approved';
 		 $myobj->approveby=$id;
          $myobj->save();
-
+	
+}
+		
 	    $query=Doctrine_Query::create()-> select("*")->
 		from("ordertbl")->where("id='$code'");
 		$order=$query->execute();
@@ -211,7 +213,7 @@ public static function get_all_orders_moh(){
 	}
 	//get the order date from a given date
 	public static function get_dates($id){
-		$query=Doctrine_Query::create()-> select("orderDate,deliverDate")->from("ordertbl")->where("id='$id'");
+		$query=Doctrine_Query::create()-> select("approvalDate,orderDate,deliverDate")->from("ordertbl")->where("id='$id'");
 		$order=$query->execute()->toArray();
 		return $order[0];
 	}

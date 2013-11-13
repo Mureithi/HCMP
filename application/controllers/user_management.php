@@ -37,6 +37,53 @@ public function change_password(){
 		$data['title'] = "Login";		
 		$this -> load -> view("login_v", $data);
 	}
+/////////////////// edit user details
+
+public function edit_user_profile(){
+	
+	    $f_name= $this->input->post('f_name');
+		$other_name=$this->input->post('o_name');
+		$phone=$this->input->post('phone_no');
+		$phone=preg_replace('(^0+)', "254", $phone);
+		$email=$this->input->post('email');
+		$user_id=$this->input->post('user_id');
+			
+	    $u= Doctrine::getTable('User')->find($user_id);
+
+		$u->fname=$f_name;
+		$u->lname=$other_name;
+		$u->email = $email;
+		$u->username = $email;
+		$u->telephone =$phone;
+		$u->save();
+
+
+		
+		$user_id_session=$this -> session -> userdata('user_id');
+		
+		($user_id==$user_id_session)?				
+		$this -> session -> set_userdata(array('phone_no'=>$phone,
+		'user_email'=>$email,'names'=>$f_name,'inames'=>$other_name))
+		: $blank=null;
+		
+        $this->session->set_flashdata('system_success_message', "$f_name,$other_name details have been updated");
+		$access_level=$this -> session -> userdata('user_indicator');
+		$redirect_to=null;
+		
+		switch ($access_level):
+			case 'moh':
+				$redirect_to='user_management/moh_manage';
+				break;
+			case 'district':
+				$redirect_to="user_management/dist_manage";
+				break;
+			case 'facility' || 'fac_user':
+			$redirect_to="report_management/facility_settings";
+				break;
+				endswitch;
+	
+	    redirect($redirect_to);
+}
 
 public function submit() {
 	if($this->input->post('username')){
@@ -89,34 +136,82 @@ public function submit() {
 		$dpp="District Lab Technologist";
 		
        if ($myvalue ==1) {
-       		$session_data = array('county_id'=>$county_id,'phone_no'=>$phone,'user_email'=>$user_email,'full_name' =>$moh ,'user_id'=>$user_id,'user_indicator'=>"moh",'names'=>$namer,'inames'=>$inames,'identity'=>$id_d,'news'=>$faci,'district1'=>$disto,'county_name'=>$county_name);	
+       		$session_data = array('county_id'=>$county_id,'phone_no'=>$phone,
+       		'user_email'=>$user_email,'full_name' =>$moh ,'user_id'=>$user_id,
+       		'user_indicator'=>"moh",'names'=>$namer,'inames'=>$inames,'identity'=>$id_d,
+       		'news'=>$faci,'district1'=>$disto,'county_name'=>$county_name);	
 		} else if($myvalue==4){
-			$session_data = array('county_id'=>$county_id,'phone_no'=>$phone,'user_email'=>$user_email,'full_name' =>$moh_user ,'user_id'=>$user_id,'user_indicator'=>"moh_user",'names'=>$namer,'inames'=>$inames,'identity'=>$id_d,'news'=>$faci,'district1'=>$disto,'county_name'=>$county_name);
+			$session_data = array('county_id'=>$county_id,'phone_no'=>$phone,
+			'user_email'=>$user_email,'full_name' =>$moh_user ,'user_id'=>$user_id,
+			'user_indicator'=>"moh_user",'names'=>$namer,'inames'=>$inames,
+			'identity'=>$id_d,'news'=>$faci,'district1'=>$disto,
+			'county_name'=>$county_name);
 		}else if($myvalue==5){
-			$session_data = array('county_id'=>$county_id,'phone_no'=>$phone,'user_email'=>$user_email,'full_name' =>$facility_name ,'user_id'=>$user_id,'user_indicator'=>"fac_user",'names'=>$namer,'inames'=>$inames,'identity'=>$id_d,'news'=>$faci,'district1'=>$disto, 'drawing_rights'=>$drawing_rights, 'county_name'=>$county_name);
+			$session_data = array('county_id'=>$county_id,'phone_no'=>$phone,
+			'user_email'=>$user_email,'full_name' =>$facility_name ,'user_id'=>$user_id,
+			'user_indicator'=>"fac_user",'names'=>$namer,'inames'=>$inames,'identity'=>$id_d,
+			'news'=>$faci,'district1'=>$disto, 
+			'drawing_rights'=>$drawing_rights, 'county_name'=>$county_name);
 		}else if($myvalue ==3){
-			$session_data = array('county_id'=>$county_id,'phone_no'=>$phone,'user_email'=>$user_email,'user_db_id'=>$user_id,'full_name' =>$dist ,'user_id'=>$user_id,'user_indicator'=>"district",'names'=>$namer,'inames'=>$inames,'identity'=>$id_d,'news'=>$faci, 'district'=>$n['district'],'district1'=>$disto, 'county_name'=>$county_name);
+			$session_data = array('county_id'=>$county_id,'phone_no'=>$phone,
+			'user_email'=>$user_email,'user_db_id'=>$user_id,'full_name' =>$dist
+			 ,'user_id'=>$user_id,'user_indicator'=>"district",'names'=>$namer,
+			 'inames'=>$inames,'identity'=>$id_d,'news'=>$faci,
+			  'district'=>$n['district'],'district1'=>$disto, 
+			  'county_name'=>$county_name);
 		}else if($myvalue ==6){
-			$session_data = array('county_id'=>$county_id,'phone_no'=>$phone,'user_email'=>$user_email,'full_name' =>$kemsa,'user_id'=>$user_id,'user_indicator'=>"kemsa",'names'=>$namer,'inames'=>$inames,'identity'=>$id_d,'news'=>$faci,'district1'=>$disto, 'county_name'=>$county_name);
+			$session_data = array('county_id'=>$county_id,
+			'phone_no'=>$phone,'user_email'=>$user_email,'full_name' =>$kemsa,
+			'user_id'=>$user_id,'user_indicator'=>"kemsa",'names'=>$namer,
+			'inames'=>$inames,'identity'=>$id_d,'news'=>$faci,
+			'district1'=>$disto, 'county_name'=>$county_name);
 		}	
 		else if($myvalue ==2)  {
-			$session_data = array('county_id'=>$county_id,'phone_no'=>$phone,'user_email'=>$user_email,'user_db_id'=>$user_id,'full_name' =>$facility_name,'user_id'=>$user_id,'user_indicator'=>"facility",'names'=>$namer,'inames'=>$inames,'identity'=>$id_d,'news'=>$faci,'district1'=>$disto,'drawing_rights'=>$drawing_rights, 'county_name'=>$county_name);
+			$session_data = array('county_id'=>$county_id,'phone_no'=>$phone,
+			'user_email'=>$user_email,'user_db_id'=>$user_id,'full_name' =>$facility_name,
+			'user_id'=>$user_id,'user_indicator'=>"facility",'names'=>$namer,
+			'inames'=>$inames,'identity'=>$id_d,'news'=>$faci,'district1'=>$disto,
+			'drawing_rights'=>$drawing_rights, 
+			'county_name'=>$county_name);
 		}
 		else if($myvalue ==9)  {
-			$session_data = array('county_id'=>$county_id,'phone_no'=>$phone,'user_email'=>$user_email,'user_db_id'=>$user_id,'full_name' =>$super_admin,'user_id'=>$user_id,'user_indicator'=>"super_admin",'names'=>$namer,'inames'=>$inames,'identity'=>$id_d,'news'=>$faci,'district1'=>$disto,'drawing_rights'=>0,  'county_name'=>$county_name);
+			$session_data = array('county_id'=>$county_id,'phone_no'=>$phone,
+			'user_email'=>$user_email,'user_db_id'=>$user_id,'full_name' =>$super_admin,
+			'user_id'=>$user_id,'user_indicator'=>"super_admin",'names'=>$namer,
+			'inames'=>$inames,'identity'=>$id_d,'news'=>$faci,
+			'district1'=>$disto,'drawing_rights'=>0, 
+			'county_name'=>$county_name);
 		}
 		else if($myvalue ==8)  {
-			$session_data = array('county_id'=>$county_id,'phone_no'=>$phone,'user_email'=>$user_email,'user_db_id'=>$user_id,'full_name' =>$rtk,'user_id'=>$user_id,'user_indicator'=>"rtk_manager",'names'=>$namer,'inames'=>$inames,'identity'=>$id_d,'news'=>$faci,'district1'=>$disto,'drawing_rights'=>0, 'county_name'=>$county_name);
+			$session_data = array('county_id'=>$county_id,'phone_no'=>$phone,
+			'user_email'=>$user_email,'user_db_id'=>$user_id,'full_name' =>$rtk,
+			'user_id'=>$user_id,'user_indicator'=>"rtk_manager",'names'=>$namer,
+			'inames'=>$inames,'identity'=>$id_d,'news'=>$faci,'district1'=>$disto,
+			'drawing_rights'=>0, 'county_name'=>$county_name);
 		}	
 		else if($myvalue ==10)  {
-		$session_data = array('county_id'=>$county_id,'phone_no'=>$phone,'user_email'=>$user_email,'user_db_id'=>$user_id,'full_name' =>$county,'user_id'=>$user_id,'user_indicator'=>"county_facilitator",'names'=>$namer,'inames'=>$inames,'identity'=>$id_d,'news'=>0,'district'=>'6','drawing_rights'=>0, 'county_name'=>$county_name);
+		$session_data = array('county_id'=>$county_id,'phone_no'=>$phone,
+		'user_email'=>$user_email,'user_db_id'=>$user_id,'full_name' =>$county,
+		'user_id'=>$user_id,'user_indicator'=>"county_facilitator",
+		'names'=>$namer,'inames'=>$inames,'identity'=>$id_d,
+		'news'=>0,'district'=>'6','drawing_rights'=>0, 
+		'county_name'=>$county_name);
 
 		}
 		else if($myvalue ==11)  {
-		$session_data = array('county_id'=>$county_id,'phone_no'=>$phone,'user_email'=>$user_email,'user_db_id'=>$user_id,'full_name' =>$allocation,'user_id'=>$user_id,'user_indicator'=>"allocation_committee",'names'=>$namer,'inames'=>$inames,'identity'=>$id_d,'news'=>0,'district'=>'6','drawing_rights'=>0, 'county_name'=>$county_name);
+		$session_data = array('county_id'=>$county_id,'phone_no'=>$phone,
+		'user_email'=>$user_email,'user_db_id'=>$user_id,'full_name' =>$allocation,
+		'user_id'=>$user_id,'user_indicator'=>"allocation_committee",
+		'names'=>$namer,'inames'=>$inames,'identity'=>$id_d,
+		'news'=>0,'district'=>'6','drawing_rights'=>0, 
+		'county_name'=>$county_name);
 		}
 		else if($myvalue ==12)  {
-		$session_data = array('county_id'=>$county_id,'phone_no'=>$phone,'user_email'=>$user_email,'user_db_id'=>$user_id,'full_name' =>$dpp,'user_id'=>$user_id,'user_indicator'=>"dpp",'names'=>$namer,'inames'=>$inames,'identity'=>$id_d,'news'=>$county,'district1'=>$disto,'drawing_rights'=>0, 'county_name'=>$county_name);			
+		$session_data = array('county_id'=>$county_id,'phone_no'=>$phone,
+		'user_email'=>$user_email,'user_db_id'=>$user_id,'full_name' =>$dpp,
+		'user_id'=>$user_id,'user_indicator'=>"dpp",'names'=>$namer,'inames'=>$inames,
+		'identity'=>$id_d,'news'=>$county,'district1'=>$disto,'drawing_rights'=>0,
+		'county_name'=>$county_name);			
 		
 		}				
 		$this -> session -> set_userdata($session_data);
@@ -234,25 +329,41 @@ public function forgotpassword() {
 	//////// reset password /activate/ deactivate 
 	public function reset_user_variable($title,$id){
 		
+		 $u= Doctrine::getTable('User')->find($id);
+
+		$f_name=$u->fname;
+		$l_name=$u->lname;
+		
 		switch ($title) {
 			  case 'deactive':
 				$status=  user::activate_deactivate_user($id,0);
 				if($status){
-					echo "User id: $id has been deactivated";
+					
+					$this->session->set_flashdata('system_success_message', "User $f_name, $l_name has been deactivated");
 				}
 				break;
 				case 'active':
 				
 				$status=  user::activate_deactivate_user($id,1);
 				if($status){
-					echo "User id: $id has been activated";
+					
+					$this->session->set_flashdata('system_success_message', "User $f_name, $l_name has been activated");
 				}
 				break;
 				
 				case 'reset':
 				$status=  user::reset_password($id);
 				if($status){
-					echo "User id: $id password has been reset";
+					
+					$this->session->set_flashdata('system_success_message', "User $f_name, $l_name password has been reset");
+				}
+				break;	
+				
+				case 'delete':
+				$status=  user::delete_user($id);
+				if($status){
+					
+					$this->session->set_flashdata('system_success_message', "User $f_name, $l_name has been deleted");
 				}
 				break;	
 
@@ -739,10 +850,13 @@ endif;
 		$this -> load -> view("template", $data);
 	}
 	
-	public function get_user_profile(){
-		$user_id=$this -> session -> userdata('identity');
+	public function get_user_profile($user_id=null){
 		
-		$data['user_data']=user::getAllUser($user_id)->toArray();
+		$user_id_input=isset($user_id)? $user_id:$this -> session -> userdata('identity');
+		
+	
+		
+		$data['user_data']=user::getAllUser($user_id_input)->toArray();
 		
 		$this->load->view('facility/user_management/user_profile_v',$data);
 		

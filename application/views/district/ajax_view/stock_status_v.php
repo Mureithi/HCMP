@@ -4,7 +4,7 @@
 <script>
 
 	$(function() {
-		FusionCharts.setCurrentRenderer('javascript');
+		
 
 		<?php $time=time();  ?>
 		var chart = new FusionCharts("<?php echo base_url()."scripts/FusionCharts/Bar2D.swf"?>", "ChartId", <?php echo "'$width','$height,'"; ?>,"0", "0");
