@@ -62,11 +62,17 @@
       
       $(document).ready(function() {
     
+       	var url = "<?php echo base_url()."report_management/get_stock_out_trends_ajax" ?>";			
+		 div="#chart_6";	
+		ajax_request(url,div);
+		
+       
 		var url = "<?php $year=date('Y'); echo base_url()."report_management/get_stock_status_ajax/consumption" ?>";			
 		 div="#chart_1";
 		
 		ajax_request(url,div);
 		
+	
 		    	//ajax reuest for the graphs
         var url = "<?php echo base_url()."report_management/get_stock_status_ajax/ajax-request_county"?>";			
 		var div="#chart_2";
@@ -126,21 +132,23 @@
 }
     
 
-    var chart = new FusionCharts("<?php echo base_url()."scripts/FusionCharts/Line.swf"?>", "ChartId4", "100%", "80%", "1", "1");
+    var chart = new FusionCharts("<?php echo base_url()."scripts/FusionCharts/Line.swf"?>", "ChartId4", "100%", "80%", "0", "0");
     var url = '<?php echo base_url()."report_management/generate_costofordered_County_chart"?>'; 
     chart.setDataURL(url);
     chart.render("chart_4");
 
       
-     var chart = new FusionCharts("<?php echo base_url()."scripts/FusionWidgets/HLinearGauge.swf"?>", "ChartId8", "100%", "50", "0", "0");
-    var url = '<?php echo base_url()."report_management/lead_time_chart_county"?>'; 
-    chart.setDataURL(url);
-      chart.render("chart_5");
+     //var chart = new FusionCharts("<?php //echo base_url()."scripts/FusionWidgets/HLinearGauge.swf"?>",// "ChartId8", "100%", "50", "0", "0");
+   // var url = '<?php //echo base_url()."report_management/lead_time_chart_county"?>'; 
+   //chart.setDataURL(url);
+      //chart.render("chart_5");
       
-      var chart = new FusionCharts("<?php echo base_url()."scripts/FusionWidgets/HLinearGauge.swf"?>", "ChartId8", "100%", "50", "0", "0");
-    var url = '<?php echo base_url()."report_management/lead_time_chart_county"?>'; 
-    chart.setDataURL(url);
-      chart.render("chart_6");
+     // var chart = new FusionCharts("<?php //echo base_url()."scripts/FusionWidgets/HLinearGauge.swf"?>",// "ChartId8", "100%", "50", "0", "0");
+    //var url = '<?php //echo base_url()."report_management/lead_time_chart_county"?>'; 
+   // chart.setDataURL(url);
+     /// chart.render("chart_6");
+     
+   
   });
   </script>
 <div class="dash_container">
@@ -188,11 +196,12 @@
 			<div id="chart_4"></div>	
 		</div>
 		<div class="right-div" >
-			<h3>Lead Time</h3>
-			<div class='label label-info'>District Level(Placement-Approval)</div>
+			<h3>Facility Stock Out trend</h3>
+			<!--<div class='label label-info'>District Level(Placement-Approval)</div>
 			<div id="chart_5" ></div>
 			<div class='label label-info'>Distribution Level(Approval-Delivery)</div>
-			<div id="chart_6" ></div>
+			<div id="chart_6" ></div>-->
+			<div id="chart_6" >
 		</div>
 		</div>
 		

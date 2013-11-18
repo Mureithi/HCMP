@@ -300,6 +300,15 @@ AND d.id = fs.kemsa_code
 GROUP BY month( expiry_date ) asc");
         return $inserttransaction ;
 			} 
+			
+			public static function get_county_stock_out_trend($county_id){
+     
+$inserttransaction = Doctrine_Manager::getInstance()->getCurrentConnection()
+		->fetchAll("SELECT count(f_t.id) as total,date_format( `start_date`, '%b' ) as month, month(`start_date`) as checker from facility_stock_out_tracker f_t, facilities f, districts d
+where f.facility_code=f_t.`facility_id` and f.district=d.id and d.county=1
+ GROUP BY month( `start_date`) asc");
+        return $inserttransaction ;
+			}
       /////getting cost of exipries county
             public static function get_county_cost_of_exipries($county_id){
      

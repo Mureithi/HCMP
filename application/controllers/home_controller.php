@@ -141,6 +141,7 @@ return $stats_data;
 			$data['exp_count']=Facility_Stock::get_potential_count($facility_c);
 			$data['stock']=Facility_Stock::count_facility_stock_first($facility_c);
 		    $data['pending_orders'] = Ordertbl::get_pending_count($facility_c);
+			$data['rejected_orders'] = Ordertbl::get_rejected_count($facility_c);
 			$count=Ordertbl::getPending_d($facility_c)->count();
 			$data['pending_orders_d'] =$count;
 			$data['dispatched'] = NULL;//Ordertbl::get_dispatched_count($facility_c);

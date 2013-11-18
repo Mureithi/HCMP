@@ -1978,6 +1978,43 @@ public function get_consumption_trends_ajax(){
 	$this->load->view("district/ajax_view/consumption_trends_v", $data);
 }
 
+public function get_stock_out_trends_ajax(){
+	$county_id=$this -> session -> userdata('county_id');
+	$data['county']=$county_id;
+	$this->load->view("county/ajax_view/county_stock_out_data_v", $data);
+}
+
+public function get_stock_out_trends($county_id){
+		
+		$facility_data=Facility_Stock::get_county_stock_out_trend($county_id);
+	
+	 $strXML = "<chart formatNumberScale='0'
+	    lineColor='000000' lineAlpha='40' showValues='1' rotateValues='1' valuePosition='auto'
+	     palette='1' xAxisName='Months' yAxisName='# of facilities' yAxisMinValue='15000' showValues='0'  useRoundEdges='1' alternateHGridAlpha='20' divLineAlpha='50' canvasBorderColor='666666' canvasBorderAlpha='40' baseFontColor='666666' lineColor='AFD8F8' chartRightMargin = '0' showBorder='0' bgColor='FFFFFF'>";
+
+foreach ($facility_data as $data):
+	   
+		$strXML.="<set label='".$data['month']."' value='".$data['total']."' />";
+	
+endforeach;
+
+$strXML .= "<styles>
+<definition>
+<style name='Anim1' type='animation' param='_xscale' start='0' duration='1'/>
+<style name='Anim2' type='animation' param='_alpha' start='0' duration='0.6'/>
+<style name='DataShadow' type='Shadow' alpha='40'/>
+</definition>
+<application>
+<apply toObject='DIVLINES' styles='Anim1'/>
+<apply toObject='HGRID' styles='Anim2'/>
+<apply toObject='DATALABELS' styles='Anim2'/>
+</application>
+</styles>
+</chart>";
+	echo $strXML;
+}
+
+
 public function get_costofexpiries_chart_ajax($option=NULL,$location_id=NULL){
 	
      switch ($option) {

@@ -90,6 +90,15 @@ $(document).ready(function(){
 			</p>
 		</div>
 		<?php endif;?>
+		  <?php if($rejected_orders >0):?>
+		<div class="message warning">
+			<h2>Orders Rejected by District Pharmacist</h2>
+			<p>
+				<a class="link" href="<?php 
+				 echo site_url("Order_Management/index/#tabs-0/true");?>"><?php echo $rejected_orders;?> Order(s) rejected</a> 
+			</p>
+		</div>
+		<?php endif;?>
 		<?php if($pending_orders_d>0):?>
 		<div class="message warning">
 			<h2>Pending Dispatch</h2>
