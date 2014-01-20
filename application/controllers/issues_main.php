@@ -9,8 +9,7 @@ class Issues_main extends auto_sms {
 		
 		
 	}
-	
-	
+
 	public function index($checker=NULL,$pop_up_msg=NULL){
 		$facility=$this -> session -> userdata('news');
 		//$facility=$this->uri->segment(4);
@@ -19,7 +18,7 @@ class Issues_main extends auto_sms {
 			{
 				case 'Internal':
 					
-					$data['content_view'] = "IssueInternal_v";
+					$data['content_view'] = "facility/facility_data/facility_issues/IssueInternal_v";
 					$data['title'] = "Stock";
 					$data['banner_text'] = "Issue";
 					$data['link'] = "IssuesnReceipts";
@@ -28,7 +27,7 @@ class Issues_main extends auto_sms {
 					break;
 					case 'External':
 						
-						$data['content_view'] = "IssueExternal_v";
+						$data['content_view'] = "facility/facility_data/facility_issues/IssueExternal_v";
 						//$data['content_view'] = "IssueExternal_v";						
 						$county=districts::get_county_id($this -> session -> userdata('district1'));
 						$data['district']=districts::getDistrict($county[0]['county']);
@@ -51,7 +50,7 @@ class Issues_main extends auto_sms {
 					
 					default;
 						
-						$data['content_view'] = "issuesnRecpt";
+						$data['content_view'] = "facility/facility_data/facility_issues/issuesnRecpt";
 						$data['banner_text'] = "Issues Home";
 						$data['title'] = "Stock";
 						$data['quick_link'] = "issuenRecpt";
@@ -68,16 +67,18 @@ class Issues_main extends auto_sms {
 	}
 	public function Insert_test()
 	{
-
+       
+		
 		$ids=$_POST['kemsaCode'];		
 	    $Available=$_POST['AvStck'];
 		$batchN=$_POST['batchNo'];
 		$Expiry=$_POST['Exp'];
-		$sNo=$_POST['s11N'];
+		//$sNo=$_POST['s11N'];
         $qty=$_POST['qty'];
 		$thedate=$_POST['datepicker'];
 		$serviceP=$_POST['Servicepoint'];
         $j=sizeof ($ids);
+		
        $count=0;
 
 
@@ -92,7 +93,7 @@ class Issues_main extends auto_sms {
 
 
 
-				$mydata = array('facility_code' => $facilityCode,	'kemsa_code' => $ids[$me], 's11_No'=>$sNo[$me], 'batch_no' => $batchN[$me] ,
+				$mydata = array('facility_code' => $facilityCode,	'kemsa_code' => $ids[$me], 's11_No'=>"internal issue", 'batch_no' => $batchN[$me] ,
 				'expiry_date' => $Expiry[$me] ,'qty_issued'=> $qty[$me] ,
 				'issued_to'=>$serviceP,'balanceAsof'=>$Available[$me], 'date_issued'=>date('y-m-d',strtotime($thedate[$me])),'issued_by'=>$usernow);
 
@@ -145,7 +146,10 @@ class Issues_main extends auto_sms {
 	
 	public function Insert()
 	{
-		
+		 
+		#solves error code fac#35 changing issuing to use commodity id that batchno		
+		$commodity_id=$_POST['commodity_id'];
+		#///////////////////////////////////////
 		$ids=$_POST['kemsaCode'];		
 	    $Available=$_POST['AvStck'];
 		$batchN=$_POST['batchNo'];
@@ -170,7 +174,7 @@ class Issues_main extends auto_sms {
 				
 				
 				
-				$mydata = array('facility_code' => $facilityCode,	'kemsa_code' => $ids[$me], 's11_No'=>$sNo[$me], 'batch_no' => $batchN[$me] ,
+				$mydata = array('facility_code' => $facilityCode,	'kemsa_code' => $ids[$me], 's11_No'=>'internal issue', 'batch_no' => $batchN[$me] ,
 				'expiry_date' => date('y-m-d',strtotime($Expiry[$me])),'qty_issued'=> $qty[$me] ,
 				'issued_to'=>$serviceP,'balanceAsof'=>$Available[$me], 'date_issued'=>date('y-m-d',strtotime($thedate[$me])),'issued_by'=>$usernow);
 				
@@ -184,7 +188,7 @@ class Issues_main extends auto_sms {
 			$q = Doctrine_Query::create()
 			->update('Facility_Stock')
 				->set('balance', '?', $Available[$me])
-					->where("kemsa_code='$ids[$me]' AND batch_no='$batchN[$me]' and facility_code ='$facilityCode'");
+					->where("kemsa_code='$ids[$me]' AND batch_no='$batchN[$me]' and facility_code ='$facilityCode' and id='$commodity_id[$me]'");
 
 			$q->execute();
 			
@@ -201,7 +205,7 @@ class Issues_main extends auto_sms {
 
 			$inserttransaction1->execute("UPDATE `facility_transaction_table` SET closing_stock = (SELECT SUM(balance)
 			 FROM facility_stock WHERE kemsa_code = '$ids[$me]' and availability='1' and facility_code='$facilityCode')
-                                          WHERE `kemsa_code`= '$ids[$me]' and availability='1' and facility_code ='$facilityCode'; ");
+             WHERE `kemsa_code`= '$ids[$me]' and availability='1' and facility_code ='$facilityCode';");
 			}
 			
 			
@@ -213,15 +217,16 @@ class Issues_main extends auto_sms {
 		 //$this->send_stock_donate_sms();
          $this->session->set_flashdata('system_success_message', "You have issued $count item(s)");
 		 redirect('issues_main');
-		
-       
-		
-		
+
 	}
 
 public function InsertExt()
 	{
-		//exit;
+		#solves error code fac#35 changing issuing to use commodity id that batchno		
+		$commodity_id=$_POST['commodity_id'];
+		#///////////////////////////////////////
+	
+		
 		$ids=$_POST['kemsaCode'];
 		$mfl=$_POST['mfl'];			
 	    $Available=$_POST['AvStck'];
@@ -242,7 +247,7 @@ public function InsertExt()
 				///update the donating facility details
 				$facility_name=Facilities::get_facility_name($mfl[$me]);
 				$facility_details=$facility_name['facility_name']." ".$mfl[$me];
-		        $sNo="Donation :".$sNo[$me];
+		        $sNo="inter-facility donation ".$sNo[$me];
 				$count++;
 				
 				////checking if the facilility receiving the commodities is using HCMP
@@ -250,7 +255,8 @@ public function InsertExt()
 				$user_in_donated_facility=count($users_array);
 				
 				//inserting in the facility issues 
-				$mydata = array('facility_code' => $facilityCode,'kemsa_code' => $ids[$me], 's11_No'=>$sNo, 'batch_no' => $batchN[$me] ,'expiry_date' => date('y-m-d',strtotime($Expiry[$me])) ,'qty_issued'=> $qty[$me] ,'balanceAsof'=>$Available[$me],
+				$mydata = array('facility_code' => $facilityCode,'kemsa_code' => $ids[$me],
+				 's11_No'=>$sNo, 'batch_no' => $batchN[$me] ,'expiry_date' => date('y-m-d',strtotime($Expiry[$me])) ,'qty_issued'=> $qty[$me] ,'balanceAsof'=>$Available[$me],
 				 'date_issued'=>date('y-m-d',strtotime($thedate[$me])),'issued_to'=>$facility_details,'issued_by'=>$usernow);
 				
 				$u = new Facility_Issues();
@@ -263,7 +269,7 @@ public function InsertExt()
 			$q = Doctrine_Query::create()
 			->update('Facility_Stock')
 				->set('balance', '?', $Available[$me])
-					->where("kemsa_code='$ids[$me]' AND batch_no='$batchN[$me]'");
+					->where("kemsa_code='$ids[$me]' AND batch_no='$batchN[$me]' and facility_code ='$facilityCode' and id='$commodity_id[$me]'");
 
 			$q->execute();
 			///updating the trascation_table

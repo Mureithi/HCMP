@@ -1,9 +1,6 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html lang="en">
-	<style>
-	
+	<style>	
 	@-webkit-keyframes greenPulse {
 from { background-color: #749a02; -webkit-box-shadow: 0 0 9px #333; }
 50% { background-color: #91bd09; -webkit-box-shadow: 0 0 18px #EBDDE2; }
@@ -22,6 +19,23 @@ to { background-color: #749a02; -webkit-box-shadow: 0 0 9px #333; }
 	
 </style>	
 <head>
+	<script type="text/javascript">
+function changeHashOnLoad() {
+     window.location.href += "#";
+     setTimeout("changeHashAgain()", "50"); 
+}
+
+function changeHashAgain() {
+  window.location.href += "1";
+}
+
+var storedHash = window.location.hash;
+window.setInterval(function () {
+    if (window.location.hash != storedHash) {
+         window.location.hash = storedHash;
+    }
+}, 50);
+</script>   
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>HCMP | Login</title>
 
@@ -30,6 +44,7 @@ to { background-color: #749a02; -webkit-box-shadow: 0 0 9px #333; }
 <link rel="icon" href="<?php echo base_url().'Images/coat_of_arms.png'?>" type="image/x-icon" />
 <link href="<?php echo base_url().'CSS/style.css'?>" type="text/css" rel="stylesheet"/> 
 <link href="<?php echo base_url().'CSS/jquery-ui.css'?>" type="text/css" rel="stylesheet"/>
+
 <?php
 if (isset($script_urls)) {
 	foreach ($script_urls as $script_url) {
@@ -77,7 +92,7 @@ $('.errorlogin').fadeOut(10000, function() {
 </script>
 </head>
 
-<body>
+<body onload="changeHashOnLoad();">
 <div id="wrapper">
 	<div id="top-panel" style="margin:0px;">
 

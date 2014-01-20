@@ -65,8 +65,8 @@ if ($access_level == "dpp") {
 <link rel="icon" href="<?php echo base_url().'Images/coat_of_arms.png'?>" type="image/x-icon" />
 <link href="<?php echo base_url().'CSS/style.css'?>" type="text/css" rel="stylesheet"/> 
 <link href="<?php echo base_url().'CSS/bootstrap.css'?>" type="text/css" rel="stylesheet"/>
-<link href="<?php echo base_url().'CSS/bootstrap-responsive.css'?>" type="text/css" rel="stylesheet"/>
-<link href="<?php echo base_url().'CSS/jquery-ui.css'?>" type="text/css" rel="stylesheet"/> 
+<link href="<?php echo base_url().'CSS/jquery-ui.css'?>" type="text/css" rel="stylesheet"/>
+ 
 <script src="<?php echo base_url().'Scripts/jquery.js'?>" type="text/javascript"></script> 
 <script src="<?php echo base_url();?>Scripts/HighCharts/highcharts.js"></script>
 <script src="<?php echo base_url();?>Scripts/HighCharts/modules/exporting.js"></script>
@@ -79,31 +79,10 @@ if ($access_level == "dpp") {
 <script src="<?php echo base_url().'Scripts/waypoints.js'?>" type="text/javascript"></script> 
 <script src="<?php echo base_url().'Scripts/waypoints-sticky.min.js'?>" type="text/javascript"></script>
 <script src="<?php echo base_url().'Scripts/bootstrap.js'?>" type="text/javascript"></script>
-<SCRIPT LANGUAGE="Javascript" SRC="<?php echo base_url();?>Scripts/FusionCharts/FusionCharts.js"></SCRIPT>
 
-
-
-  <?php
-if (isset($script_urls)) {
-	foreach ($script_urls as $script_url) {
-		echo "<script src=\"" . $script_url . "\" type=\"text/javascript\"></script>";
-	}
-}
-?>
-<?php
-if (isset($scripts)) {
-	foreach ($scripts as $script) {
-		echo "<script src=\"" . base_url() . "Scripts/" . $script . "\" type=\"text/javascript\"></script>";
-	}
-}
-?>
-<?php
-if (isset($styles)) {
-	foreach ($styles as $style) {
-		echo "<link href=\"" . base_url() . "CSS/" . $style . "\" type=\"text/css\" rel=\"stylesheet\"/>";
-	}
-}
-?>  
+<script src="<?php echo base_url();?>Scripts/FusionCharts/FusionCharts.js" type="text/javascript"></SCRIPT>
+	
+ 
 <style>
 	input.text {
 		margin-bottom: 12px;
@@ -284,7 +263,9 @@ if ($quick_link == "user_facility_v") {echo "active";
 ?>">Users</a></li>
  <?php } ?>
 <li>
-	<i class=" icon-wrench icon-white" style="margin-right: 0.3em; margin-top: 0.1em;"></i><a  href="<?php echo base_url(); ?>report_management/facility_settings"  class="<?php
+	<i class="icon icon-wrench  icon-white" style="margin-right: 0.3em; margin-top: 0.1em;">
+		
+	</i><a  href="<?php echo base_url(); ?>report_management/facility_settings"  class="<?php
 	if ($quick_link == "user_facility_v") {echo "active";
 	}
 ?>">Settings</a></li>
@@ -462,8 +443,8 @@ if (@@$current == "home_controller") {echo "active";
 </nav>
 </div>
   	
-	<div style="font-size:15px; float:right; padding: 1em "><?php  echo date('l, dS F Y'); ?>&nbsp;<div id="clock" style="font-size:15px; float:right; " ></div>
-	 </div><div style="width :53em;height: 4.2em; margin: auto; ;" ></div>
+	<div style="font-size:15px; float:right; padding: 0.5em "><?php  echo date('l, dS F Y'); ?>&nbsp;<div id="clock" style="font-size:15px; float:right; " ></div>
+	 </div>
 	 <div >
 <?php $flash_success_data = NULL;
 	$flash_error_data = NULL;
@@ -482,18 +463,35 @@ if (@@$current == "home_controller") {echo "active";
 		
 		
 <div class="btn-group">
-  <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-user icon-white"></i> <?php echo $this -> session -> userdata('names'); ?> <?php echo $this -> session -> userdata('inames'); ?><span style="margin-left: 0.3em;" class="caret"></span></a>
+  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" >
+  <i class="icon icon-user icon-white">
+  	
+  </i> 
+  <?php echo $this -> session -> userdata('names'); ?> <?php echo $this -> session -> userdata('inames'); ?>
+  <span style="margin-left: 0.3em;" class="caret">
+  	
+  </span>
+
+    </button>
   
   <ul class="dropdown-menu" style="font:#FFF">
-    <li><a href="#"><i class="icon-pencil"></i> Edit Settings</a></li>
-    <li><a href="#myModal" data-toggle="modal" data-target="#myModal" id="changepswd" ><i class="icon-edit"></i> Change password</a></li>
+    <li>
+    	<a href="#"><i class="icon icon-pencil"></i> Edit Settings</a>
+    	</li>
+    <li>
+    	<a href="#myModal" data-toggle="modal" data-target="#myModal" id="changepswd" >
+    	<i class="icon icon-edit"></i> Change password</a></li>
     
     
-    <li class="divider"></li>
-    <li><a href="<?php echo base_url(); ?>user_management/logout"><i class=" icon-off"></i> Log Out</a></li>
+    <li class="divider">
+    	
+    </li>
+    <li>
+    	<a href="<?php echo base_url(); ?>user_management/logout"><i class="icon icon-off"></i> Log Out</a>
+    </li>
   </ul>
 </div>
-		<a class="link" href="<?php echo base_url(); ?>user_management/logout"><i class="icon-off"></i> Log Out</a> 
+	<a class="link" href="<?php echo base_url(); ?>user_management/logout"><i class="icon icon-off"></i> Log Out</a> 
 	
 		</div>
 	
@@ -504,7 +502,7 @@ if (@@$current == "home_controller") {echo "active";
 
 <!-- MOH USR-->
 
-<div id="inner_wrapper"> 
+<div id="inner_wrapper" style="padding-top: 2.3em"> 
  		
 <?php $this -> load -> view($content_view); ?>
 <!-- end inner wrapper -->

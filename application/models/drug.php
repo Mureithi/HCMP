@@ -18,7 +18,10 @@ class Drug extends Doctrine_Record {
 		
 		
 	}
-
+	public static function getAll_2() {
+		$query=Doctrine_Manager::getInstance()->getCurrentConnection()->fetchAll("select * from drug order by drug_name asc");	
+		return $query;
+	}
 	public static function getAll() {
 		$query = Doctrine_Query::create() -> select("*") -> from("Drug")-> OrderBy("Drug_Name asc");
 		$drugs = $query -> execute();

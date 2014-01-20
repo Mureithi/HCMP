@@ -1440,22 +1440,23 @@ function moh_category_consumption_report(){
      $this -> load -> view("moh/ajax_reports/consumption_category",$data);   }
 		
 }
-public function generate_costofexpiries_chart($option=NULL,$location_id=NULL){
+public function generate_costofexpiries_chart($option=NULL,$location_id=NULL,$year=NULL){
 	 $district=$this -> session -> userdata('district');
-	 $year=date("Y");
+	$county_id=$this -> session -> userdata('county_id');
 	 
 		 	switch ($option) {
 				 case 'county':
-	$county_id=districts::get_county_id($district);
+	
 					 
-	 $commodity_array=Facility_Stock::get_county_cost_of_exipries($county_id[0]['county']);	
+	 $commodity_array=Facility_Stock::get_county_cost_of_exipries($county_id,$year);
 	 
 	
-	$county_name=counties::get_county_name($county_id[0]['county']);
+	$county_name=counties::get_county_name($county_id);
 	$title=$county_name[0]["county"]." County";	
 	
 		
-     $detail=$commodity_array;		 
+     $detail=$commodity_array;
+	// print_r($detail);		 
 					 break;
 				 
 				 default:
@@ -1464,20 +1465,26 @@ public function generate_costofexpiries_chart($option=NULL,$location_id=NULL){
 		 $detail=$commodity_array;	 
 					 break;
 			 }
-		 
 	
-	   
-		
+	//exit;	 
+
 	    $strXML = "<chart formatNumberScale='0'
 	    lineColor='000000' lineAlpha='40' showValues='1' rotateValues='1' valuePosition='auto'
 	     palette='1' xAxisName='Months' yAxisName='Cost of Commodities (KES)' yAxisMinValue='15000' showValues='0'  useRoundEdges='1' alternateHGridAlpha='20' divLineAlpha='50' canvasBorderColor='666666' canvasBorderAlpha='40' baseFontColor='666666' lineColor='AFD8F8' chartRightMargin = '0' showBorder='0' bgColor='FFFFFF'>";
 
-	    for($i=0;$i<12;$i++){
-
-switch ($i){
-	case 0:
-		if(isset($detail[$i]['total'])){
-			$val=$detail[$i]['total'];
+    $temp_array=array();
+	foreach($detail as $data):
+	$temp_array=array_merge($temp_array,array($data["cal_month"]=>$data['total']))	;
+	
+	endforeach;
+	
+	
+	 for($i=1;$i<13;$i++){
+	    	
+      switch ($i){
+	   case 1:
+		if(array_key_exists('Jan',$temp_array)){
+			$val=$temp_array['Jan'];
 			$strXML .="<set label='Jan' value='$val' />";
 			
 		}	else{
@@ -1486,99 +1493,99 @@ switch ($i){
 		}
 		
 		break;
-		case 1:
-		if(isset($detail[$i]['total'])){
-			$val=$detail[$i]['total'];
+		case 2:
+		if(array_key_exists('Feb',$temp_array)){
+			$val=$temp_array['Feb'];
 			
 		}	else{
 			$val=0;
 		}
 		$strXML .="<set label='Feb' value='$val' />";
 		break;
-		case 2:
-		if(isset($detail[$i]['total'])){
-			$val=$detail[$i]['total'];
+		case 3:
+		if(array_key_exists('Mar',$temp_array)){
+			$val=$temp_array['Mar'];
 			
 		}	else{
 			$val=0;
 		}	
 		$strXML.="<set label='Mar' value='$val' />";
 		break;
-		case 3:
-		if(isset($detail[$i]['total'])){
-			$val=$detail[$i]['total'];
+		case 4:
+		if(array_key_exists('Apr',$temp_array)){
+			$val=$temp_array['Apr'];
 			
 		}	else{
 			$val=0;
 		}	
 		$strXML .="<set label='Apr' value='$val' />";
 		break;
-		case 4:
-		if(isset($detail[$i]['total'])){
-			$val=$detail[$i]['total'];
+		case 5:
+		if(array_key_exists('May',$temp_array)){
+			$val=$temp_array['May'];
 			
 		}	else{
 			$val=0;
 		}	
 		$strXML.="<set label='May' value='$val' />";
 		break;
-		case 5:
-		if(isset($detail[$i]['total'])){
-			$val=$detail[$i]['total'];
+		case 6:
+		if(array_key_exists('Jun',$temp_array)){
+			$val=$temp_array['Jun'];
 			
 		}	else{
 			$val=0;
 		}	
 		$strXML.="<set label='Jun' value='$val' />";
 		break;
-		case 6:
-		if(isset($detail[$i]['total'])){
-			$val=$detail[$i]['total'];
+		case 7:
+		if(array_key_exists('Jul',$temp_array)){
+			$val=$temp_array['Jul'];
 			
 		}	else{
 			$val=0;
 		}	
 		$strXML.="<set label='Jul' value='$val' />";
 		break;
-		case 7:
-		if(isset($detail[$i]['total'])){
-			$val=$detail[$i]['total'];
+		case 8:
+		if(array_key_exists('Aug',$temp_array)){
+			$val=$temp_array['Aug'];
 			
 		}	else{
 			$val=0;
 		}	
 		$strXML.="<set label='Aug' value='$val' />";
 		break;
-		case 8:
-		if(isset($detail[$i]['total'])){
-			$val=$detail[$i]['total'];
+		case 9:
+		if(array_key_exists('Sep',$temp_array)){
+			$val=$temp_array['Sep'];
 			
 		}	else{
 			$val=0;
 		}	
 		$strXML.="<set label='Sep' value='$val' />";
 		break;
-		case 9:
-		if(isset($detail[$i]['total'])){
-			$val=$detail[$i]['total'];
+		case 10:
+		if(array_key_exists('Oct',$temp_array)){
+			$val=$temp_array['Oct'];
 			
 		}	else{
 			$val=0;
 		}	
 		$strXML.="<set label='Oct' value='$val' />";
 		break;
-		case 10:
-		if(isset($detail[$i]['total'])){
-			$val=$detail[$i]['total'];
+		case 11:
+		if(array_key_exists('Nov',$temp_array)){
+			$val=$temp_array['Nov'];
 			
 		}	else{
 			$val=0;
 		}	
 		$strXML.="<set label='Nov' value='$val' />";	
 		break;
-		case 11:
-		if(isset($detail[$i]['total'])){
-			$val=$detail[$i]['total'];
+		case 12:
+		if(array_key_exists('Dec',$temp_array)){
+			$val=$temp_array['Dec'];
 			
 		}	else{
 			$val=0;
@@ -1589,8 +1596,6 @@ switch ($i){
 		
 }
 }
-	    
-
 
 $strXML .= "<styles>
 <definition>
@@ -1753,15 +1758,14 @@ echo $strXMLlead_time;
 
 
 //view affected is district dash
-public function get_stock_status($option=NULL,$facility_code=NULL){
+public function get_stock_status($option=NULL,$facility_code=NULL,$year=NULL){
+
 	$chart =NULL;
 	$title=NULL;
 	$district=$this -> session -> userdata('district');
 	$county_id=$this -> session -> userdata('county_id');
 	$district_name=districts::get_district_name($district)->toArray();
 
-
-	
 	if($option==NULL){
 
 	    $title=$district_name[0]["district"]." District";
@@ -1774,11 +1778,8 @@ public function get_stock_status($option=NULL,$facility_code=NULL){
 	    $title=$district_name["facility_name"];
 		
         $commodity_array=facility_stock::get_facility_stock_level($facility_code);
-		
 
-		
-	}
-	
+	}	
 	
 	elseif($option=="ajax-request_drug") {
 		 $title="".$district_name[0]["district"]." District";
@@ -1798,16 +1799,12 @@ public function get_stock_status($option=NULL,$facility_code=NULL){
 
 	}
 		elseif($option=="consumption"){
-		
-	 $commodity_array=isset($facility_code)?
-	     facility_stock::get_county_drug_consumption_level($county_id,$facility_code):
-	     facility_stock::get_county_drug_consumption_level($county_id);
+	
+	    $commodity_array=
+	      facility_stock::get_county_drug_consumption_level($county_id,$facility_code,$year);
 		
 		
 	}
- 
-
-
 
 $chart .="<chart palette='2' chartLeftMargin='0' useEllipsesWhenOverflow='1' plotSpacePercent='100' yAxisNamePadding='0'yAxisValuesPadding='0' bgColor='FFFFFF' showBorder='0' shownames='1' showvalues='1'   showSum='1' decimals='0' useRoundEdges='1'".'exportEnabled="1" exportHandler="' . base_url() . 'scripts/FusionCharts/ExportHandlers/PHP/FCExporter.php" exportAtClient="0" exportAction="download"'." >";
 foreach($commodity_array as $commodity_detail){
@@ -1826,7 +1823,8 @@ $chart .="</chart>";
 echo $chart;
 }
 //////
-public function get_stock_status_ajax($option=NULL,$facility_code=NULL){
+public function get_stock_status_ajax($option=NULL, $facility_code=NULL,$year=NULL){
+	$facility_code=$facility_code;
 	$district=$this -> session -> userdata('district1');
 	$county_id=$this -> session -> userdata('county_id');
 	
@@ -1905,14 +1903,8 @@ public function get_stock_status_ajax($option=NULL,$facility_code=NULL){
 
 	}
 	elseif($option=="consumption"){
-		//$commodity_array=0;
-		
-		
-		 $commodity_array=isset($facility_code)?
-	     facility_stock::get_county_drug_consumption_level($county_id,$facility_code):
-	     facility_stock::get_county_drug_consumption_level($county_id);
-		
-		
+	  
+		 $commodity_array=facility_stock::get_county_drug_consumption_level($county_id,$facility_code,$year);	
 	}
 	
 	if(count($commodity_array)<20){
@@ -1931,11 +1923,14 @@ public function get_stock_status_ajax($option=NULL,$facility_code=NULL){
  
        $data['width']=$width;
        $data['height']=$height;
+       
 	
 	
 	$data['facilities']=Facilities::getFacilities($district);
 	$data['option']=$option;
 	$data['facility_code']=$facility_code;
+	$data['year_selection']=$year;
+	
 	
 	$this->load->view("district/ajax_view/stock_status_v",$data);
 }
@@ -1978,17 +1973,18 @@ public function get_consumption_trends_ajax(){
 	$this->load->view("district/ajax_view/consumption_trends_v", $data);
 }
 
-public function get_stock_out_trends_ajax(){
+public function get_stock_out_trends_ajax($year=null){
 	$county_id=$this -> session -> userdata('county_id');
 	$data['county']=$county_id;
+	$data['year']=$year;
 	$this->load->view("county/ajax_view/county_stock_out_data_v", $data);
 }
 
-public function get_stock_out_trends($county_id){
+public function get_stock_out_trends($county_id,$year=NULL){
 		
-		$facility_data=Facility_Stock::get_county_stock_out_trend($county_id);
+		$facility_data=Facility_Stock::get_county_stock_out_trend($county_id,$year);
 	
-	 $strXML = "<chart formatNumberScale='0'
+	   $strXML = "<chart formatNumberScale='0'
 	    lineColor='000000' lineAlpha='40' showValues='1' rotateValues='1' valuePosition='auto'
 	     palette='1' xAxisName='Months' yAxisName='# of facilities' yAxisMinValue='15000' showValues='0'  useRoundEdges='1' alternateHGridAlpha='20' divLineAlpha='50' canvasBorderColor='666666' canvasBorderAlpha='40' baseFontColor='666666' lineColor='AFD8F8' chartRightMargin = '0' showBorder='0' bgColor='FFFFFF'>";
 
@@ -2015,24 +2011,26 @@ $strXML .= "<styles>
 }
 
 
-public function get_costofexpiries_chart_ajax($option=NULL,$location_id=NULL){
+public function get_costofexpiries_chart_ajax($option=NULL,$location_id=NULL,$year=null){
 	
      switch ($option) {
 		case 'county':
 		
 		$county="true";
 		
-	   $data['county']='county';
-	  
+	  $data['county']='county';
+	 
 		break;
 		
 		default:
-		 $data['county']='_';
+	$data['county']='_';
+	
 	$district=$this -> session -> userdata('district1');
 	$data['facilities']=Facilities::getFacilities($district);	
 			break;
 	}
 
+	 $data['year']=$year;
 	
 	$this->load->view("district/ajax_view/costofexpiries_v",$data);
 }
@@ -2088,6 +2086,8 @@ public function facility_settings(){
 		$district_data=districts::getDistrict($county_id);
 		
 	   $table_data="<tbody>";
+	   $table_data_summary="<tbody>";
+	  
 	   $district_names="<thead><tr><th>Monthly Activities</th>";
 	   $district_total=array();
 	   $district_total_facilities=array();
@@ -2129,7 +2129,7 @@ public function facility_settings(){
         $district_total_facilities[$district_name]=$total_facilities
 	    :$district_total_facilities=array_merge($district_total_facilities,array($district_name=>$total_facilities));
 		
-	    ($total>0)  ? $table_data .="<td><a href='#' id='$district_id' class='ajax_call_1 link' option='monthly' date='$date'> $total</a></td>" : $table_data .="<td>$total</td>" ;
+	     $table_data .=($total>0) ?"<td><a href='#' id='$district_id' class='ajax_call_1 link' option='monthly' date='$date'> $total</a></td>" :"<td>$total</td>" ;
 	
 		
 
@@ -2140,6 +2140,7 @@ public function facility_settings(){
 		
 		endforeach;
 		$table_data .="<tr>";
+		$table_data_summary .="<tr>";
 		
 		$checker=1;
 		
@@ -2153,21 +2154,26 @@ public function facility_settings(){
 		$percentage_coverage_total=$percentage_coverage_total+$coverage;
 			
 		$district_names .="<th>$key</th>";
+	
 			
-		($checker==1) ? $table_data .="<td><b>TOTAL: Facilities using HCMP</b></td><td>$value</td>" :$table_data .="<td>$value</td>";	
+		$table_data .=($checker==1) ? "<td><b>TOTAL: Facilities using HCMP</b></td><td>$value</td>" :"<td>$value</td>";	
+		$table_data_summary .=($checker==1) ? "<td><b>TOTAL: Facilities using HCMP</b></td><td>$value</td>" :"<td>$value</td>";
 		
-		($checker==1) ? $total_facility_list .="<tr><td><b>TOTAL: Facilities in District</b></td><td>$district_total_facilities[$key]</td>" :$total_facility_list .="<td>$district_total_facilities[$key]</td>";	
+		
+		$total_facility_list .=($checker==1) ?"<tr><td><b>TOTAL: Facilities in District</b></td><td>$district_total_facilities[$key]</td>"
+		 :"<td>$district_total_facilities[$key]</td>";	
 		
 		$total_facilities_in_county=$total_facilities_in_county+$district_total_facilities[$key];
 			
 		
-		($checker==1) ?  $percentage_coverage .="<tr><td><b>% Coverage</b></td><td>$coverage %</td>" : $percentage_coverage .="<td>$coverage %</td>";	
+		$percentage_coverage .=($checker==1) ?  "<tr><td><b>% Coverage</b></td><td>$coverage %</td>" :"<td>$coverage %</td>";	
 		
 		$checker++;
 		
 		endforeach;
 		
-		$table_data .="<td><a href='#' id='total' class='ajax_call_1 link' option='total' date='total'>$all_facilities</a></td></tr></tbody>";
+		$table_data .= "<td><a href='#' id='total' class='ajax_call_1 link' option='total' date='total'>$all_facilities</a></td></tr></tbody>";
+		$table_data_summary .="<td><a href='#' id='total' class='ajax_call_1 link' option='total' date='total'>$all_facilities</a></td></tr></tbody>";
 		$district_names .="<th>TOTAL</th></tr></thead>";
 			
 		$final_coverage_total=0;
@@ -2175,10 +2181,22 @@ public function facility_settings(){
 		@$final_coverage_total=round((($all_facilities/$total_facilities_in_county))*100,1);	
 		
 		$data_= "
-		<div class='label label-info'> Below is the project status in the county</div>
+		<div class='tabbable tabs-left'>
+		<div class='tab-content'>
+        <ul class='nav nav-tabs'>
+        <li class=''><a href='#A' data-toggle='tab'><h3>Monthly Break Down</h3></a></li>
+        <li class='active'><a href='#B' data-toggle='tab'><h3>Roll out Summary</h3></a></li>
+        </ul>
+         <div class='tab-pane' id='A'>
 		<table class='data-table' width='100%'>"
 		.$district_names.$table_data.$total_facility_list.
-		"<td>$total_facilities_in_county</td></tr>".$percentage_coverage."<td>$final_coverage_total %</td></tr></table>";
+		"<td>$total_facilities_in_county</td></tr>".$percentage_coverage."<td>$final_coverage_total %</td></tr></table>
+		 </div>
+		 <div class='tab-pane active' id='B'>
+		 <table class='data-table' width='100%'>"
+		.$district_names.$table_data_summary.$total_facility_list.
+		"<td>$total_facilities_in_county</td></tr>".$percentage_coverage."<td>$final_coverage_total %</td></tr></table>
+		 </div></div>";
 		
 		
 		if(isset($option)): 
@@ -2187,34 +2205,44 @@ public function facility_settings(){
 		endif;
 	}
 	
-	public function get_county_facility_mapping(){
+	public function get_county_facility_mapping($year=null,$month=NULL){
+		
+		$year=isset($year)?$year: date("Y");
+		$month=isset($month)?$month: date("m");
 		
 		$county_id=$this -> session -> userdata('county_id');
 		
 		$district_data=districts::getDistrict($county_id);
 		
+		$data['year']=$year;
+		$data['month']=$month;
 		$data['title'] = "Facility Mapping";
 		$data['banner_text'] = "Facility Mapping";
 		$data['content_view'] = "county/facility_mapping_v";
 	    $data['district_data']=$district_data;
-	   
-	
+
 	    $this -> load -> view("template",$data);
 	}
 	
-	public function get_county_facility_mapping_data(){
+	public function get_county_facility_mapping_data($year=null,$month=NULL){
+
+	$year=isset($year)?$year: date("Y");
+	$month=isset($month)?$month: date("m");	
+	
+	$county_id=$this -> session -> userdata('county_id');
 		
-		$county_id=$this -> session -> userdata('county_id');
-		
-	$first_day_of_the_month=date("Y-m-1", strtotime("this month") );
-	$last_day_of_the_month=date("Y-m-t", strtotime("this month") ) ;
+	$first_day_of_the_month=date("Y-m-1", strtotime(date($year."-".$month)) );
+	$last_day_of_the_month=date("Y-m-t", strtotime(date($year."-".$month)) ) ;
 	
     $date_1 = new DateTime($first_day_of_the_month);
     $date_2 = new DateTime($last_day_of_the_month);
 
 	$district_data=districts::getDistrict($county_id);
+	
 	$series_data=array();
 	$category_data=array();
+	$series_data_monthly=array();
+	$category_data_monthly=array();
 	
 	$interval = $date_1->diff($date_2);
 
@@ -2222,7 +2250,7 @@ public function facility_settings(){
 	
 	$day=1+$i;
 	
-    $new_date=date("Y")."-".date("m")."-".$day;
+    $new_date="$year-$month-".$day;
 	$new_date=date('Y-m-d', strtotime($new_date));
      
       if(date('N', strtotime($new_date)) < 6){
@@ -2248,14 +2276,183 @@ public function facility_settings(){
          // do nothing
         }
 	endfor;
-		
-		
-		
+	
+
+	  for($i=0;$i<12;$i++):
+	
+	   $day=1+$i;//changed it to be a month
+	
+       $new_date="$year-$day";
+	
+	   $new_date=date('Y-m', strtotime($new_date));
+	
+	   $date_=date('M',strtotime($new_date));		  
+	   $category_data_monthly =array_merge($category_data_monthly, array($date_));	
+
+		foreach($district_data as $district_):
+			
+		$district_id=$district_->id;
+		$district_name=$district_->district;	
+		$county_data=Log::get_county_login_monthly_count($county_id,$district_id,$new_date);	
+
+	    (array_key_exists($district_name,$series_data_monthly)) ?
+        $series_data_monthly[$district_name]=array_merge($series_data_monthly[$district_name],array((int)$county_data[0]['total']))
+	    : $series_data_monthly=array_merge($series_data_monthly,array($district_name=>array((int) $county_data[0]['total'])));
+
+		endforeach;
+
+	endfor;
+		$data['year']=$year;
+		$data['month']=date("F",strtotime(date($year."-".$month)));
+		$data['series_data_monthly']=$series_data_monthly;
+		$data['category_data_monthly']=stripslashes(json_encode($category_data_monthly));	
 		$data['series_data']=$series_data;
 		$data['category_data']=stripslashes(json_encode($category_data));
 	    $data['data']=$this->get_county_facility_mapping_ajax_request("on_load");	
 	    $this -> load -> view("county/ajax_view/facility_roll_out_at_a_glance_v",$data);
 	}
+	
+	public function get_county_consumption_level_new($year=null,$month=null,$commodity_id=null,$category_id=null,$district_id=null,$option=null){
+
+	$county_id=$this -> session -> userdata('county_id');	
+	$county_name=counties::get_county_name($county_id);
+	$category_data=array();
+	$series_data=array();
+	$year=isset($year)?$year: date("Y");
+	$month=isset($month)?$month: date("m");		
+	$option_new=(isset($option)) ?$option : "packs";
+	$district_data=(isset($district_id)&& ($district_id>0)) ? districts::get_district_name($district_id)->toArray() : null;
+	$district_name=(isset($district_data))? " :".$district_data[0]['district']." subcounty": null ;
+
+	//get the data from the db
+	 $consumption_data=facility_stock::get_county_drug_consumption_level($county_id,$category_id,$year,$month,$commodity_id,$district_id,$option);
+	
+	foreach($consumption_data as $commodity_detail):
+		
+    $category_data =array_merge($category_data, array(preg_replace("/[^A-Za-z0-9 ]/", "", $commodity_detail['drug_name'])));
+	$series_data=array_merge($series_data, array((int) $commodity_detail['total']));	
+	endforeach;
+	
+	$data['c_data']=drug::getAll_2();
+	$data['district_data']=districts::getDistrict($county_id);
+	$data['category_data']=stripslashes(json_encode($category_data));
+	$data['series_data']=stripslashes(json_encode($series_data));
+	$data['year']=$year;
+	$data['month']=date("F",strtotime(date($year."-".$month)));
+	$data['county']=$county_name[0]['county'].$district_name;
+	$data['consumption_option']=$option_new;
+	
+	$this -> load -> view("county/ajax_view/county_consumption_graphical_data_v",$data);	
+	}
+
+	public function get_county_stock_level_new($commodity_id=null,$category_id=null,$district_id=null,$option=null){
+
+	$county_id=$this -> session -> userdata('county_id');	
+	$county_name=counties::get_county_name($county_id);
+	
+	$year= date("Y");
+	$month=date("m");	
+	
+	$category_data=array();
+	$series_data=array();
+		
+	$option_new=(isset($option)) ?$option : "packs";
+	$district_data=(isset($district_id)&& ($district_id>0)) ? districts::get_district_name($district_id)->toArray() : null;
+	$district_name=(isset($district_data))? " :".$district_data[0]['district']." subcounty": null ;
+
+	//get the data from the db
+	 $stock_data=facility_stock::get_county_drug_stock_level($county_id,$category_id,$commodity_id,$district_id,$option);
+	
+	foreach($stock_data as $commodity_detail):
+		
+    $category_data =array_merge($category_data, array(preg_replace("/[^A-Za-z0-9 ]/", "", $commodity_detail['drug_name'])));
+	$series_data=array_merge($series_data, array((int) $commodity_detail['total']));	
+	endforeach;
+	
+	$data['c_data']=drug::getAll_2();
+	$data['district_data']=districts::getDistrict($county_id);
+	$data['category_data']=stripslashes(json_encode($category_data));
+	$data['series_data']=stripslashes(json_encode($series_data));
+	$data['year']=$year;
+	$data['month']=date("F",strtotime(date($year."-".$month)));
+	$data['county']=$county_name[0]['county'].$district_name;
+	$data['consumption_option']=$option_new;
+	
+	$this -> load -> view("county/ajax_view/county_stock_level_graphical_data_v",$data);
+	}
+
+   public function get_county_cost_of_expiries_new($year=null,$district_id=null,$commodity_id=null,$option=null){
+   	
+	$county_id=$this -> session -> userdata('county_id');	
+	$county_name=counties::get_county_name($county_id);
+	
+	$year=isset($year)?$year: date("Y");
+	
+	$option_new=(isset($option)) ?$option : "ksh";
+
+	$category_data=array();
+	
+	$series_data=array();
+	$series_data_total=array();
+	$total=0;
+	
+	
+	$district_data=(isset($district_id)&& ($district_id>0)) ? districts::get_district_name($district_id)->toArray() : null;
+	$district_name_=(isset($district_data))? " :".$district_data[0]['district']." subcounty": null ;
+	
+	  
+	    $district_data=districts::getDistrict($county_id,$district_id);
+		$category_data=array_merge($category_data,array('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'));
+		
+		foreach($district_data as $district_):
+        $district_total=0;
+		$temp_array=array();
+		
+		$district_id=$district_->id;
+		$district_name=$district_->district;	
+      
+	    $commodity_array=Facility_Stock::get_county_cost_of_exipries($county_id,$year,$district_id,$commodity_id,$option_new);
+	
+	
+	    foreach($commodity_array as $data):
+		
+	    $temp_array=array_merge($temp_array,array($data["cal_month"]=>$data['total']))	;
+	
+	    endforeach;
+		
+		
+		
+		foreach($category_data as $key=>$data):
+				
+		$val=(array_key_exists($data,$temp_array))?(int) $temp_array[$data] :(int) 0;
+		
+		($key==0)?$series_data= array_merge($series_data,array($district_name=>array($val))): 
+		$series_data[$district_name]=array_merge($series_data[$district_name],array($val)) ;
+		
+		$district_total=$district_total+$val;
+		$total=$total+$district_total;
+		
+		endforeach;
+
+		$series_data_total=array_merge($series_data_total,array($district_name=>(int) $district_total));
+		
+		endforeach;
+		
+		$data=array();
+		$data['c_data']=drug::getAll_2();
+	    $data['district_data']=districts::getDistrict($county_id);
+	    $data['category_data']=stripslashes(json_encode($category_data));
+	    $data['series_data_monthly']=$series_data;
+	    $data['series_data_monthly_total']=$series_data_total;
+	    $data['county']=$county_name[0]['county'].$district_name_;
+	    $data['expiry_option']=$option_new;
+		$data['year']=$year;
+		$data['total']=$total;
+	
+	$this -> load -> view("county/ajax_view/county_expiries_graphical_data_v",$data);
+   	
+   }
+   
 	
 	public function get_district_drill_down_detail($district_id,$option,$date_of_activation){
 	

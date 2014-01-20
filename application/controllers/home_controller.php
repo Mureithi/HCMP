@@ -7,9 +7,9 @@ class Home_Controller extends MY_Controller {
 		parent::__construct();
 	}
 
-	public function index() {
+	public function index($year=null) {
 
-		$this -> home();
+		$this -> home("",$year);
 	}
 
 
@@ -21,7 +21,7 @@ public function get_dash_board_stats($dash_board_indicator){
 	$base_url=base_url();
 	$indicator='';
 	switch ($dash_board_indicator) {
-		case 'county':
+	case 'county':
 	$indicator ="County";
 	$facility_data=facilities::get_no_of_facilities_hcmp($county_id);
 	$user_data=user::get_no_of_users_using_hcmp($county_id);
@@ -108,7 +108,7 @@ return $stats_data;
 	
 }
 
-	public function home($pop_up=NULL) {
+	public function home($pop_up=NULL,$year=null) {
 
 		$data['title'] = "Home";
 		$access_level = $this -> session -> userdata('user_indicator');
@@ -154,11 +154,12 @@ else if($access_level == "super_admin"){
 	$data['content_view'] = "super_admin/home_v";
 }
 else if($access_level == "county_facilitator"){
-	
+	  $year=isset($year)?$year : date("Y");
 	//$active_logs=Log::get_active_login($option,$option_id);
 	$county_id=$this -> session -> userdata('county_id');
 	$data['stats']=$this->get_dash_board_stats("county");
-	$data['content_view'] = "county/county_v_2";
+	$data['year']=$year;
+	$data['content_view'] = "county/county_v_3";
 	$data['banner_text'] = "Home";
 	$data['link'] = "home";
 	$data['coverage_data']=$this->get_county_dash_board_district_coverage();

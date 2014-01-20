@@ -1,6 +1,7 @@
 <?php
+
 $url_swf=base_url()."scripts/FusionCharts/Line.swf";
-$url_data=base_url()."report_management/get_stock_out_trends/".$county;
+$url_data=base_url()."report_management/get_stock_out_trends/".$county."/".$year;
 
 echo <<<HTMLCHART
 	<script type="text/javascript">

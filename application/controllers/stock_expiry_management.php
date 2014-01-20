@@ -381,13 +381,16 @@ public function county_expiries() {
 	}
 	
 	public function county_deliveries() {
-		$date= date('Y-m-d');
+		//$date= date('Y-m-d');
 		$county=$this -> session -> userdata('county_id');
 		$data['title'] = "Deliveries";
 		$data['content_view'] = "county/county_stock_data/county_deliveries_v";
 		$data['banner_text'] = "Deliveries";
 		$data['delivered']=Counties::get_county_received($county);
+		$data['pending']=Counties::get_pending_county($county);
+		$data['approved']=Counties::get_approved_county($county);
 		$data['order_counts']=Counties::get_county_order_details($county);
+		$data['rejected']=Counties::get_rejected_county($county);
 		$data['link'] = "county/county_deliveries_v";
 		$data['quick_link'] = "county/county_deliveries_v";
 

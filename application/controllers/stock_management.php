@@ -42,7 +42,11 @@ class Stock_Management extends auto_sms {
 		redirect('Home_Controller');
 	}
 	
-	
+	public function getTempStock(){
+		$facility_code=$this -> session -> userdata('news');
+		$result=Update_stock_first_temp::get_temp_stock($facility_code);
+		echo json_encode($result);
+	}
 	
 	
 	//the facility is meant to update their stock level when they first run the system
@@ -50,37 +54,33 @@ class Stock_Management extends auto_sms {
 	    $facility_code=$this -> session -> userdata('news');
 		
 		$data['title'] = "Update Stock Level on First Run";
-     	$data['content_view'] = "update_stock_first_run";
+     	$data['content_view'] = "facility/facility_data/update_stock_first_run";
 		$data['banner_text'] = "Update Stock Level";
-		$data['quick_link'] ="load_stock";
-		$data['link'] = "home";
 		$data['drugs'] = Drug::getAll();
-		$data['drug_name']=Drug::get_drug_name();
-		$data['first_run_temp']=Update_stock_first_temp::get_facility_temp($facility_code);
 		$data['quick_link'] = "update_stock_level";
 		$this -> load -> view("template", $data);
 	}
-	public function test2()
+	public function add_stock_first_run()
 	{
 		
 		$facility_c=$this -> session -> userdata('news');
 		
-		$kemsa_code=$_POST['kemsa_code'];
+		$kemsa_code=$_POST['drug_id'];
 		$expiry_date=$_POST['expiry_date'];
-		$batch_no=$_POST['batch_no'];
+		$batch_no=$_POST['batchNo'];
 		$manuf=$_POST['manuf'];
 		$a_stock=$_POST['qreceived'];
+		//$drug_id=$_POST['drug_id'];
 		$count=count($kemsa_code);
+		
+		
 		$orderDate=date('y-m-d H:i:s');
-		
-		
+	
 		Facility_Transaction_Table::disable_facility_transaction_table($facility_c);
 		Facility_Stock::disable_facility_stock($facility_c);
 		
-		for($i=0;$i<=$count;$i++){
-			
-			if(isset($kemsa_code[$i])&&$kemsa_code[$i]!=''){
-				
+		for($i=0;$i<=$count;$i++){			
+			if(isset($kemsa_code[$i])&&$kemsa_code[$i]!=''){				
 			$mydata=array('facility_code'=>$facility_c,
 			'kemsa_code'=>$kemsa_code[$i],
 			'batch_no'=>$batch_no[$i],
@@ -88,16 +88,13 @@ class Stock_Management extends auto_sms {
 			'expiry_date'=> date('y-m-d', strtotime($expiry_date[$i])),
 			'balance'=>$a_stock[$i],
 			'quantity'=>$a_stock[$i],
-			'stock_date'=>$orderDate);
-			
-			Facility_Stock::update_facility_stock($mydata);
-			
-			
+			'stock_date'=>$orderDate);			
+			Facility_Stock::update_facility_stock($mydata);			
 			}
 		}
 		//updating the facility transaction table
-		$data=Facility_Stock::count_facility_stock($facility_c,$orderDate);
-      
+		
+		$data=Facility_Stock::count_facility_stock($facility_c,$orderDate);    
 		foreach ($data as $infor) {
 			$mydata2=array('Facility_Code'=>$facility_c,
 			'Kemsa_Code'=>$infor->kemsa_code,
@@ -106,7 +103,7 @@ class Stock_Management extends auto_sms {
 			'Total_Receipts'=>0,
 			'Closing_Stock'=>$infor->quantity1,
 			'availability'=>1,
-			'Cycle_Date'=>$infor->stock_date);
+			'Cycle_Date'=>$orderDate);
 
 			$mydata3 = array('facility_code'=>$facility_c,
 			's11_No' => 'Physical Stock Count',
@@ -121,14 +118,10 @@ class Stock_Management extends auto_sms {
 			);
 			Facility_Issues::update_issues_table($mydata3);
 			Facility_Transaction_Table::update_facility_table($mydata2);
-		
-		
-			}
-		
+			}		
 		Update_stock_first_temp::delete_facility_temp(NULL,$facility_c);
 		
-//////////////////////////////////////////////////////////////////////////////////////////
-		
+//////////////////////////////////////////////////////////////////////////////////////////		
           $this->send_stock_update_sms();
 		  $this->session->set_flashdata('system_success_message', "Stock Levels Have Been Updated");
 		  redirect('stock_management/stock_level');	
@@ -136,17 +129,11 @@ class Stock_Management extends auto_sms {
 }
 
     public function facility_add_stock_data(){
-    	$facility_code=$this -> session -> userdata('news');
-		
-		$data['title'] = "Update Stock Level on First Run";
+    	$facility_code=$this -> session -> userdata('news');		
+		$data['title'] = "Update Stock Level";
      	$data['content_view'] = "facility/facility_data/facility_add_stock_data";
 		$data['banner_text'] = "Update Stock Level";
-		$data['quick_link'] ="load_stock";
-		$data['link'] = "home";
 		$data['drugs'] = Drug::getAll();
-		$data['drug_name']=Drug::get_drug_name();
-		$data['first_run_temp']=Update_stock_first_temp::get_facility_temp($facility_code);
-		$data['quick_link'] = "update_stock_level";
 		$this -> load -> view("template", $data);	
     }
 	public function add_stock_level()
@@ -154,16 +141,14 @@ class Stock_Management extends auto_sms {
 		
 		$facility_c=$this -> session -> userdata('news');
 		
-		$kemsa_code=$_POST['kemsa_code'];
+		$kemsa_code=$_POST['drug_id'];
 		$expiry_date=$_POST['expiry_date'];
-		$batch_no=$_POST['batch_no'];
+		$batch_no=$_POST['batchNo'];
 		$manuf=$_POST['manuf'];
 		$a_stock=$_POST['qreceived'];
 		$count=count($kemsa_code);
 		$orderDate=date('y-m-d H:i:s');
-		
-
-		
+        
 		for($i=0;$i<=$count;$i++){
 			
 			if(isset($kemsa_code[$i])&&$kemsa_code[$i]!=''){
@@ -269,27 +254,23 @@ class Stock_Management extends auto_sms {
 public function autosave_update(){
 	$facility_code=$this -> session -> userdata('news');
 	
-	    if($this->input->post('category')){
+        $unit_size=$_POST['unit_size'];	
 	    $kemsa_code=$_POST['kemsa_code'];	
-	    $category=$_POST['category'];
-		$description=$_POST['description'];
-		$unit_size=$_POST['unit_size'];	
-	    }
-	    
 		$expiry_date=$_POST['expiry_date'];
 		$batch_no=$_POST['batch_no'];
 		$manuf=$_POST['manu'];
 		$stock_level=$_POST['stock_level'];				
 		$unit_count=$_POST['unit_count'];
 		$drug_id=$_POST['drug_id'];
-        
+        $unit_issue=$_POST['unit_issue'];
+		$category="N/A";
 		
-		$does_facility_have_this_drug_in_temp_table=Update_stock_first_temp::check_if_facility_has_drug_in_temp($drug_id, $facility_code);
+		$does_facility_have_this_drug_in_temp_table=Update_stock_first_temp::check_if_facility_has_drug_in_temp($drug_id, $facility_code,$batch_no);
 	    
 		
 		if($does_facility_have_this_drug_in_temp_table>0){
 			
-		Update_stock_first_temp::update_facility_temp_data($expiry_date,$batch_no,$manuf,$stock_level,$unit_count,$drug_id,$facility_code);	
+		Update_stock_first_temp::update_facility_temp_data($expiry_date,$batch_no,$manuf,$stock_level,$unit_count,$drug_id,$facility_code,$unit_issue);	
 		 echo "UPDATE SUCCESS  BATCH NO: $batch_no ";	
 			
 		}else{
@@ -303,7 +284,8 @@ public function autosave_update(){
 			'unit_size'=>$unit_size,
 			'category'=>$category,
 			'drug_id'=>$drug_id,
-			'description'=>$description);
+			'description'=>"N/A",
+			'unit_issue'=> $unit_issue);
 			
 			 Update_stock_first_temp::update_temp($mydata);
 			
@@ -317,8 +299,8 @@ public  function delete_temp_autosave(){
 		if (isset($_POST['drugid'])) {
 			$facilitycode=$_POST['facilitycode'];
 			$drugid=$_POST['drugid'];			
-			
-			$detail = Update_stock_first_temp::delete_facility_temp($drugid, $facilitycode);
+			$batchNo=$_POST['batchNo'];	
+			$detail = Update_stock_first_temp::delete_facility_temp($drugid, $facilitycode,$batchNo);
 			
 			
 	}
@@ -326,9 +308,6 @@ else{
 	echo $_POST['drugid'];
 }
 }
-
-
-
 
 	// moh offical is able to see the stock level balance
 		function stock_level_moh(){
@@ -424,7 +403,7 @@ public function stock_level($msg=Null){
 	    $facility_c=$this -> session -> userdata('news');
 		$checker=$this->uri->segment(3);
 		$data['title'] = "Stock";
-		$data['content_view'] = "facility/stock_level_v";
+		$data['content_view'] = "facility/facility_data/stock_level_v";
 		$data['banner_text'] = "Physical Stock";
 		$data['link'] = "order_management";
 		if(isset($msg)){
@@ -446,7 +425,9 @@ public function stock_level($msg=Null){
 		 }
 		$data['facility_order'] = Facility_Transaction_Table::get_all($facility_c);
 		$data['max_date'] = Facility_Stock::get_max_date($facility_c)->toArray();
-		$data['quick_link'] = "stock_level";
+		$data['name_of_person'] = Facility_Issues::get_last_person_who_issues($facility_c);
+	
+		//$data['quick_link'] = "stock_level";
 		$this -> load -> view("template", $data);
 
 	}

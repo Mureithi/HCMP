@@ -12,15 +12,21 @@ class Districts extends Doctrine_Record {
 	}
 
 	public static function getAll() {
+
 		$query = Doctrine_Query::create() -> select("*") -> from("districts");
-		$drugs = $query -> execute();
-		return $drugs;
-	}
-	public static function getDistrict($county){
-		$query = Doctrine_Query::create() -> select("*") -> from("districts")->where("county='$county'");
 		$drugs = $query -> execute();
 		
 		return $drugs;
+	}
+	
+	public static function getDistrict($county,$district_id=null){
+		
+		$addition=(isset($district_id) && ($district_id>0))? "id=$district_id" : "county='$county'";
+		$query = Doctrine_Query::create() -> select("*") -> from("districts")->where("$addition");
+		$drugs = $query -> execute();
+		
+		return $drugs;
+		exit;
 	}
 	public static function get_county_id($district){
 		$query = Doctrine_Query::create() -> select("county") -> from("districts")->where("id='$district'");

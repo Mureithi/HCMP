@@ -396,6 +396,8 @@ public function kemsa_approve_order(){
 			$list.=$describe->balance;
 			$list.="*";
 			$list.=$describe->status;
+			$list.="*";
+			$list.=$describe->id;
 			$list.="_";
 		}
 		
@@ -569,17 +571,17 @@ else{
 		c.quantityOrdered, c.price, c.orderNumber, c.quantityRecieved,
 		c.o_balance, c.t_receipts, c.t_issues, c.adjust, c.losses, c.days, c.comment, c.c_stock,c.s_quantity
 FROM drug_category a, drug b, orderdetails c
-WHERE c.orderNumber =$order_no
+WHERE c.orderNumber =$newOrderid
 AND b.id = c.kemsa_code
 AND a.id = b.drug_category
 ORDER BY a.id ASC , b.drug_name ASC ");
 		
 		$jay=count($in);
 		
-		$from_ordertbl=Ordertbl::get_order($order_no);
+		$from_ordertbl=Ordertbl::get_order($newOrderid);
 		
 		//create the report title
-		$html_title="<div ALIGN=CENTER><img src='".base_url()."Images/coat_of_arms.png' height='70' width='70'style='vertical-align: top;' > </img></div>
+		$html_title="<div ALIGN=CENTER><img src='Images/coat_of_arms.png' height='70' width='70'style='vertical-align: top;' > </img></div>
       <div style='text-align:center; font-size: 14px;display: block;font-weight: bold;'>Order Report</div>
        <div style='text-align:center; font-family: arial,helvetica,clean,sans-serif;display: block; font-weight: bold; font-size: 14px;'>
        Ministry of Health</div>
@@ -729,10 +731,6 @@ else if( $in[$i]['category_name']!=$in[$i-1]['category_name']){
 		   </tr>
 		   </table>';
 		   
-		   
-		   
-		   
-		   
 		
 		//now ganerate an order pdf from the generated report
             $this->mpdf = new mPDF('', 'A4-L', 0, '', 15, 15, 16, 16, 9, 9, '');
@@ -789,7 +787,7 @@ else{
 	
 	}
 
-public function update_order(){
+public function update_order($order_id_county=null){
 
 		
 		$new_value=@$_POST['quantity'];
@@ -800,10 +798,12 @@ public function update_order(){
 		$s_quantity=@$_POST['actual_quantity'];
 		$order_total=0;
 		$rejected_order=@$_POST['rejected_order'];
+		$make_pdf=@$rejected_order;
+				
+		$make_pdf=isset($rejected_order)? true: (isset($order_id_county) && ($order_id_county>0)) ? true : false ;
 		
 		
-		
-		($value==0)?redirect("order_management") : $blank_data;
+		(!$make_pdf)?redirect("home_controller") : $blank_data;
 		
 
 		for($i=0;$i<$value;$i++){
@@ -816,10 +816,12 @@ public function update_order(){
 			//echo $new_value[$i];
 		}
 	
-		if($rejected_order=='true'){
-			$from_ordertbl=Ordertbl::get_order($code);
+		if($rejected_order=='true' || $make_pdf){
 			
-
+		$code=isset($code)? $code: $order_id_county;
+			
+		$from_ordertbl=Ordertbl::get_order($code);
+			
 		$total=0;
 		
 		//update the order based on how the district pham has rationalized it
@@ -930,14 +932,14 @@ else if( $in[$i]['category_name']!=$in[$i-1]['category_name']){
 		 $losses=$in[$i]['losses'];
 		 $total=$o_t*$in[$i]['total_units'];
 		 
-		/* if($o_bal==0 && $t_re==0 && $t_issues>0){
+		if($o_bal==0 && $t_re==0 && $t_issues>0){
 		 	$adj=$t_issues;
 		 }
 		 $c_stock=$o_bal+$t_re+$adj-$losses-$t_issues;
 		 
 		 if($c_stock<0){
 		 	$adj=$c_stock*-1;
-		 }*/
+		 }
 		  $c_stock=$o_bal+$t_re+$adj-$losses-$t_issues;
 		 $html_body .="<tr>";
 		 $html_body .="<td>".$in[$i]['kemsa_code']."</td>"; 	
@@ -967,13 +969,16 @@ else if( $in[$i]['category_name']!=$in[$i-1]['category_name']){
 			$approve_name2=$myobj_approve->lname;
 			$approve_telephone=$myobj_approve->telephone;
 
-          $bal=$d_rights-$order_total;
-		  $html_body .='</tbody></table></ol>'; 
-		  $html_body1 ='<table class="data-table" width="100%" style="background-color: 	#FFF380;">
-		  <tr style="background-color: 	#FFFFFF;" > <td colspan="4" ><div style="float: left" > Total Order Value:</div><div style="float: right" >KSH '.number_format($order_total, 2, '.', ',').'</div> </td></tr>
-		   <tr style="background-color: 	#FFFFFF;"  > <td colspan="4" ><div style="float: left" > Drawing Rights Available Balance:</div><div style="float: right" >KSH		'.number_format($bal, 2, '.', ',').'</div> </td></tr>
-		   <tr><td>FACILITY TEL NO:</td><td colspan="3">FACILITY EMAIL:</td>
-		   </tr>
+           $bal=$d_rights-$order_total;
+		   $html_body .='</tbody></table></ol>'; 
+		   $html_body1 ='<table class="data-table" width="100%" style="background-color:#FFF380;">
+		  <tr style="background-color: 	#FFFFFF;" > <td colspan="4" >
+		  <div style="float: left" > Total Order Value:</div>
+		  <div style="float: right" >KSH '.number_format($order_total, 2, '.', ',').'</div></td></tr>
+		   <tr style="background-color: 	#FFFFFF;"  > 
+		   <td colspan="4" ><div style="float: left" > Drawing Rights Available Balance:</div>
+		   <div style="float: right" >KSH		'.number_format($bal, 2, '.', ',').'</div> </td></tr>
+		   <tr><td>FACILITY TEL NO:</td><td colspan="3">FACILITY EMAIL:</td></tr>
 		   <tr><td >Prepared by (Name/Designation) '.$creator_name1.' '.$creator_name2.'
 		   <br/>
 		   <br/>Email: '.$creator_name.'</td><td>Tel: '.$creator_telephone.'</td><td>Date: '.date('d M, Y',strtotime ($o_date)).'</td><td>Signature</td>
@@ -984,15 +989,10 @@ else if( $in[$i]['category_name']!=$in[$i-1]['category_name']){
 		   </tr>
 		   <tr><td>Authorised by (Name/DMoH) '.$approve_name1.' '.$approve_name2.'
 		   <br/>
-		   <br/>Email: '.$approve_name.'</td><td>Tel: '.$approve_telephone.'</td><td>Date: '.date('d M, Y',strtotime ($a_date)).'</td><td>Signature</td>
-		   
-		   </tr>
+		   <br/>Email: '.$approve_name.'</td><td>Tel: '.$approve_telephone.'</td><td>Date: '.date('d M, Y',strtotime ($a_date)).'</td><td>Signature</td></tr>
 		   </table>';
 		   
-		 $myobj = Doctrine::getTable('Ordertbl')->find($code);
-        $myobj->orderTotal =$order_total;
-		$myobj->orderStatus ="pending";
-        $myobj->save();
+		 
 		
 
 		
@@ -1007,6 +1007,18 @@ else if( $in[$i]['category_name']!=$in[$i-1]['category_name']){
 			
 			$report_name='updated_facility_order_no_'.$code.'_'.date('d-m-y');
 		
+		   if(isset($order_id_county)){
+		   	$this->mpdf->Output('facility_order_no_'.$code.'_date_'.date('d-m-y',strtotime ($o_date)).'.pdf','D');
+			exit;
+			
+		   }
+		   else{
+		  $myobj = Doctrine::getTable('Ordertbl')->find($code);
+          $myobj->orderTotal =$order_total;
+		  $myobj->orderStatus ="pending";
+          $myobj->save();
+		   }
+		   
            		  
 			if(!write_file( './pdf/'.$report_name.'.pdf',$this->mpdf->Output('$report_name','S')))
 			{
@@ -1024,7 +1036,6 @@ else if( $in[$i]['category_name']!=$in[$i-1]['category_name']){
     
   $message=$html_title.$html_body;
   
-  ;	
 	$message_1='<br>Please find the order for  '.$fac_name.' which has been updated for approval 
 		<br>
 		<br>';

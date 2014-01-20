@@ -26,8 +26,6 @@ set facility_id='".$in[$i]['facility_code']."', drug_id='".$in[$i]['kemsa_code']
 }
 	
 public function send_stock_update_sms(){
-	
-
        $facility_name = $this -> session -> userdata('full_name');
 	   $facility_code=$this -> session -> userdata('news');
 	   $data=User::getUsers($facility_code)->toArray();
@@ -159,11 +157,11 @@ public function send_sms($phones,$message) {
  	
  	$phone_numbers=explode("+", $spam_sms);
 	
-	foreach($phone_numbers as $key=>$user_no):
-
-	file("http://41.57.109.242:13000/cgi-bin/sendsms?username=clinton&password=ch41sms&to=$user_no&text=$message");
+	//foreach($phone_numbers as $key=>$user_no):
+  //  break;
+	//file("http://41.57.109.242:13000/cgi-bin/sendsms?username=clinton&password=ch41sms&to=$user_no&text=$message");
 		
-	endforeach;
+	//endforeach;
  		
 	}
 public function send_order_submission_email($message,$subject,$attach_file){

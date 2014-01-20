@@ -19,18 +19,18 @@ include_once('auto_sms.php');
 	}
 	
 	public function district_orders($msg=NULL){
-		$data['title'] = "District Orders";
+		$district_id=$this -> session -> userdata('district');
+		$district_id=$this -> session -> userdata('district1');
+		
+		$data['title'] = "Orders";
 		$data['content_view'] = "district/district_orders_v";
-		$data['banner_text'] = "District Orders";
-		$id=$this -> session -> userdata('district');
-		$data['order_list']=Ordertbl::get_district_orders($id);
-		
-		$myobj = Doctrine::getTable('districts')->find($id);
-		
-		
-		//$data['district_incharge']=array($id=>$myobj->district);
-		$data['myClass'] = $this;
-		$data['msg']=$msg;
+		$data['banner_text'] = "Orders";
+		$data['order_counts']=Counties::get_county_order_details("",$district_id);
+		$data['delivered']=Counties::get_county_received("",$district_id);
+		$data['pending']=Counties::get_pending_county("",$district_id);
+		$data['approved']=Counties::get_approved_county("",$district_id);
+		$data['rejected']=Counties::get_rejected_county("",$district_id);
+
 		$data['link'] = "order_appoval";
 		$data['quick_link'] = "new_order";
 		$this -> load -> view("template", $data);
@@ -197,14 +197,14 @@ else if( $in[$i]['category_name']!=$in[$i-1]['category_name']){
 		 $losses=$in[$i]['losses'];
 		 $total=$o_t*$in[$i]['total_units'];
 		 
-		/* if($o_bal==0 && $t_re==0 && $t_issues>0){
+		 if($o_bal==0 && $t_re==0 && $t_issues>0){
 		 	$adj=$t_issues;
 		 }
 		 $c_stock=$o_bal+$t_re+$adj-$losses-$t_issues;
 		 
 		 if($c_stock<0){
 		 	$adj=$c_stock*-1;
-		 }*/
+		 }
 		  $c_stock=$o_bal+$t_re+$adj-$losses-$t_issues;
 		 $html_body .="<tr>";
 		 $html_body .="<td>".$in[$i]['kemsa_code']."</td>"; 	
