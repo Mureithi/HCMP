@@ -395,7 +395,20 @@ if (@@$current == "home_controller") {echo "active";
 </ul>
 </nav>
 </div>
-
+<div  id="system_alerts">
+      				<?php $flash_success_data = NULL;
+					      $flash_error_data = NULL;
+	                      $flash_success_data = $this -> session -> flashdata('system_success_message');
+						  $flash_error_data = $this -> session -> flashdata('system_error_message');
+							if ($flash_success_data != NULL) {
+							echo '<div class="alert alert-success alert-dismissable" >
+							<button type="button" class=" close" data-dismiss="alert" aria-hidden="true">×</button>' . $flash_success_data . '</div>';
+						   } elseif ($flash_error_data != NULL) {
+							echo '<div class="alert alert-danger alert-dismissable" >
+							<button type="button" class=" close" data-dismiss="alert" aria-hidden="true">×</button>' . $flash_error_data . '</div>';
+							}
+ 						?>
+    				</div>
 <div class="btn-group " id="btnlogout">
   <a  class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-user icon-white"></i> <?php echo $this -> session -> userdata('names'); ?> <?php echo $this -> session -> userdata('inames'); ?><span style="margin-left: 0.3em;" class="caret"></span></a>
   
@@ -419,22 +432,7 @@ if (@@$current == "home_controller") {echo "active";
     			<div   id="banner_text">
       				<?php echo $this -> session -> userdata('full_name') . ": " . $banner_text; ?>
             			    				</div>
-    				
-    				<div  id="system_alerts">
-      				<?php $flash_success_data = NULL;
-					      $flash_error_data = NULL;
-	                      $flash_success_data = $this -> session -> flashdata('system_success_message');
-						  $flash_error_data = $this -> session -> flashdata('system_error_message');
-							if ($flash_success_data != NULL) {
-							echo '<div class="alert alert-success alert-dismissable" >
-							<button type="button" class=" close" data-dismiss="alert" aria-hidden="true">×</button>' . $flash_success_data . '</div>';
-						   } elseif ($flash_error_data != NULL) {
-							echo '<div class="alert alert-danger alert-dismissable" >
-							<button type="button" class=" close" data-dismiss="alert" aria-hidden="true">×</button>' . $flash_error_data . '</div>';
-							}
- 						?>
-    				</div>
-    				
+    						
   				
   				</div>
 
@@ -464,7 +462,7 @@ if (@@$current == "home_controller") {echo "active";
     <div id="errsummary" style=""></div>
   </div>
   
-  <form class="form-horizontal" action="<?php echo base_url().'User_Management/save_new_password'?>" method="post" id="change">
+  <form style="font-size: 0.5em;" class="form-horizontal" action="<?php echo base_url().'User_Management/save_new_password'?>" method="post" id="change">
   <div class="control-group" style="margin-top: 1em;">
     <label class="control-label" for="inputPassword">Old Password</label>
     <div class="controls">

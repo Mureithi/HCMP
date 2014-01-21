@@ -187,7 +187,6 @@ html, body {
 .divide {
 	width: 100%;
 	margin: 7em 0 0 auto;
-	height: 3em;
 	padding: 1px;margin-bottom;0.3%;
 }
 #banner_text, #system_alerts {
@@ -195,14 +194,16 @@ html, body {
 	vertical-align: top;
 }
 #banner_text {
-	width: 20%;
+	width: auto;
 	margin-left: 1%;
 	text-shadow: 0 -1px 0 #000;
+	margin-bottom:0.5%;
 }
 #system_alerts {
 	width: 32%;
 	height: 2.5em;
-	margin-left: 18%;
+	margin-left: 21%;
+	margin-top:1.2em;
 }
 #inner_wrapper {
 	width: 99%;
