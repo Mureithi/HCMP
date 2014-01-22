@@ -1,3 +1,4 @@
+ <?php $att=array("name"=>'myform','id'=>'myform'); echo form_open('Issues_main/Insert',$att); ?>
 <table   class="table table-hover table-bordered table-update" id="example" width="100%" >
 					<thead>
 					<tr>
@@ -17,7 +18,7 @@
 						<tr row_id='0'>
 						<td>
 						<select  name="Servicepoint[0]" class="service_point">
-						<option>-Select-</option>
+						<option value="0" selected="selected">-Select-</option>
 						<option value="CCC">CCC</option>
 						<option value="Pharmacy">Pharmacy</option>
 						<option value="Lab">Lab</option>
@@ -27,11 +28,12 @@
 						<option value="TB Clinic">TB Clinic</option>
 						<option value="MCH">MCH</option>
 						<option value="Diabetic Clinic">Diabetic Clinic</option>
+						
 					</select>
 						</td>
 						<td>
-	<select class="desc" name="desc">
-    <option title="0">-Select Commodity -</option>
+	<select class="desc" name="desc[0]">
+    <option title="0" value="0" selected="selected">-Select Commodity -</option>
 		<?php 
 		foreach ($drugs as $drugs) :			
 			foreach ($drugs->Code as $d):
@@ -46,36 +48,72 @@
 						</td>
 						<td>
 						<input type="hidden" id="0" name="commodity_id[0]" value="" class="commodity_id"/>
-						<input type="hidden" name="commodity_balance" value="" class="commodity_balance"/>	
+						<input type="hidden" name="commodity_balance" value="" class="commodity_balance"/>
+						<input type="hidden" name="drug_id[0]" value="" class="drug_id"/>	
 						<input type="text" class="input-small kemsa_code" readonly="readonly" name="kemsa_code[]"/></td>
 			            <td><input  type="text" class="input-small unit_size" readonly="readonly"  /></td>
-						<td><select class=" input-small batchNo" name="batchNo[]"></select></td>
-						<td><input class='input-small exp_date'  name='expiry_date[]' readonly="readonly" type='text' /></td>
-						<td><input class='input-small AvStck' type="text" name="AvStck[]" readonly="readonly" value=""/></td>
-						<td><input class='input-small Qtyissued' type="text" name="Qtyissued[0]" value="" /></td>
+						<td><select class=" input-small batchNo" name="batchNo[0]"></select></td>
+						<td><input class='input-small exp_date'  name='expiry_date[0]' readonly="readonly" type='text' /></td>
+						<td><input class='input-small AvStck' type="text" name="AvStck[0]" readonly="readonly" /></td>
+						<td><input class='input-small Qtyissued' type="text" value="0"  name="Qtyissued[0]" /></td>
 						<td><input class='input-small my_date' type="text" name="date_issue[0]"  value="" /></td>
 						<td><a class="add label label-success">Add Row</a><a class="remove label label-important" style="display:none;">Remove Row</span></td>
 			</tr>
-		            </tbody>					
-</table>
+		           </tbody></table>
+ </form>
+ <button class="btn btn-primary" id="finishIssue" >Finish</button>
 <script>
 /***************clone the row here*********************/
 		$(".add").click(function() {
-			
-			var last_row = $('#example tr:last');
-            var cloned_object = last_row.clone(true);
-           
+
              //find the last row
+            var last_row = $('#example tr:last');
+            var cloned_object = last_row.clone(true);
+            cloned_object.attr("row_id", next_table_row);
+            
             var table_row = cloned_object.attr("row_id");
-			var next_table_row = parseInt(table_row) + 1;
+			
+			var service_point=$(this).closest("tr").find(".service_point").val();
+			var commodity_id=$(this).closest("tr").find(".desc").val();
+			var issue_date=$(this).closest("tr").find(".my_date").val();
+			var issue_quantity=$(this).closest("tr").find(".Qtyissued").val();
+			var alert_message='';
+			
+			if(service_point==0){
+				alert_message +="-Select a service point\n";
+			}
+			if(commodity_id==0){
+				alert_message +="-Select a commodity to issue\n";
+			}
+			if(issue_quantity==''){
+				alert_message +="-Indicate how much you want to\n";
+			}
+			if(issue_date==''){
+				alert_message +="-Indicate the date of the issue\n";
+			}
+			if(isNaN(alert_message)){
+				alert(alert_message+' before adding a new rown\n');
+				return;
+			}
+			
+			//set the quantities to readonly
+			$("input[name='Qtyissued["+table_row+"]']").attr('readonly','readonly');
+			
 			//reset the values of current element 
-			cloned_object.attr("row_id", next_table_row);
+			var next_table_row = parseInt(table_row) + 1;
 			cloned_object.find(".service_point").attr('name','Servicepoint['+next_table_row+']'); 
 			cloned_object.find(".commodity_id").attr('name','commodity_id['+next_table_row+']'); 
 			cloned_object.find(".commodity_id").attr('id',next_table_row); 
 			cloned_object.find(".Qtyissued").attr('name','Qtyissued['+next_table_row+']'); 	
-			cloned_object.find(".my_date").attr('name','date_issue['+next_table_row+']'); 				
-            cloned_object.find("input").attr('value',"");            
+			cloned_object.find(".my_date").attr('name','date_issue['+next_table_row+']'); 
+			cloned_object.find(".AvStck").attr('name','AvStck['+next_table_row+']'); 
+			cloned_object.find(".drug_id").attr('name','drug_id['+next_table_row+']'); 
+			cloned_object.find(".batchNo").attr('name','batchNo['+next_table_row+']');
+			cloned_object.find(".exp_date").attr('name','exp_date['+next_table_row+']');
+			cloned_object.find(".desc").attr('name','desc['+next_table_row+']');
+			 					
+            cloned_object.find("input").attr('value',"");     
+            cloned_object.find(".Qtyissued").attr('value',"0");            
             cloned_object.find(".batchNo").html("");            
 			cloned_object.find(".remove").show();
 			cloned_object.insertAfter('#example tr:last');
@@ -86,27 +124,44 @@
 		
 		/// remove the row
 		$('.remove').live('click',function(){
-			var row_id=$(this).closest("tr").find(".row_id").val();
+			var row_id=$(this).index();
+		
+			var bal=parseInt($("input[name='Qtyissued["+row_id+"]']").val());
 			
-	     $(this).parent().parent().remove();
+            var commodity_stock_id=parseInt($("input[name='commodity_id["+row_id+"]']").val());
+            var total=0;
+			
+			$("input[name^=commodity_id]").each(function(index, value) {
+				var new_id=$(this).attr('id');
+                   
+                  if(new_id>row_id && $(this).val()==commodity_stock_id){
+                   var value=parseInt($("input[name='AvStck["+new_id+"]']").val())+bal;  ///AvStck
+                   $("input[name='AvStck["+new_id+"]']").val(value);
+                  }
+                 
+		        });
+			
+	       $(this).parent().parent().remove();
     
       });
       
-      ///when changing the commodity
+      ///when changing the commodity combobox
       		$(".desc").live('change',function(){
+      			
       		var locator=$('option:selected', this);
 			var data =$('option:selected', this).attr('title'); 
 	       	var data_array=data.split("^");
 	       	
 	        locator.closest("tr").find(".unit_size").val(data_array[1]);
 	     	locator.closest("tr").find(".kemsa_code").val(data_array[2]);
-	     	
+	     	locator.closest("tr").find(".drug_id").val(data_array[0]);
 	     	locator.closest("tr").find(".AvStck").val("");
 	     	locator.closest("tr").find(".exp_date").val("");
-	     	locator.closest("tr").find(".Qtyissued").val("");
+	     	locator.closest("tr").find(".Qtyissued").val("0");
 	     	locator.closest("tr").find(".my_date").val("");	     	
 
 			json_obj={"url":"<?php echo site_url("order_management/getBatch");?>",}
+			
 			var baseUrl=json_obj.url;
 			var id=data_array[0];
             var dropdown="<option title=''>--select Batch--</option>";
@@ -114,6 +169,7 @@
             var bal='';
             var commodity_stock_row_id='';
             var total=0;
+            
 			$.ajax({
 			  type: "POST",
 			  url: baseUrl,
@@ -165,8 +221,9 @@
 
 		});
 		
-		/////batch no
+		/////batch no change event
 		$('.batchNo').live('change',function(){
+			var row_id=$(this).index();
 		    var locator=$('option:selected', this);
 			var data =$('option:selected', this).attr('title'); 
 	       	var data_array=data.split("^");	
@@ -175,33 +232,121 @@
 	       	var total=0;
 	       	var commodity_stock_row_id;
 	       	var remaining_items=0;
+	       	var bal=parseInt($("input[name='Qtyissued["+row_id+"]']").val());			
+            var commodity_stock_id_old=parseInt($("input[name='commodity_id["+row_id+"]']").val());
 	       	
 	       	if(data_array[0]!=''){
 	       	new_date=$.datepicker.formatDate('d M yy', new Date(data_array[0]));	
 	       	val=data_array[1];
 	       	commodity_stock_row_id=data_array[2];
+    
+            var total=0;
 	       	
 	       	$("input[name^=commodity_id]").each(function(index, value) {
-                  
-                  if($(this).val()==commodity_stock_row_id){
+	       		
                   var element_id=$(this).attr('id');
+                  if($(this).val()==commodity_stock_row_id){   
+                  	                              
                    total=parseInt($("input[name='Qtyissued["+element_id+"]']").val())+total;
                   }
-                 
+  
 		        });
        	
 	        remaining_items=val-total;
 	        locator.closest("tr").find(".exp_date").val(new_date);
-			locator.closest("tr").find(".AvStck").val(remaining_items);	
+			locator.closest("tr").find(".AvStck").val(remaining_items);
+			$("input[name='Qtyissued["+row_id+"]']").removeAttr('readonly');	
+			locator.closest("tr").find(".Qtyissued").val("0");	
+
 	       	}
 	       	else{
-	       	locator.closest("tr").find(".exp_date").val();
-			locator.closest("tr").find(".AvStck").val();		
+	       		
+	       	locator.closest("tr").find(".exp_date").val("");
+			locator.closest("tr").find(".AvStck").val("");
+			$("input[name='Qtyissued["+row_id+"]']").removeAttr('readonly');	
+			locator.closest("tr").find(".Qtyissued").val("0");
+				
 	       	}
-	                
-	        
-    
+	       	
+	       	$("input[name^=commodity_id]").each(function(index, value) {
+	       		  var element_id=$(this).attr('id');
+                  if(element_id>row_id && $(this).val()==commodity_stock_id_old){                 	
+                   var value=parseInt($("input[name='AvStck["+element_id+"]']").val())+bal;  ///AvStck
+                   $("input[name='AvStck["+element_id+"]']").val(value);
+                  }
+                 
+		        });
+		
       });
+        //entering the values to issue check if you have enough balance
+        $(".Qtyissued").live('keyup',function (){
+
+        	var bal=parseInt($(this).closest("tr").find(".AvStck").val());
+        	var issues=$(this).val();
+        	var remainder=bal-issues;
+        	
+        		if (remainder<0) {
+						$(this).val("0");
+						$(this).focus();
+						alert("Can not issue beyond available stock");
+					}
+					else{
+						
+					}
+					if (issues <0) {
+					    $(this).val("0");
+					    $(this).focus();
+					    alert("Issued value must be above 0");
+					}
+					if(issues.indexOf('.') > -1) {
+						$(this).val("0");
+						$(this).focus();
+						alert("Decimals are not allowed.");
+							}
+					if (isNaN(issues)){
+						$(this).val("0");
+						$(this).focus();
+						alert('Enter only numbers');
+				}
+        	
+        });
+      /////// save button
+     var $myDialog = $('<div></div>')
+    .html('Please confirm the values before saving')
+    .dialog({
+        autoOpen: false,
+        title: 'Confirmation',
+        buttons: { "Cancel": function() {
+                      $(this).dialog("close");
+                      return false;
+                },
+                "OK": function() { 
+                	var checker=0;
+                	$("input[name^=commodity_id]").each(function() {
+                		checker=checker+1;
+                		
+                	});
+
+                	if(checker<1){
+                		alert("Cannot submit an empty form");
+                		$(this).dialog("close"); 
+                	}
+                	else{
+                		
+                	$(this).dialog("close"); 
+                     $( "#myform" ).submit();
+                      return true;	
+                	}
+                	
+                      
+                 }
+        }
+});
+      $( "#finishIssue" )
+			.button()
+			.click(function() {
+				return $myDialog.dialog('open');			
+			});
 		
 		//	-- Datepicker		
 		json_obj = {
@@ -219,8 +364,7 @@
 			maxDate: new Date()
 		});
 
-	function refreshDatePickers() {
-		
+	function refreshDatePickers() {		
 		var counter = 0;
 		$('.my_date').each(function() {
 		var this_id = $(this).attr("id"); // current inputs id
