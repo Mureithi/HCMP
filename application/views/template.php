@@ -83,51 +83,7 @@ if ($access_level == "dpp") {
 <script src="<?php echo base_url();?>Scripts/FusionCharts/FusionCharts.js" type="text/javascript"></SCRIPT>
 	
  
-<style>
-	input.text {
-		margin-bottom: 12px;
-		width: 95%;
-		padding: .4em;
-	}
-	fieldset {
-		padding: 0;
-		border: 0;
-		
-	}
-	h1 {
-		font-size: 1.2em;
-		margin: .6em 0;
-	}
-	div#users-contain {
-		width: 350px;
-		margin: 20px 0;
-	}
-	div#users-contain table {
-		margin: 1em 0;
-		border-collapse: collapse;
-		width: 100%;
-	}
-	div#users-contain table td, div#users-contain table th {
-		border: 1px solid #eee;
-		padding: .6em 10px;
-		text-align: left;
-	}
-	.ui-dialog .ui-state-error {
-		padding: .3em;
-	}
-	.validateTips {
-		border: 1px solid transparent;
-		padding: 0.3em;
-	}
 
-	#top_menu a {
-		color: white;
-		text-decoration: none;
-	}
-	.successtext{
-		color:#003300;
-	}
-    </style>
 <script type="text/javascript">
 
 /*
@@ -197,18 +153,15 @@ return i;
 </head>
  
 <body onload="set_interval()" onmouseover="reset_interval()" onclick="reset_interval()">
+<div id="header_container" class="" id="top-panel" style="margin-bottom: 0px" >
 
-<div id="wrapper">
-	<div id="top-panel" style="margin:0px;">
+	<div class="banner_logo">
+			<a class="logo" href="<?php echo base_url();?>" ></a> 
+		</div>
 
-		<div class="logo_template">
-			<a class="logo_template" href="<?php echo base_url(); ?>" ></a> 
-</div>
-
-				<div id="system_title">
+				<div id="logo_text">
 					<span style="display: block; font-weight: bold; font-size: 14px; margin:2px;">Ministry of Health</span>
-					<span style="display: block; font-size: 12px;">Health Commodities Management Platform</span>
-					
+					<span style="display: block; font-size: 12px;">Health Commodities Management Platform(HCMP)</span>	
 				</div>
 			<?php if($banner_text=="New Order"):?>
 				<div id="notification" style="display: block; margin-left: 40%;">
@@ -223,7 +176,7 @@ return i;
 	
 	<?php endif; ?>
 	<?php $facility = $this -> session -> userdata('news'); ?>
- <div id="top_menu"> 
+ <div id="main_menu"> 
 
 <nav id="navigate">
 <ul>
@@ -442,79 +395,63 @@ if (@@$current == "home_controller") {echo "active";
 </ul>
 </nav>
 </div>
-  	
-	<div style="font-size:15px; float:right; padding: 0.5em "><?php  echo date('l, dS F Y'); ?>&nbsp;<div id="clock" style="font-size:15px; float:right; " ></div>
-	 </div>
-	 <div >
-<?php $flash_success_data = NULL;
-	$flash_error_data = NULL;
-	$flash_success_data = $this -> session -> flashdata('system_success_message');
-	$flash_error_data = $this -> session -> flashdata('system_error_message');
-	if ($flash_success_data != NULL) {
-		echo '<p class="successreset" style="margin: auto;">' . $flash_success_data . '</p>';
-	} elseif ($flash_error_data != NULL) {
-		echo '<p class="errorlogin" style="margin: auto;">' . $flash_error_data . '</p>';
-	}
- ?>
-</div>
-<div class="banner_content" style="font-size:20px; float:right; margin-top: 0.3em;padding-bottom: 0.35em;"><div style="float: left;"><?php echo $this -> session -> userdata('full_name') . ": " . $banner_text; ?></div>
-
-		<div style="float:right">
-		
-		
-<div class="btn-group">
-  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" >
-  <i class="icon icon-user icon-white">
-  	
-  </i> 
-  <?php echo $this -> session -> userdata('names'); ?> <?php echo $this -> session -> userdata('inames'); ?>
-  <span style="margin-left: 0.3em;" class="caret">
-  	
-  </span>
-
-    </button>
+<div  id="system_alerts">
+      				<?php $flash_success_data = NULL;
+					      $flash_error_data = NULL;
+	                      $flash_success_data = $this -> session -> flashdata('system_success_message');
+						  $flash_error_data = $this -> session -> flashdata('system_error_message');
+							if ($flash_success_data != NULL) {
+							echo '<div class="alert alert-success alert-dismissable" >
+							<button type="button" class=" close" data-dismiss="alert" aria-hidden="true">×</button>' . $flash_success_data . '</div>';
+						   } elseif ($flash_error_data != NULL) {
+							echo '<div class="alert alert-danger alert-dismissable" >
+							<button type="button" class=" close" data-dismiss="alert" aria-hidden="true">×</button>' . $flash_error_data . '</div>';
+							}
+ 						?>
+    				</div>
+<div class="btn-group " id="btnlogout">
+  <a  class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-user icon-white"></i> <?php echo $this -> session -> userdata('names'); ?> <?php echo $this -> session -> userdata('inames'); ?><span style="margin-left: 0.3em;" class="caret"></span></a>
   
-  <ul class="dropdown-menu" style="font:#FFF">
-    <li>
-    	<a href="#"><i class="icon icon-pencil"></i> Edit Settings</a>
-    	</li>
-    <li>
-    	<a href="#myModal" data-toggle="modal" data-target="#myModal" id="changepswd" >
-    	<i class="icon icon-edit"></i> Change password</a></li>
+  <ul class="dropdown-menu" style="font:#FFF;">
+    <li><a href="#"><i class="icon-pencil"></i> Edit Settings</a></li>
+    <li><a href="#myModal" data-toggle="modal" data-target="#myModal" id="changepswd" ><i class="icon-edit"></i> Change password</a></li>
     
     
-    <li class="divider">
-    	
-    </li>
-    <li>
-    	<a href="<?php echo base_url(); ?>user_management/logout"><i class="icon icon-off"></i> Log Out</a>
-    </li>
+    <li class="divider"></li>
+    <li><a href="<?php echo base_url(); ?>user_management/logout"><i class=" icon-off"></i> Log Out</a></li>
   </ul>
+  
 </div>
-	<a class="link" href="<?php echo base_url(); ?>user_management/logout"><i class="icon icon-off"></i> Log Out</a> 
-	
-		</div>
-	
-	</div>
-	
-	
+<div style="font-size:0.75em; float:right; padding: 0.5em "><?php  echo date('l, dS F Y'); ?>&nbsp;<div id="clock" style="font-size:0.75em; float:right; " ></div>
+	 </div>
+  	
 </div>
+	 <div>
+	<div class="divide" >
+	
+    			<div   id="banner_text">
+      				<?php echo $this -> session -> userdata('full_name') . ": " . $banner_text; ?>
+            			    				</div>
+    						
+  				
+  				</div>
 
-<!-- MOH USR-->
 
-<div id="inner_wrapper" style="padding-top: 2.3em"> 
+
+
+ <div id="inner_wrapper"> 
  		
-<?php $this -> load -> view($content_view); ?>
+	<?php $this -> load -> view($content_view); ?>
 <!-- end inner wrapper -->
 
   <!--End Wrapper div-->
     
     
-    </div>
-    <div class="footer">
-	Government of Kenya &copy; <?php echo date('Y'); ?>. All Rights Reserved
-	
-	</div>
+ </div>
+ </div>
+
+ </div>
+    <div id="bottom_ribbon"><div id="footer"><?php $this -> load -> view("footer");?></div></div>
 
 	<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
 		
@@ -525,7 +462,7 @@ if (@@$current == "home_controller") {echo "active";
     <div id="errsummary" style=""></div>
   </div>
   
-  <form class="form-horizontal" action="<?php echo base_url().'User_Management/save_new_password'?>" method="post" id="change">
+  <form style="font-size: 0.5em;" class="form-horizontal" action="<?php echo base_url().'User_Management/save_new_password'?>" method="post" id="change">
   <div class="control-group" style="margin-top: 1em;">
     <label class="control-label" for="inputPassword">Old Password</label>
     <div class="controls">
