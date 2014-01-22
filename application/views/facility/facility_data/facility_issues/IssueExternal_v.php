@@ -1,148 +1,321 @@
-<script type="text/javascript" language="javascript" src="<?php echo base_url(); ?>Scripts/jquery.dataTables.js"></script>
-		<style type="text/css" title="currentStyle">
-			
-			@import "<?php echo base_url(); ?>DataTables-1.9.3 /media/css/jquery.dataTables.css";
-		</style>
-<style>
-.user{
-		width:100px;
-	}
-	.date{
-		width:110px;
-	}
-	
-	.user1{
-	width:100px;
-	background : none;
-	border : none;
-	text-align: center;
-	}
-	</style>
-        
-   <script> 
-json_obj = {
-				"url" : "<?php echo base_url().'Images/calendar.gif';?>",
-				};
-	var baseUrl=json_obj.url;
-	
-	$(function() {
-			$('#main').dataTable( {
-					"bJQueryUI": true
-				} );
+ <?php $att=array("name"=>'myform','id'=>'myform'); echo form_open('Issues_main/InsertExt',$att); ?>
+<table   class="table table-hover table-bordered table-update" id="example" width="100%" >
+					<thead>
+					<tr>
+						<th style="text-align:center; font-size: 14px"><b>Sub County</b></th>
+						<th style="text-align:center; font-size: 14px"><b>Facility</b></th>
+						<th style="text-align:center; font-size: 14px"><b>Description</b></th>
+						<th style="text-align:center; font-size: 14px"><b>KEMSA Code</b></th>
+						<th style="text-align:center; font-size: 14px"><b>Unit Size</b></th>
+						<th style="text-align:center; font-size: 14px"><b>Batch No</b></th>
+						<th style="text-align:center; font-size: 14px"><b>Expiry Date</b></th>
+						<th style="text-align:center; font-size: 14px"><b>Available Stock</b></th>
+						<th style="text-align:center; font-size: 14px"><b>Issued Quantity</b></th>
+					    <th style="text-align:center; font-size: 14px"><b>Issue Date </b></th>
+						<th style="text-align:center; font-size: 14px"><b>Remove</b></th> 				    
+					</tr>
+					</thead>
+					<tbody>
+						<tr row_id='0'>
+							<td>
+								<select name="district[0]" class="district">
+								<?php 
+		foreach ($district as $district) {
+			$id=$district->id;
+			$name=$district->district;
 		
+			echo '<option value="'.$id.'"> '.$name.'</option>';
+		}
+		?>	
+								</select>
+							</td>
+						<td>
+						<select  name="mfl[0]" class="facility">
+                       
+					   </select>
+						</td>
+						<td>
+	<select class="desc" name="desc[0]">
+    <option title="0" value="0" selected="selected">-Select Commodity -</option>
+		<?php 
+		foreach ($drugs as $drugs) :			
+			foreach ($drugs->Code as $d):
+			$drugname=$d->Drug_Name;
+			$code=$d->id;
+			$unit=$d->Unit_Size;
+			$kemsa_code=$d->Kemsa_Code;
 			
-		  $( "#dialog" ).dialog();	
-					
-		$( "#datepicker" ).datepicker({
-			showOn: "button",
-			dateFormat: 'd M, yy', 
-			buttonImage: baseUrl,
-			buttonImageOnly: true,
-			maxDate: new Date()
-		});
-			$( "#dialog" ).dialog();
-		$( "#expiry_date" ).datepicker({
-			showOn: "button",
-			dateFormat: 'd M, yy', 
-			buttonImage: baseUrl,
-			buttonImageOnly: true
-		});
-				
-		
-		$( "#dialog:ui-dialog" ).dialog( "destroy" );
-		//confirmation modal window
-		$('#qty').keyup(function() {
+			 echo "<option title='$code^$unit^$kemsa_code' value='$code'> $drugname</option>";?> 
+		<?php endforeach;endforeach;?>
+	</select>
+						</td>
+						<td>
+						<input type="hidden" id="0" name="commodity_id[0]" value="" class="commodity_id"/>
+						<input type="hidden" name="commodity_balance" value="" class="commodity_balance"/>
+						<input type="hidden" name="drug_id[0]" value="" class="drug_id"/>	
+						<input type="text" class="input-small kemsa_code" readonly="readonly" name="kemsa_code[]"/></td>
+			            <td><input  type="text" class="input-small unit_size" readonly="readonly"  /></td>
+						<td><select class=" input-small batchNo" name="batchNo[0]"></select></td>
+						<td><input class='input-small exp_date'  name='expiry_date[0]' readonly="readonly" type='text' /></td>
+						<td><input class='input-small AvStck' type="text" name="AvStck[0]" readonly="readonly" /></td>
+						<td><input class='input-small Qtyissued' type="text" value="0"  name="Qtyissued[0]" /></td>
+						<td><input class='input-small my_date' type="text" name="date_issue[0]"  value="" /></td>
+						<td><a class="add label label-success">Add Row</a><a class="remove label label-important" style="display:none;">Remove Row</span></td>
+			</tr>
+		           </tbody></table>
+ </form>
+ <button class="btn btn-primary" id="finishIssue" >Finish</button>
+<script>
+/***************clone the row here*********************/
+		$(".add").click(function() {
+
+             //find the last row
+            var last_row = $('#example tr:last');
+            var cloned_object = last_row.clone(true);
+            cloned_object.attr("row_id", next_table_row);
+            
+            var table_row = cloned_object.attr("row_id");
 			
-  					var hidden=$('input:[name=avlb_hide]').val();
-  					var stock=$('input:text[name=avlb_Stock]').val();
-					var issues=$('input:text[name=qty]').val();
-					var remainder=hidden-issues;
-					
-					
-					if (remainder<0) {
-						$('input:text[name=qty]').val('');
-						$('input:[name=avlb_Stock]').val(hidden);
-						alert("Can not issue beyond available stock");
-					}else{
-						
-						$('input:text[name=avlb_Stock]').val(remainder);
-					}
-					});
-		 var checker=0;
-		$( "#IssueNow" ).dialog({
-		    autoOpen: true,
-			height: 300,
-			width:1350,
-			modal: true,
-			buttons: {
-				"Donate": function() {
-					
-					if ($('input:text[name=mfl]').val()=="") {
-						
-						alert("Please enter Mfl No");
-						return;
-					}
-					if ($("#desc option:selected").text()=="-Select Drug Name-") {
-						
-						alert("Please Select Drug");
-						return;
-					}
-					if ($('input:text[name=qty]').val()=="") {
-						
-						alert("Please enter Quantity to dispense");
-						return;
-					}
-					
-					    
-          $( "#main" ).dataTable().fnAddData([
-             "" + $("#facility option:selected").text() + "" ,
-         					"" + $('input:[name=kemsac_1]').val() + "" , 
-							"" + $("#desc option:selected").text() + "" ,
-							"" + $("#batchNo option:selected").text() + ""+ 
-         '<input type="hidden" name="mfl['+checker+']" value="'+$('#facility option:selected').val()+'" /><input type="hidden" name="kemsaCode['+checker+']" value="'+$('input:[name=kemsac]').val()+'" />'+
-         '<input type="hidden" name="drugName['+checker+']" value="'+$("#desc option:selected").text()+'" />'+
-         '<input type="hidden" name="batchNo['+checker+']" value="'+$("#batchNo option:selected").text()+'" />'+ 
-          '<input type="hidden" name="commodity_id['+checker+']" value="'+$('input:[name=comm_id]').val()+'" />'+
-          '<input type="hidden" name="Expiries['+checker+']" value="'+$("#Exp option:selected").val()+'" />',
-							
-							'' +'<input class="user" type="text" name="Expiries['+checker+']" readonly="readonly" value="'+ $("#Exp option:selected").val() +'"/>' + '' ,
-							'' +'<input class="user" type="text" name="AvStck['+checker+']" readonly="readonly" value="'+ $('input:text[name=avlb_Stock]').val() +'"/>' + '' ,
-							'' + '<input class="user" type="text" name="Qtyissued['+checker+']" value="'+ $('input:text[name=qty]').val() +'" />' + '' ,
-							'' + '<input class="user" type="text" name="date_issue['+checker+']"  value="'+ $('input:text[name=datepicker]').val() +'" />' + '' ,
-							
-							'' + '<img class="del" src="<?php echo base_url()?>Images/close.png" />' ]); 
-						checker =checker+1;
-						
-						$( this ).dialog( "close" );
-        
-				},
-				Cancel: function() {
-					$( this ).dialog( "close" );
-				}
-			},
-			close: function() {
-				
+			var service_point=$(this).closest("tr").find(".service_point").val();
+			var commodity_id=$(this).closest("tr").find(".desc").val();
+			var issue_date=$(this).closest("tr").find(".my_date").val();
+			var issue_quantity=$(this).closest("tr").find(".Qtyissued").val();
+			var alert_message='';
+			
+			if(service_point==0){
+				alert_message +="-Select a service point\n";
 			}
-			});
+			if(commodity_id==0){
+				alert_message +="-Select a commodity to issue\n";
+			}
+			if(issue_quantity==''){
+				alert_message +="-Indicate how much you want to\n";
+			}
+			if(issue_date==''){
+				alert_message +="-Indicate the date of the issue\n";
+			}
+			if(isNaN(alert_message)){
+				alert(alert_message+' before adding a new rown\n');
+				return;
+			}
 			
-			$( "#NewIssue" )
-			.button()
-			.click(function() {
-				$( "#IssueNow" ).dialog( "open" );
-			});
+			//set the quantities to readonly
+			$("input[name='Qtyissued["+table_row+"]']").attr('readonly','readonly');
 			
-			$( "#finishIssue" )
-			.button()
-			.click(function() {
-				return $myDialog.dialog('open');
-				
-			});
-			
-			$('.del').live('click',function(){
-    $(this).parent().parent().remove();
-});
+			//reset the values of current element 
+			var next_table_row = parseInt(table_row) + 1;
+			cloned_object.find(".service_point").attr('name','Servicepoint['+next_table_row+']'); 
+			cloned_object.find(".commodity_id").attr('name','commodity_id['+next_table_row+']'); 
+			cloned_object.find(".commodity_id").attr('id',next_table_row); 
+			cloned_object.find(".Qtyissued").attr('name','Qtyissued['+next_table_row+']'); 	
+			cloned_object.find(".my_date").attr('name','date_issue['+next_table_row+']'); 
+			cloned_object.find(".AvStck").attr('name','AvStck['+next_table_row+']'); 
+			cloned_object.find(".drug_id").attr('name','drug_id['+next_table_row+']'); 
+			cloned_object.find(".batchNo").attr('name','batchNo['+next_table_row+']');
+			cloned_object.find(".facility").attr('name','mfl['+next_table_row+']');
+			cloned_object.find(".exp_date").attr('name','exp_date['+next_table_row+']');
+			cloned_object.find(".desc").attr('name','desc['+next_table_row+']');
+			 					
+            cloned_object.find("input").attr('value',"");     
+            cloned_object.find(".Qtyissued").attr('value',"0");            
+            cloned_object.find(".batchNo").html("");            
+			cloned_object.find(".remove").show();
+			cloned_object.insertAfter('#example tr:last');
+	
+			refreshDatePickers();
+
+		});
 		
-			var $myDialog = $('<div></div>')
+		/// remove the row
+		$('.remove').live('click',function(){
+			var row_id=$(this).index();
+		
+			var bal=parseInt($("input[name='Qtyissued["+row_id+"]']").val());
+			
+            var commodity_stock_id=parseInt($("input[name='commodity_id["+row_id+"]']").val());
+            var total=0;
+			
+			$("input[name^=commodity_id]").each(function(index, value) {
+				var new_id=$(this).attr('id');
+                   
+                  if(new_id>row_id && $(this).val()==commodity_stock_id){
+                   var value=parseInt($("input[name='AvStck["+new_id+"]']").val())+bal;  ///AvStck
+                   $("input[name='AvStck["+new_id+"]']").val(value);
+                  }
+                 
+		        });
+			
+	       $(this).parent().parent().remove();
+    
+      });
+      
+      ///when changing the commodity combobox
+      		$(".desc").live('change',function(){
+      			
+      		var locator=$('option:selected', this);
+			var data =$('option:selected', this).attr('title'); 
+	       	var data_array=data.split("^");
+	       	
+	        locator.closest("tr").find(".unit_size").val(data_array[1]);
+	     	locator.closest("tr").find(".kemsa_code").val(data_array[2]);
+	     	locator.closest("tr").find(".drug_id").val(data_array[0]);
+	     	locator.closest("tr").find(".AvStck").val("");
+	     	locator.closest("tr").find(".exp_date").val("");
+	     	locator.closest("tr").find(".Qtyissued").val("0");
+	     	locator.closest("tr").find(".my_date").val("");	     	
+
+			json_obj={"url":"<?php echo site_url("order_management/getBatch");?>",}
+			
+			var baseUrl=json_obj.url;
+			var id=data_array[0];
+            var dropdown="<option title=''>--select Batch--</option>";
+            var new_date='';
+            var bal='';
+            var commodity_stock_row_id='';
+            var total=0;
+            
+			$.ajax({
+			  type: "POST",
+			  url: baseUrl,
+			  data: "desc="+id,
+			  success: function(msg){
+
+			  		var values=msg.split("_");
+			  		
+			  		var txtbox;
+			  		for (var i=0; i < values.length-1; i++) {
+			  			var id_value=values[i].split("*")
+			  			if(i==0){
+			  				dropdown+="<option selected='selected' title="+id_value[2]+"^"+id_value[3]+"^"+id_value[5]+">";
+			  				 new_date=$.datepicker.formatDate('d M yy', new Date(id_value[2]));
+			  				 bal=id_value[3];
+			  				 commodity_stock_row_id=id_value[5];
+			  			}else{
+			  				dropdown+="<option title="+id_value[2]+"^"+id_value[3]+"^"+id_value[5]+">";
+			  			}
+			  			
+						dropdown+=id_value[1];						
+						dropdown+="</option>";					
+					};	
+					
+			  },
+			  error: function(XMLHttpRequest, textStatus, errorThrown) {
+			       if(textStatus == 'timeout') {}
+			   }
+			}).done(function( msg ) {
+				
+				$("input[name^=commodity_id]").each(function(index, value) {
+                  
+                  if($(this).val()==commodity_stock_row_id){
+                  var element_id=$(this).attr('id');
+                   total=parseInt($("input[name='Qtyissued["+element_id+"]']").val())+total;
+                  }
+                 
+		        });
+		        
+		        var remaining_items=bal-total;
+		        
+				locator.closest("tr").find(".batchNo").html(dropdown);
+				locator.closest("tr").find(".exp_date").val(new_date);
+				locator.closest("tr").find(".AvStck").val(remaining_items);	
+				locator.closest("tr").find(".commodity_id").val(commodity_stock_row_id);		
+								
+			});
+
+
+		});
+		
+		/////batch no change event
+		$('.batchNo').live('change',function(){
+			var row_id=$(this).index();
+		    var locator=$('option:selected', this);
+			var data =$('option:selected', this).attr('title'); 
+	       	var data_array=data.split("^");	
+	       	var new_date='';
+	       	var val='';
+	       	var total=0;
+	       	var commodity_stock_row_id;
+	       	var remaining_items=0;
+	       	var bal=parseInt($("input[name='Qtyissued["+row_id+"]']").val());			
+            var commodity_stock_id_old=parseInt($("input[name='commodity_id["+row_id+"]']").val());
+	       	
+	       	if(data_array[0]!=''){
+	       	new_date=$.datepicker.formatDate('d M yy', new Date(data_array[0]));	
+	       	val=data_array[1];
+	       	commodity_stock_row_id=data_array[2];
+    
+            var total=0;
+	       	
+	       	$("input[name^=commodity_id]").each(function(index, value) {
+	       		
+                  var element_id=$(this).attr('id');
+                  if($(this).val()==commodity_stock_row_id){   
+                  	                              
+                   total=parseInt($("input[name='Qtyissued["+element_id+"]']").val())+total;
+                  }
+  
+		        });
+       	
+	        remaining_items=val-total;
+	        locator.closest("tr").find(".exp_date").val(new_date);
+			locator.closest("tr").find(".AvStck").val(remaining_items);
+			$("input[name='Qtyissued["+row_id+"]']").removeAttr('readonly');	
+			locator.closest("tr").find(".Qtyissued").val("0");	
+
+	       	}
+	       	else{
+	       		
+	       	locator.closest("tr").find(".exp_date").val("");
+			locator.closest("tr").find(".AvStck").val("");
+			$("input[name='Qtyissued["+row_id+"]']").removeAttr('readonly');	
+			locator.closest("tr").find(".Qtyissued").val("0");
+				
+	       	}
+	       	
+	       	$("input[name^=commodity_id]").each(function(index, value) {
+	       		  var element_id=$(this).attr('id');
+                  if(element_id>row_id && $(this).val()==commodity_stock_id_old){                 	
+                   var value=parseInt($("input[name='AvStck["+element_id+"]']").val())+bal;  ///AvStck
+                   $("input[name='AvStck["+element_id+"]']").val(value);
+                  }
+                 
+		        });
+		
+      });
+        //entering the values to issue check if you have enough balance
+        $(".Qtyissued").live('keyup',function (){
+
+        	var bal=parseInt($(this).closest("tr").find(".AvStck").val());
+        	var issues=$(this).val();
+        	var remainder=bal-issues;
+        	
+        		if (remainder<0) {
+						$(this).val("0");
+						$(this).focus();
+						alert("Can not issue beyond available stock");
+					}
+					else{
+						
+					}
+					if (issues <0) {
+					    $(this).val("0");
+					    $(this).focus();
+					    alert("Issued value must be above 0");
+					}
+					if(issues.indexOf('.') > -1) {
+						$(this).val("0");
+						$(this).focus();
+						alert("Decimals are not allowed.");
+							}
+					if (isNaN(issues)){
+						$(this).val("0");
+						$(this).focus();
+						alert('Enter only numbers');
+				}
+        	
+        });
+      /////// save button
+     var $myDialog = $('<div></div>')
     .html('Please confirm the values before saving')
     .dialog({
         autoOpen: false,
@@ -153,16 +326,17 @@ json_obj = {
                 },
                 "OK": function() { 
                 	var checker=0;
-                	$("input[name^=Expiries]").each(function() {
+                	$("input[name^=commodity_id]").each(function() {
                 		checker=checker+1;
                 		
                 	});
-                	//alert(checker);
+
                 	if(checker<1){
                 		alert("Cannot submit an empty form");
                 		$(this).dialog("close"); 
                 	}
                 	else{
+                		
                 	$(this).dialog("close"); 
                      $( "#myform" ).submit();
                       return true;	
@@ -172,272 +346,101 @@ json_obj = {
                  }
         }
 });
-			    
-    $('#desc').change(function() {
-			
-				
-			var code= $("#desc").val();
-				var text=$("#desc option:selected").text();
-				var code_array=code.split("|");
-				var text_array=text.split("|");
-				$('input:[name=kemsac]').val(code_array[0]);	
-				$('input:[name=kemsac_1]').val(code_array[2]);
-				
-				
+
+      ///// county district facility filter 
+       $('.district').live("change", function() {
 			/*
 			 * when clicked, this object should populate district names to district dropdown list.
 			 * Initially it sets default values to the 2 drop down lists(districts and facilities) 
 			 * then ajax is used is to retrieve the district names using the 'dropdown()' method that has
 			 * 3 arguments(the ajax url, value POSTed and the id of the object to populated)
 			 */
-			$("#batchNo").html("<option>--Batch--</option>");
-			$("#Exp").html("<option>--Exp--</option>");
-			//$("#Exp").html("<option>--Exp Dates--</option>");
-			json_obj={"url":"<?php echo site_url("order_management/getBatch");?>",}
-			var baseUrl=json_obj.url;
-			//var id=$(this).attr("value")
-			var id=code_array[0];
-			dropdown(baseUrl,"desc="+id,"#batchNo");	
-			
-			$('#batchNo').click(function(){
-				
-				var drug_total=0;
-				 var batch= $("#batchNo option:selected").text();
-				var batch_array=$('#batchNo').val();
-				var batch_split=batch_array.split("|");
-		  var new_date=$.datepicker.formatDate('d M, yy', new Date(batch_split[0]));
-
-			var drop='<option>'+new_date+'</option>'
-			$('#Exp').html(drop);
-			
-				$("input[name^=kemsaCode]").each(function(index, value) {
-  //alert(batch);
-			if($(this).val()==(code_array[0]) && $(document.getElementsByName("batchNo["+index+"]")).val()==batch){ 
-
-				drug_total +=parseInt($(document.getElementsByName("Qtyissued["+index+"]")).val());
-				
-			}
-		});
-			//alert(drug_total);
-		   if(drug_total>0){
-          batch_split[1]= batch_split[1]-drug_total;
-		   }else{
-		   	 
-		   }
-			$('#avlb_Stock').val(batch_split[1]);
-			$('#avlb_hide').val(batch_split[1]);
-			 $('#comm_id').val(batch_split[2]);
-				
-		});	
-			
-		});	
-		
-		  $('#district').change(function() {
-			/*
-			 * when clicked, this object should populate district names to district dropdown list.
-			 * Initially it sets default values to the 2 drop down lists(districts and facilities) 
-			 * then ajax is used is to retrieve the district names using the 'dropdown()' method that has
-			 * 3 arguments(the ajax url, value POSTed and the id of the object to populated)
-			 */
-			$("#facility").html("<option>--Select--</option>");
+	        var locator =$('option:selected', this);
 
 			json_obj={"url":"<?php echo site_url("order_management/getFacilities");?>",}
 			var baseUrl=json_obj.url;
-			var id=$(this).attr("value")
-			dropdown(baseUrl,"district="+id,"#facility");	
+			var id=$(this).val();
+		    var dropdown;
+			$.ajax({
+			  type: "POST",
+			  url: baseUrl,
+			  data: "district="+id,
+			  success: function(msg){
+
+			  		var values=msg.split("_");
+			  		var txtbox;
+
+			  		for (var i=0; i < values.length-1; i++) {
+			  			var id_value=values[i].split("*");	
+			  					  			
+			  			dropdown+="<option value="+id_value[0]+">";
+						dropdown+=id_value[1];						
+						dropdown+="</option>";		  			
+
+		  		}
+	
+			  },
+			  error: function(XMLHttpRequest, textStatus, errorThrown) {
+			       if(textStatus == 'timeout') {}
+			   }
+			}).done(function( msg ) {
+			
+				locator.closest("tr").find(".facility").html(dropdown);
+
+			});	
 			
 		});	
 		
-		
-		
-		
-					
-		function dropdown(baseUrl,post,identifier){
+		function dropdown(baseUrl,post,locator,identifier){
 			
 			/*
 			 * ajax is used here to retrieve values from the server side and set them in dropdown list.
 			 * the 'baseUrl' is the target ajax url, 'post' contains the a POST varible with data and
 			 * 'identifier' is the id of the dropdown list to be populated by values from the server side
 			 */
-			$.ajax({
-			  type: "POST",
-			  url: baseUrl,
-			  data: post,
-			  success: function(msg){
-			  	
-			  	 //	alert(msg);
-			  	
-			  		var values=msg.split("_");
-			  		var dropdown;
-			  		var txtbox;
-			  		var checker=identifier;
-			  			
-			  		
-			  		for (var i=0; i < values.length-1; i++) {
-			  			if(checker=="#facility"){
-			  				var id_value=values[i].split("*");
-			  			
-			  			dropdown+="<option value="+id_value[0]+">";
-						dropdown+=id_value[1];						
-						dropdown+="</option>";
-			  			}else{
-			  				
-			  			
-			  			var id_value=values[i].split("*");
-			  			
-			  			if(i==0){
-			  				dropdown+="<option selected='selected' value="+id_value[2]+"|"+id_value[3]+"|"+id_value[5]+">";
-			  			}else{
-			  				dropdown+="<option value="+id_value[2]+"|"+id_value[3]+"|"+id_value[5]+">";
-			  			}
-						dropdown+=id_value[1];						
-						dropdown+="</option>";
-						}
-						
-					
-		  		}
-			  		
-					$(identifier).html(dropdown);
-					
-			  },
-			  error: function(XMLHttpRequest, textStatus, errorThrown) {
-			       if(textStatus == 'timeout') {}
-			   }
-			}).done(function( msg ) {
-				
+	
+		}
+		
+		////save
+      $( "#finishIssue" )
+			.button()
+			.click(function() {
+				return $myDialog.dialog('open');			
 			});
-		}
-}); 
-
-   </script>  	
-	<div id="IssueNow" title="Fill in the details below">
-	<table  class="table-update"  width="100%">
-					<thead>
-					<tr>
-
-						<th><b>District( Select )</b></th>
-						<th><b>Facility( Select )</b></th>
-						<th>Commodity ( Select )</th>
-						<th><b>Batch No</b></th>
-						<th><b>Expiry Date</b></th>
-						<th><b>Available Stock</b></th>
-						<th><b>Donated Quantity</b></th>	
-						<th><b>Donate Date</b></th>	 
-						 
-					</tr>
-					</thead>
-					<tbody>
-						<tr>
-
-							<td >
-							 <select id="district" name="distrct" class="dropdownsize">
-    <option>-Select Distrct-</option>
-		<?php 
-		foreach ($district as $district) {
-			$id=$district->id;
-			$name=$district->district;
 		
-			echo '<option value="'.$id.'"> '.$name.'</option>';
-		}
-		?>
-	</select>	  
-								
-							</td>
-						<td >
-							<select id='facility' class="dropdownsize">
-								
-							</select>
-							
-       </td>
-       <td>   <select class="dropdownsize" id="desc" name="desc">
-    <option >-Select Commodity -</option>
-		<?php 
+		//	-- Datepicker		
+		json_obj = {
+				"url" : "<?php echo base_url().'Images/calendar.gif';?>",
+				};
+	    var baseUrl=json_obj.url;
+	
+     $( ".my_date" ).datepicker({
+			showOn: "both",
+			dateFormat: 'd M yy', 
+			buttonImage: baseUrl,
+			buttonImageOnly: true,
+			changeMonth: true,
+			changeYear: true,
+			maxDate: new Date()
+		});
+
+	function refreshDatePickers() {		
+		var counter = 0;
+		$('.my_date').each(function() {
+		var this_id = $(this).attr("id"); // current inputs id
+        var new_id = counter +1; // a new id
+        $(this).attr("id", new_id); // change to new id
+        $(this).removeClass('hasDatepicker'); // remove hasDatepicker class
+        $(this).datepicker({ 
+                    maxDate: new Date(),
+        	        dateFormat: 'd M yy', 
+        	        buttonImage: baseUrl,
+					changeMonth: true,
+			        changeYear: true
+				});; // re-init datepicker
+				counter++;
+		});
 		
-		foreach ($drugs as $drugs) {
-			
-			foreach ($drugs->Code as $d) {
-			$drugname=$d->Drug_Name;
-			$code=$d->id;
-			$unit=$d->Unit_Size;
-			$kemsa_code=$d->Kemsa_Code;
-				
-			
-		echo 	'<option value="'.$code.'|'.$unit.'|'.$kemsa_code.'"> '.$drugname.'</option>';
-		} }
-?>
-	</select></td>
-	
-						<td width="80">
-	<select id="batchNo" name="batchNo">
-		<option>-Batch-</option>
-	</select></td>
-						<td width="80">
-	<select id="Exp" name="Exp">
-		<option>-Exp-</option>
-	</select>
-	</td>
-	
-	<td width="70"><input class="user" id="avlb_Stock" name="avlb_Stock" readonly="readonly"/>
 		
-	</td>
-	
-	
-						<td width="70"><input type="text" class="user" name="qty" id="qty" value="" /></td>
-						
-						
-						<td width="110"><?php 
-					
-					$today= ( date('d M, Y')); 
-					
-				?><input type="text" name="datepicker" class="date" readonly="readonly" value="<?php echo $today;?>" id="datepicker"/></td>
-						</tr>
-					</tbody>
-					</table>
-					
-					
-						<input type="hidden" id="kemsac" type="text" name="kemsac"  readonly="readonly">
-						<input type="hidden" id="kemsac_1" name="kemsac_1"  readonly="readonly" />
-						<input type="hidden" class="user" id="avlb_hide" name="avlb_hide" /> 
-						<input type="hidden" id="comm_id" name="comm_id" />
-</div>
-
-
-   		
- <div>
-			<p>
-				<?php  $att=array("name"=>'myform','id'=>'myform');
-	 echo form_open('Issues_main/InsertExt',$att); ?>
-				<table id="main" width="100%">
-					<thead>
-					<tr>
-						<th><b>Facility Name</b></th>
-						<th><b>KEMSA Code</b></th>
-						<th><b>Description</b></th>
-						<th><b>Batch No</b></th>
-						<th><b>Expiry Date</b></th>
-					    <th><b>Available Stock</b></th>
-					    <th><b>Donated Quantity</b></th>
-					    <th><b>Donate Date </b></th>
-					    <th>Remove</th>  
-					   	
-					   				    
-					</tr>
-					</thead>
-					
-							<tbody>
-							
-			       
-						
-						</tbody>
-					
-				</table>
-			</p>
-			<?php echo form_close(); ?>
-			
-<button class="btn" id="NewIssue">Issue</button>
-<button class="btn btn-primary" id="finishIssue"  type="submit">Finish</button>
-
-		</div>
-		
-
-
+  }
+</script>

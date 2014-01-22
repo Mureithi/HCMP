@@ -30,7 +30,7 @@ class Issues_main extends auto_sms {
 						$data['content_view'] = "facility/facility_data/facility_issues/IssueExternal_v";
 						//$data['content_view'] = "IssueExternal_v";						
 						$county=districts::get_county_id($this -> session -> userdata('district1'));
-						$data['district']=districts::getDistrict($county[0]['county']);
+						$data['district']=districts::getAll();
 						$data['banner_text'] = "Donate";
 						$data['title'] = "Stock";
 						$data['quick_link'] = "IssueExternal_v";
@@ -150,20 +150,17 @@ class Issues_main extends auto_sms {
 		#solves error code fac#35 changing issuing to use commodity id that batchno		
 		$commodity_id=$_POST['commodity_id'];
 		#///////////////////////////////////////
-		$ids=$_POST['kemsaCode'];		
+		$ids=$_POST['drug_id'];		
 	    $Available=$_POST['AvStck'];
 		$batchN=$_POST['batchNo'];
-		$Expiry=$_POST['Expiries'];
-		$sNo=$_POST['S11'];
+		$Expiry=$_POST['expiry_date'];
+		//$sNo=$_POST['S11'];
         $qty=$_POST['Qtyissued'];
 		$thedate=$_POST['date_issue'];
 		$serviceP=$_POST['Servicepoint'];
         $j=sizeof ($ids);
-       $count=0;
-	   
-	  
-	   
-	   
+        $count=0;
+
         $facilityCode=$facility_c=$this -> session -> userdata('news');	
 		$usernow=$this -> session -> userdata('identity');
 
@@ -171,47 +168,36 @@ class Issues_main extends auto_sms {
         	        	
 			if ($qty[$me]>0) {
 				$count++;
-				
-				
-				
+
 				$mydata = array('facility_code' => $facilityCode,	'kemsa_code' => $ids[$me], 's11_No'=>'internal issue', 'batch_no' => $batchN[$me] ,
 				'expiry_date' => date('y-m-d',strtotime($Expiry[$me])),'qty_issued'=> $qty[$me] ,
-				'issued_to'=>$serviceP,'balanceAsof'=>$Available[$me], 'date_issued'=>date('y-m-d',strtotime($thedate[$me])),'issued_by'=>$usernow);
+				'issued_to'=>$serviceP[$me],'balanceAsof'=>$Available[$me], 'date_issued'=>date('y-m-d',strtotime($thedate[$me])),'issued_by'=>$usernow);
 				
 				$u = new Facility_Issues();
 
     			$u->fromArray($mydata);
 
     			$u->save();
-				//echo "$xraws records inserted";
 				
 			$q = Doctrine_Query::create()
 			->update('Facility_Stock')
-				->set('balance', '?', $Available[$me])
-					->where("kemsa_code='$ids[$me]' AND batch_no='$batchN[$me]' and facility_code ='$facilityCode' and id='$commodity_id[$me]'");
+				->set('balance', '?'," `balance`-$qty[$me]")
+					->where("id='$commodity_id[$me]'");
 
 			$q->execute();
 			
 			$inserttransaction = Doctrine_Manager::getInstance()->getCurrentConnection();
-			
 
 			$inserttransaction->execute("UPDATE `facility_transaction_table` SET total_issues = (SELECT SUM(qty_issued) 
 			FROM facility_issues WHERE kemsa_code = '$ids[$me]' and availability='1' and facility_code='$facilityCode' and s11_No not like '%Donation%')
-                                          WHERE `kemsa_code`= '$ids[$me]' and availability='1' and facility_code='$facilityCode'; ");
-			//echo "$numrows records updated";
+            WHERE `kemsa_code`= '$ids[$me]' and availability='1' and facility_code='$facilityCode'; ");
 			
 			$inserttransaction1 = Doctrine_Manager::getInstance()->getCurrentConnection();
-			
-
 			$inserttransaction1->execute("UPDATE `facility_transaction_table` SET closing_stock = (SELECT SUM(balance)
 			 FROM facility_stock WHERE kemsa_code = '$ids[$me]' and availability='1' and facility_code='$facilityCode')
              WHERE `kemsa_code`= '$ids[$me]' and availability='1' and facility_code ='$facilityCode';");
 			}
-			
-			
-			
 
-			
 		}
         
 		 //$this->send_stock_donate_sms();
@@ -225,17 +211,15 @@ public function InsertExt()
 		#solves error code fac#35 changing issuing to use commodity id that batchno		
 		$commodity_id=$_POST['commodity_id'];
 		#///////////////////////////////////////
-	
-		
-		$ids=$_POST['kemsaCode'];
+        $Available=$_POST['AvStck'];
+		$ids=$_POST['drug_id'];		
 		$mfl=$_POST['mfl'];			
-	    $Available=$_POST['AvStck'];
 		$batchN=$_POST['batchNo'];
-		$Expiry=$_POST['Expiries'];
-		$sNo=$_POST['S11'];
+		$Expiry=$_POST['expiry_date'];
         $qty=$_POST['Qtyissued'];
 		$thedate=$_POST['date_issue'];
         $j=sizeof ($ids);
+		
        $count=0;
 	   $facilityCode=$facility_c=$this -> session -> userdata('news');
        $usernow=$this -> session -> userdata('identity'); 
@@ -247,7 +231,7 @@ public function InsertExt()
 				///update the donating facility details
 				$facility_name=Facilities::get_facility_name($mfl[$me]);
 				$facility_details=$facility_name['facility_name']." ".$mfl[$me];
-		        $sNo="inter-facility donation ".$sNo[$me];
+		        $sNo="inter-facility donation: ".$mfl[$me];
 				$count++;
 				
 				////checking if the facilility receiving the commodities is using HCMP
@@ -256,7 +240,8 @@ public function InsertExt()
 				
 				//inserting in the facility issues 
 				$mydata = array('facility_code' => $facilityCode,'kemsa_code' => $ids[$me],
-				 's11_No'=>$sNo, 'batch_no' => $batchN[$me] ,'expiry_date' => date('y-m-d',strtotime($Expiry[$me])) ,'qty_issued'=> $qty[$me] ,'balanceAsof'=>$Available[$me],
+				 's11_No'=>$sNo, 'batch_no' => $batchN[$me] ,'expiry_date' => date('y-m-d',strtotime($Expiry[$me])) ,'qty_issued'=> $qty[$me] ,
+				 'balanceAsof'=>$Available[$me],
 				 'date_issued'=>date('y-m-d',strtotime($thedate[$me])),'issued_to'=>$facility_details,'issued_by'=>$usernow);
 				
 				$u = new Facility_Issues();
@@ -268,15 +253,20 @@ public function InsertExt()
 				//updating the facility stock
 			$q = Doctrine_Query::create()
 			->update('Facility_Stock')
-				->set('balance', '?', $Available[$me])
-					->where("kemsa_code='$ids[$me]' AND batch_no='$batchN[$me]' and facility_code ='$facilityCode' and id='$commodity_id[$me]'");
+					->set('balance', '?'," `balance`-$qty[$me]")
+					->where("id='$commodity_id[$me]'");
 
 			$q->execute();
 			///updating the trascation_table
-			$inserttransaction_1 = Doctrine_Manager::getInstance()->getCurrentConnection()->fetchAll("select  `adj` from `facility_transaction_table`WHERE `kemsa_code`= '$ids[$me]' and availability='1' and facility_code=$facility_c; ");
+			$inserttransaction_1 = 
+			Doctrine_Manager::getInstance()->getCurrentConnection()
+			->fetchAll("select  `adj` from `facility_transaction_table`WHERE `kemsa_code`= '$ids[$me]' and availability='1' and facility_code=$facility_c; ");
 			
                                           
-			$inserttransaction_2 = Doctrine_Manager::getInstance()->getCurrentConnection()->fetchAll("SELECT (SUM(qty_issued)*-1) as update_ FROM facility_issues WHERE kemsa_code = '$ids[$me]' and issued_to='$facility_details' and availability='1'");;
+			$inserttransaction_2 = Doctrine_Manager::getInstance()
+			->getCurrentConnection()
+			->fetchAll("SELECT (SUM(qty_issued)*-1) as update_ FROM facility_issues 
+			WHERE kemsa_code = '$ids[$me]' and issued_to='$facility_details' and availability='1'");;
 									  
 			
 			 $new_value=$inserttransaction_1[0]['adj']+$inserttransaction_2[0]['update_'];
@@ -316,11 +306,8 @@ public function InsertExt()
 			
 			
 			if(count($receiving_facility_has_this_drug)>0){//if yes update their records
-				
-			
-			
+
 			$inserttransaction = Doctrine_Manager::getInstance()->getCurrentConnection();
-			
 
 			$inserttransaction->execute("UPDATE `facility_transaction_table` SET adj = (SELECT SUM(qty_issued) FROM facility_issues WHERE kemsa_code = '$ids[$me]' and issued_to='$facility_details' and availability='1')
                                           WHERE `kemsa_code`= '$ids[$me]' and availability='1' and facility_code=$mfl[$me]; ");
@@ -337,7 +324,7 @@ public function InsertExt()
 			else{
 				//if no insert the record in the transaction table
 				
-				$mydata2=array('Facility_Code'=>$mfl[$me],
+			$mydata2=array('Facility_Code'=>$mfl[$me],
 			'Kemsa_Code'=>$ids[$me],
 			'Opening_Balance'=>0,
 			'Total_Issues'=>0,

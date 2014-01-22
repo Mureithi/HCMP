@@ -13,7 +13,7 @@ class Districts extends Doctrine_Record {
 
 	public static function getAll() {
 
-		$query = Doctrine_Query::create() -> select("*") -> from("districts");
+		$query = Doctrine_Query::create() -> select("*") -> from("districts")->orderby("district asc");
 		$drugs = $query -> execute();
 		
 		return $drugs;
