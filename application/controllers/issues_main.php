@@ -208,7 +208,7 @@ public function InsertExt()
 		#solves error code fac#35 changing issuing to use commodity id that batchno		
 		$commodity_id=$_POST['commodity_id'];
 		#///////////////////////////////////////
-        $Available=$_POST['AvStck'];
+        $Available=$_POST['commodity_balance'];
 		$ids=$_POST['drug_id'];		
 		$mfl=$_POST['mfl'];			
 		$batchN=$_POST['batchNo'];
