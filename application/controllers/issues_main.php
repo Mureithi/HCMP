@@ -74,7 +74,7 @@ class Issues_main extends auto_sms {
 		$batchN=$_POST['batchNo'];
 		$Expiry=$_POST['Exp'];
 		//$sNo=$_POST['s11N'];
-        $qty=$_POST['qty'];
+        $qty=$_POST['Qtyissued'];
 		$thedate=$_POST['datepicker'];
 		$serviceP=$_POST['Servicepoint'];
         $j=sizeof ($ids);
@@ -151,13 +151,13 @@ class Issues_main extends auto_sms {
 		$commodity_id=$_POST['commodity_id'];
 		#///////////////////////////////////////
 		$ids=$_POST['drug_id'];		
-	    $Available=$_POST['AvStck'];
+	    $Available=$_POST['commodity_balance'];
 		$batchN=$_POST['batchNo'];
 		$Expiry=$_POST['expiry_date'];
-		//$sNo=$_POST['S11'];
-        $qty=$_POST['Qtyissued'];
+		$qty=$_POST['Qtyissued'];
 		$thedate=$_POST['date_issue'];
 		$serviceP=$_POST['Servicepoint'];
+		
         $j=sizeof ($ids);
         $count=0;
 
@@ -179,13 +179,10 @@ class Issues_main extends auto_sms {
 
     			$u->save();
 				
-			$q = Doctrine_Query::create()
-			->update('Facility_Stock')
-				->set('balance', '?'," `balance`-$qty[$me]")
-					->where("id='$commodity_id[$me]'");
+	
+			$a = Doctrine_Manager::getInstance()->getCurrentConnection();
+			$a->execute("UPDATE `Facility_Stock` SET `balance` = `balance`-$qty[$me] where id='$commodity_id[$me]'");
 
-			$q->execute();
-			
 			$inserttransaction = Doctrine_Manager::getInstance()->getCurrentConnection();
 
 			$inserttransaction->execute("UPDATE `facility_transaction_table` SET total_issues = (SELECT SUM(qty_issued) 
@@ -251,12 +248,8 @@ public function InsertExt()
     			$u->save();
 				
 				//updating the facility stock
-			$q = Doctrine_Query::create()
-			->update('Facility_Stock')
-					->set('balance', '?'," `balance`-$qty[$me]")
-					->where("id='$commodity_id[$me]'");
-
-			$q->execute();
+		    $a = Doctrine_Manager::getInstance()->getCurrentConnection();
+			$a->execute("UPDATE `Facility_Stock` SET `balance` = `balance`-$qty[$me] where id='$commodity_id[$me]'");
 			///updating the trascation_table
 			$inserttransaction_1 = 
 			Doctrine_Manager::getInstance()->getCurrentConnection()
@@ -309,15 +302,17 @@ public function InsertExt()
 
 			$inserttransaction = Doctrine_Manager::getInstance()->getCurrentConnection();
 
-			$inserttransaction->execute("UPDATE `facility_transaction_table` SET adj = (SELECT SUM(qty_issued) FROM facility_issues WHERE kemsa_code = '$ids[$me]' and issued_to='$facility_details' and availability='1')
-                                          WHERE `kemsa_code`= '$ids[$me]' and availability='1' and facility_code=$mfl[$me]; ");
+			$inserttransaction
+			->execute("UPDATE `facility_transaction_table` SET 
+			adj = (SELECT SUM(qty_issued) FROM facility_issues WHERE kemsa_code = '$ids[$me]' and issued_to='$facility_details' and availability='1')
+            WHERE `kemsa_code`= '$ids[$me]' and availability='1' and facility_code=$mfl[$me]; ");
 			
 			
 			$inserttransaction1 = Doctrine_Manager::getInstance()->getCurrentConnection();
-			
-
-			$inserttransaction1->execute("UPDATE `facility_transaction_table` SET closing_stock = (SELECT SUM(qty_issued) FROM facility_issues WHERE kemsa_code = '$ids[$me]' and issued_to='$facility_details' and availability='1')
-                                          WHERE`kemsa_code`= '$ids[$me]' and availability='1' and facility_code=$mfl[$me];");
+			$inserttransaction1
+			->execute("UPDATE `facility_transaction_table` 
+			SET closing_stock = (SELECT SUM(qty_issued) FROM facility_issues WHERE kemsa_code = '$ids[$me]' and issued_to='$facility_details' and availability='1')
+            WHERE`kemsa_code`= '$ids[$me]' and availability='1' and facility_code=$mfl[$me];");
 			
 			}
 			

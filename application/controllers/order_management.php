@@ -386,18 +386,22 @@ public function kemsa_approve_order(){
 		$describe=Facility_Stock::getAll($desc,$facility_c);
 		
 		$list="";
+		
 		foreach ($describe as $describe) {
-			$list.=$describe->kemsa_code;
+			
+			$list.=$describe['kemsa_code'];
 			$list.="*";
-			$list.=$describe->batch_no;
+			$list.=$describe['batch_no'];
 			$list.="*";
-			$list.=$describe->expiry_date;
+			$list.=$describe['expiry_date'];
 			$list.="*";
-			$list.=$describe->balance;
+			$list.=$describe['balance'];
 			$list.="*";
-			$list.=$describe->status;
+			$list.=$describe['status'];
 			$list.="*";
-			$list.=$describe->id;
+			$list.=$describe['id'];
+			$list.="*";
+			$list.=$describe['total_balance'];
 			$list.="_";
 		}
 		

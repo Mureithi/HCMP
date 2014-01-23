@@ -1860,9 +1860,9 @@ public function get_stock_status_ajax($option=NULL, $facility_code=NULL,$year=NU
 		$commodity_name=array();
 		$current_values=array();
 		$monthly_values=array();
+		
 		foreach($commodity_array as $data):
-			
-			//array_key_exists($data['drug_name'],$commodity_name) ? $commodity_name['drug_name']=$data['drug_name'] : $commodity_name=array_merge($commodity_name, array($data['drug_name']=>$data['drug_name'])) ;
+
 		array_push($commodity_name,$data['drug_name']); 
 		array_push($current_values,isset($data['total']) ? (int) $data['total'] : (int) 0); 
 		array_push($monthly_values, isset($data['consumption_level']) ? (int)  $data['consumption_level'] : (int) 0); 
