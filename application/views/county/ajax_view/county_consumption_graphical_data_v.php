@@ -45,6 +45,7 @@
  });
 	
 </script>
+<div>
 <div  class='label label-info'>Below is the consumption level in the county</div><br>
 <div class="label label-info">Select filter Options</div>
 <select name="year" id="year_filter">
@@ -95,5 +96,6 @@ endforeach;
 <option value="ksh">KSH</option>
 </select>
 <a id="filter_consumption" href="#"><span class="label label-success">Filter</span></a>
+</div>
 <?php echo $header; ?>
 <div id="graph_div"  style="height:100%; width: 100%; margin: 0 auto; float: left"></div>

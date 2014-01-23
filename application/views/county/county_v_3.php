@@ -1,9 +1,5 @@
 <style>
- .page_lay_out{
- 	margin-top: 0.5%;
- 	margin-left: 0.5%;
- 	margin-right: 1%;
- }
+ 
 .leftpanel{
         width: 15%;
     	height:auto;
@@ -11,14 +7,12 @@
     	margin-right: 0%;
 }
 .rightpanel{
-    width: 80%;
+    width: 84%;
     min-height:100%;
-    height:600px;
     float: left;
     -webkit-box-shadow: 2px 2px 6px #888;
 	box-shadow: 2px 2px 6px 2px #888; 
     margin-left:1.5em;
-    margin-right:0em;
     margin-bottom:1em;
 }
 </style>
