@@ -19,6 +19,7 @@
 						<tr row_id='0'>
 							<td>
 								<select name="district[0]" class="district">
+								<option value="0">--select subcounty---</option>
 								<?php 
 		foreach ($district as $district) {
 			$id=$district->id;
@@ -31,7 +32,7 @@
 							</td>
 						<td>
 						<select  name="mfl[0]" class="facility">
-                       
+                       <option value="0">--select facility---</option>
 					   </select>
 						</td>
 						<td>
@@ -50,8 +51,8 @@
 	</select>
 						</td>
 						<td>
-						<input type="hidden" id="0" name="commodity_id[0]" value="" class="commodity_id"/>
-						<input type="hidden" name="commodity_balance" value="" class="commodity_balance"/>
+				        <input type="hidden" id="0" name="commodity_id[0]" value="" class="commodity_id"/>
+						<input type="hidden" name="commodity_balance[0]" value="0" class="commodity_balance"/>
 						<input type="hidden" name="drug_id[0]" value="" class="drug_id"/>	
 						<input type="text" class="input-small kemsa_code" readonly="readonly" name="kemsa_code[]"/></td>
 			            <td><input  type="text" class="input-small unit_size" readonly="readonly"  /></td>
@@ -72,18 +73,22 @@
              //find the last row
             var last_row = $('#example tr:last');
             var cloned_object = last_row.clone(true);
-            cloned_object.attr("row_id", next_table_row);
+           
             
             var table_row = cloned_object.attr("row_id");
 			
-			var service_point=$(this).closest("tr").find(".service_point").val();
+			var service_point=$(this).closest("tr").find(".district").val();
+			var facility=$(this).closest("tr").find(".facility").val();
 			var commodity_id=$(this).closest("tr").find(".desc").val();
 			var issue_date=$(this).closest("tr").find(".my_date").val();
 			var issue_quantity=$(this).closest("tr").find(".Qtyissued").val();
 			var alert_message='';
 			
 			if(service_point==0){
-				alert_message +="-Select a service point\n";
+				alert_message +="-Select a subcounty\n";
+			}
+			if(facility==0){
+				alert_message +="-Select a facility\n";
 			}
 			if(commodity_id==0){
 				alert_message +="-Select a commodity to issue\n";
@@ -95,7 +100,7 @@
 				alert_message +="-Indicate the date of the issue\n";
 			}
 			if(isNaN(alert_message)){
-				alert(alert_message+' before adding a new rown\n');
+				alert(alert_message+' before adding a new row\n');
 				return;
 			}
 			
@@ -104,6 +109,7 @@
 			
 			//reset the values of current element 
 			var next_table_row = parseInt(table_row) + 1;
+			cloned_object.attr("row_id", next_table_row);
 			cloned_object.find(".service_point").attr('name','Servicepoint['+next_table_row+']'); 
 			cloned_object.find(".commodity_id").attr('name','commodity_id['+next_table_row+']'); 
 			cloned_object.find(".commodity_id").attr('id',next_table_row); 
@@ -113,12 +119,14 @@
 			cloned_object.find(".drug_id").attr('name','drug_id['+next_table_row+']'); 
 			cloned_object.find(".batchNo").attr('name','batchNo['+next_table_row+']');
 			cloned_object.find(".facility").attr('name','mfl['+next_table_row+']');
-			cloned_object.find(".exp_date").attr('name','exp_date['+next_table_row+']');
+			cloned_object.find(".exp_date").attr('name','expiry_date['+next_table_row+']');
+			cloned_object.find(".commodity_balance").attr('name','commodity_balance['+next_table_row+']');
 			cloned_object.find(".desc").attr('name','desc['+next_table_row+']');
-			 					
+			cloned_object.find(".commodity_balance").attr('name','commodity_balance['+next_table_row+']');					
             cloned_object.find("input").attr('value',"");     
             cloned_object.find(".Qtyissued").attr('value',"0");            
-            cloned_object.find(".batchNo").html("");            
+            cloned_object.find(".batchNo").html("");    
+             cloned_object.find(".facility").html("");         
 			cloned_object.find(".remove").show();
 			cloned_object.insertAfter('#example tr:last');
 	
@@ -129,16 +137,18 @@
 		/// remove the row
 		$('.remove').live('click',function(){
 			var row_id=$(this).index();
-		
-			var bal=parseInt($("input[name='Qtyissued["+row_id+"]']").val());
+		   
+			var bal=parseInt($(this).closest("tr").find(".Qtyissued").val());
 			
-            var commodity_stock_id=parseInt($("input[name='commodity_id["+row_id+"]']").val());
+            var commodity_stock_id=parseInt($(this).closest("tr").find(".commodity_id").val());
+           
             var total=0;
 			
 			$("input[name^=commodity_id]").each(function(index, value) {
-				var new_id=$(this).attr('id');
-                   
-                  if(new_id>row_id && $(this).val()==commodity_stock_id){
+				var new_id=$(this).attr("id");
+                //alert("new id"+new_id+" row id "+row_id+" id"+$(this).val()+" stock_id "+commodity_stock_id)
+                  if(new_id>row_id && parseInt($(this).val())==commodity_stock_id){
+                  	 
                    var value=parseInt($("input[name='AvStck["+new_id+"]']").val())+bal;  ///AvStck
                    $("input[name='AvStck["+new_id+"]']").val(value);
                   }
@@ -151,11 +161,19 @@
       
       ///when changing the commodity combobox
       		$(".desc").live('change',function(){
-      			
+      		var row_id=$(this).index();	
+      		if(parseInt(row_id)==0){
+      		var prv_id=parseInt(row_id);	
+      		}
+      		else{
+      		var prv_id=parseInt(row_id)-1;	
+      		}
+      		
       		var locator=$('option:selected', this);
 			var data =$('option:selected', this).attr('title'); 
 	       	var data_array=data.split("^");
 	       	
+
 	        locator.closest("tr").find(".unit_size").val(data_array[1]);
 	     	locator.closest("tr").find(".kemsa_code").val(data_array[2]);
 	     	locator.closest("tr").find(".drug_id").val(data_array[0]);
@@ -173,7 +191,9 @@
             var bal='';
             var commodity_stock_row_id='';
             var total=0;
-            
+            var drug_id_current=0;
+            var total_stock_bal=0;
+            var total_issues=0;
 			$.ajax({
 			  type: "POST",
 			  url: baseUrl,
@@ -183,15 +203,17 @@
 			  		var values=msg.split("_");
 			  		
 			  		var txtbox;
-			  		for (var i=0; i < values.length-1; i++) {
+					 for (var i=0; i < values.length-1; i++) {
 			  			var id_value=values[i].split("*")
 			  			if(i==0){
-			  				dropdown+="<option selected='selected' title="+id_value[2]+"^"+id_value[3]+"^"+id_value[5]+">";
+			  				dropdown+="<option selected='selected' title="+id_value[2]+"^"+id_value[3]+"^"+id_value[5]+"^"+id_value[6]+">";
 			  				 new_date=$.datepicker.formatDate('d M yy', new Date(id_value[2]));
 			  				 bal=id_value[3];
 			  				 commodity_stock_row_id=id_value[5];
+			  				 total_stock_bal=id_value[6];
+			  				 drug_id_current=id_value[0];
 			  			}else{
-			  				dropdown+="<option title="+id_value[2]+"^"+id_value[3]+"^"+id_value[5]+">";
+			  				dropdown+="<option title="+id_value[2]+"^"+id_value[3]+"^"+id_value[5]+"^"+id_value[6]+">";
 			  			}
 			  			
 						dropdown+=id_value[1];						
@@ -203,7 +225,8 @@
 			       if(textStatus == 'timeout') {}
 			   }
 			}).done(function( msg ) {
-				
+			 /* get all the items which have been issued and have 
+			  * the same id and sum them up reduce the total available balance*/	     
 				$("input[name^=commodity_id]").each(function(index, value) {
                   
                   if($(this).val()==commodity_stock_row_id){
@@ -213,12 +236,28 @@
                  
 		        });
 		        
+		        /* Check for all commodities that have the same id as the current item selected
+		         * then sum up all the issues above the given item
+		         * use this value to reduce the value of the total value of the commodity*/	        
+		        $("input[name^=drug_id]").each(function(index, value) {
+		        	
+                 var row_id_=$(this).index();
+                 
+                  var total_current_issues=$(this).closest("tr").find(".Qtyissued").val();
+                  
+                  if($(this).val()==drug_id_current && row_id<row_id_){
+                   total_issues=parseInt(total_current_issues)+total_issues;
+                  }
+                 
+		        });
+		        
 		        var remaining_items=bal-total;
 		        
 				locator.closest("tr").find(".batchNo").html(dropdown);
-				locator.closest("tr").find(".exp_date").val(new_date);
+				locator.closest("tr").find(".exp_date").val(""+new_date+"" );
 				locator.closest("tr").find(".AvStck").val(remaining_items);	
-				locator.closest("tr").find(".commodity_id").val(commodity_stock_row_id);		
+				locator.closest("tr").find(".commodity_id").val(commodity_stock_row_id);
+				locator.closest("tr").find(".commodity_balance").val(total_stock_bal-total_issues);		
 								
 			});
 
@@ -234,32 +273,26 @@
 	       	var new_date='';
 	       	var val='';
 	       	var total=0;
+	       	var total_issues=0;
 	       	var commodity_stock_row_id;
 	       	var remaining_items=0;
 	       	var bal=parseInt($("input[name='Qtyissued["+row_id+"]']").val());			
             var commodity_stock_id_old=parseInt($("input[name='commodity_id["+row_id+"]']").val());
+            var drug_id_current='';
+          
+              
+	       	$("input[name='commodity_id["+row_id+"]']").val(data_array[2]);
+	       	$("input[name='commodity_balance["+row_id+"]']").val(data_array[3]);
 	       	
 	       	if(data_array[0]!=''){
 	       	new_date=$.datepicker.formatDate('d M yy', new Date(data_array[0]));	
 	       	val=data_array[1];
 	       	commodity_stock_row_id=data_array[2];
-    
-            var total=0;
-	       	
-	       	$("input[name^=commodity_id]").each(function(index, value) {
-	       		
-                  var element_id=$(this).attr('id');
-                  if($(this).val()==commodity_stock_row_id){   
-                  	                              
-                   total=parseInt($("input[name='Qtyissued["+element_id+"]']").val())+total;
-                  }
-  
-		        });
-       	
+            drug_id_current=data_array[3];
 	        remaining_items=val-total;
-	        locator.closest("tr").find(".exp_date").val(new_date);
+	        locator.closest("tr").find(".exp_date").val(""+new_date+"");
 			locator.closest("tr").find(".AvStck").val(remaining_items);
-			$("input[name='Qtyissued["+row_id+"]']").removeAttr('readonly');	
+			
 			locator.closest("tr").find(".Qtyissued").val("0");	
 
 	       	}
@@ -279,13 +312,34 @@
                    $("input[name='AvStck["+element_id+"]']").val(value);
                   }
                  
+		       });
+		        
+		        /* Check for all commodities that have the same id as the current item selected
+		         * then sum up all the issues above the given item
+		         * use this value to reduce the value of the total value of the commodity*/	        
+		        $("input[name^=drug_id]").each(function(index, value) {
+		        	
+                 var row_id_=$(this).index();                 
+                 var total_current_issues=$(this).closest("tr").find(".Qtyissued").val();
+                 var current_balance_issues=  $(this).closest("tr").find(".commodity_balance").val();
+                 
+                  if($(this).val()==drug_id_current && row_id<row_id_){
+                   total_issues=parseInt(total_current_issues)+total_issues;
+                  }
+                  if($(this).val()==drug_id_current && row_id>row_id_){
+                  $(this).closest("tr").find(".commodity_balance").val(parseInt(current_balance_issues)+bal);
+                  }
+                 
 		        });
-		
+		        
+		       locator.closest("tr").find(".commodity_balance").val(total_stock_bal-total_issues);	
+
       });
         //entering the values to issue check if you have enough balance
         $(".Qtyissued").live('keyup',function (){
-
+            var row_id=$(this).index();
         	var bal=parseInt($(this).closest("tr").find(".AvStck").val());
+        	var drug_id_current=parseInt($(this).closest("tr").find(".desc").val());
         	var issues=$(this).val();
         	var remainder=bal-issues;
         	
@@ -312,7 +366,7 @@
 						$(this).focus();
 						alert('Enter only numbers');
 				}
-        	
+
         });
       /////// save button
      var $myDialog = $('<div></div>')

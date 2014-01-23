@@ -25,7 +25,14 @@ class Facility_Stock extends Doctrine_Record {
 	}
 	public static function getAllStock($facility)
 		  {
-			  $query = Doctrine_Query::create() -> select("DISTINCT kemsa_code") -> from("facility_stock, drug")-> where("facility_code ='$facility' and expiry_date >= NOW()")->andwhere("drug.id=facility_stock.kemsa_code")->andwhere("status='1'")->andwhere("balance>0")->groupby("kemsa_code")->orderby("drug.drug_name asc"); 
+			  $query = Doctrine_Query::create() 
+			  -> select("DISTINCT kemsa_code") 
+			  -> from("facility_stock, drug")
+			  -> where("facility_code ='$facility' and expiry_date >= NOW()")
+			  ->andwhere("drug.id=facility_stock.kemsa_code")
+			  ->andwhere("status='1'")->andwhere("balance>0")
+			  ->groupby("kemsa_code")
+			  ->orderby("drug.drug_name asc"); 
 			  $search = $query ->execute();
 			 return $search;
 				
@@ -33,10 +40,31 @@ class Facility_Stock extends Doctrine_Record {
 	
 	 public static function getAll($desc,$facility_c)
 		  {
-			  $query = Doctrine_Query::create() -> select("* ") -> from("Facility_Stock")-> where("kemsa_code='$desc' AND expiry_date >= NOW()")
-			  ->andwhere("facility_code ='$facility_c'")->andwhere("status='1'")->andwhere("balance>0")->orderby( "expiry_date ASC" ); ;
-			  $search = $query -> execute();
-			 return $search;
+		  	
+	$inserttransaction = Doctrine_Manager::getInstance()->getCurrentConnection()
+		->fetchAll("
+SELECT id , f.kemsa_code, f.batch_no ,
+ f.expiry_date , f.balance , f.status , (
+SELECT SUM( f.balance ) 
+FROM Facility_Stock f
+WHERE f.kemsa_code =  '$desc'
+AND f.expiry_date >= NOW( ) 
+AND f.facility_code =  '$facility_c'
+AND f.status =  '1'
+) AS total_balance
+FROM Facility_Stock f
+WHERE (
+f.kemsa_code =  '$desc'
+AND f.expiry_date >= NOW( ) 
+AND f.facility_code =  '$facility_c'
+AND f.status =  '1'
+AND f.balance >0
+)
+
+ORDER BY f.expiry_date ASC ");
+
+        return $inserttransaction ;
+       
 				
 		  }
 	public static function update_facility_stock($data_array){
@@ -98,7 +126,7 @@ GROUP BY fs.kemsa_code*/
 		return $stockouts;
 	}
 	public static function expiries($facility_c){
-		$query = Doctrine_Query::create() -> select("*") -> from("Facility_Stock") -> where("facility_code='$facility_c' and expiry_date BETWEEN CURDATE()AND DATE_ADD(CURDATE(), INTERVAL 6 MONTH)")->
+		$query = Doctrine_Query::create() -> select("*") -> from("Facility_Stock") -> where("facility_code='$facility_c' and balance >0 and expiry_date BETWEEN CURDATE()AND DATE_ADD(CURDATE(), INTERVAL 6 MONTH)")->
 		andwhere("status=1");
 		
 		$stocks= $query -> execute();
@@ -212,6 +240,7 @@ FROM  drug d, facility_stock fs
 left join historical_stock temp on temp.drug_id=fs.kemsa_code and temp.facility_code='$distict'
 WHERE fs.facility_code =  '$distict'
 AND d.id = fs.kemsa_code
+and fs.balance>0
 AND fs.STATUS =  '1'
 GROUP BY fs.kemsa_code
 ORDER BY d.drug_name ASC");
