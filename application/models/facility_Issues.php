@@ -27,7 +27,7 @@ class Facility_Issues extends Doctrine_Record {
 		
 	}
 	
-	public function get_last_person_who_issues($facility_code){
+	public static function get_last_person_who_issues($facility_code){
 		 	$inserttransaction = Doctrine_Manager::getInstance()->getCurrentConnection()
 		->fetchAll("SELECT max( facility_issues.id ) , `issued_by` , fname, lname
 FROM facility_issues

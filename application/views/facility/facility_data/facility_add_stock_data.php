@@ -5,6 +5,9 @@ p.padding
 padding-top:20px;
 
 }
+input[type="text"]{
+	padding: 4px 4px;
+}
 </style>
 
 <?php $att=array("name"=>'myform','id'=>'myform');
