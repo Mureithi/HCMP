@@ -380,5 +380,14 @@ order by d.district asc,f.`date_of_activation` asc
 return $q;	
 	
 }
-
+// getting facilities which are using the system
+	public static function get_facilities_which_are_online($county_id){
+$q = Doctrine_Manager::getInstance()->getCurrentConnection()->fetchAll("SELECT facility_code, facility_name
+FROM facilities f, districts d
+WHERE f.district = d.id
+AND d.id =$county_id
+AND UNIX_TIMESTAMP(  `date_of_activation` ) >0
+ORDER BY  `facility_name` ASC ");
+return $q;	
+}
 }

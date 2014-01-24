@@ -2344,10 +2344,73 @@ public function facility_settings(){
 	
 	$this -> load -> view("county/ajax_view/county_consumption_graphical_data_v",$data);	
 	}
+	public function cons_new()
+	{
+		$county_id=$this -> session -> userdata('county_id');	
+		$county_name=counties::get_county_name($county_id);
+		$data['c_data']=drug::getAll_2();
+		$data['district_data']=districts::getDistrict($county_id);
+		$this -> load -> view("county/ajax_view/consumption_stats_v", $data);
+	}
+	
+	public function consumption_stats_graph()
+	{
+		$county_id=$this -> session -> userdata('county_id');
+		$district_filter= $_POST['district_filter'];
+		$commodity_filter = $_POST['commodity_filter'];
+		$year_filter = $_POST['year_filter'];
+		$facilities_filter = $_POST['facilities'];
+		$plot_value_filter = $_POST['plot_value_filter'];
+		$montharray = array('1' => 'January', '2' => 'Febuary', '3' => 'March', '4'=> 'April', '5' => 'May', '6'=> 'June' ,'7' => 'July', '8' => 'August', '9' => 'September', '10' => 'October', '11' => 'November', '12' => 'December' );
+			$consumption_data = Facility_stock::get_county_drug_consumption_level2($facilities_filter,$county_id,$district_filter,$commodity_filter,$year_filter,$plot_value_filter);
 
-	public function get_county_stock_level_new($commodity_id=null,$category_id=null,$district_id=null,$option=null){
+			$monthnos = array();
+			$totals = array();
 
-	$county_id=$this -> session -> userdata('county_id');	
+			foreach ($consumption_data as $value) {
+
+			$monthnos[] = $value['monthno'];
+			$totals[] = (double)$value['total'];
+
+			}
+			$combined = array_combine($monthnos, $totals);
+
+			$basket = array_replace($montharray, $combined);
+			foreach ($basket as $key => $val) {
+			if (is_string($val)) {
+			$basket[$key] = 0;
+				}
+			}
+			$arrayfinal = array_combine($montharray, $basket);
+			
+			$arrayto_graph = array();
+			
+			foreach ($arrayfinal as $key => $value) {
+
+			$arrayto_graph[] = $arrayfinal[$key];
+
+				}
+			
+			$mymontharray = array();
+			foreach ($montharray as $key => $value)
+			 {
+			$mymontharray[] = $montharray[$key];
+				}
+			$data['plot_value_filter'] = json_encode($plot_value_filter);
+			$data['arrayto_graph'] = json_encode($arrayto_graph);
+			$data['montharray'] = json_encode($mymontharray);
+			$this -> load -> view("county/ajax_view/consumption_v", $data);
+			
+			}
+			public function get_facility_json_data($district_id){
+				
+				echo json_encode(facilities::get_facilities_which_are_online($district_id));
+				}
+
+			public function get_county_stock_level_new($commodity_id=null,$category_id=null,$district_id=null,$option=null){
+
+			$county_id=$this -> session -> userdata(
+		'county_id');	
 	$county_name=counties::get_county_name($county_id);
 	
 	$year= date("Y");

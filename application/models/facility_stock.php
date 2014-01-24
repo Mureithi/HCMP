@@ -341,6 +341,77 @@ ORDER BY d.drug_name ASC ");
 
  return $inserttransaction ;
  }    
+ 
+ public static function get_county_drug_consumption_level2($facilities_filter,$county_id,$district_filter,$commodity_filter,$year_filter,$plot_value_filter){
+     
+		switch ($plot_value_filter) :
+         case 'ksh':
+           $computation ="CEIL( (SUM( fs.qty_issued / d.total_units ))*d.unit_cost ) AS total";
+             break;
+         case 'units':
+           $computation ="CEIL( SUM( fs.qty_issued ) ) AS total" ;
+             break;
+             case 'packs':
+           $computation ="CEIL( SUM( fs.qty_issued / d.total_units ) ) AS total" ;
+             break;
+         default:
+               $computation ="CEIL( SUM( fs.qty_issued / d.total_units ) ) AS total" ;
+             break;
+     endswitch;
+     
+		if ($district_filter == 0) {
+	$inserttransaction = Doctrine_Manager::getInstance()->getCurrentConnection()
+		->fetchAll("SELECT MONTH( fs.date_issued ) as monthno, $computation 
+FROM facility_issues fs, drug d, facilities f, districts di, counties c
+WHERE fs.facility_code = f.facility_code
+AND f.district = di.id
+AND fs.availability =  '1'
+AND c.id = $county_id
+AND fs.kemsa_code = $commodity_filter
+AND YEAR( fs.date_issued ) =$year_filter
+AND d.id = fs.kemsa_code
+GROUP BY MONTH( fs.date_issued ) ");		
+
+
+ return $inserttransaction ;
+	
+		}elseif ($district_filter > 0 ||$facilities_filter ==0) {
+	
+	$inserttransaction = Doctrine_Manager::getInstance()->getCurrentConnection()
+		->fetchAll("SELECT MONTH( fs.date_issued )as monthno , $computation
+FROM facility_issues fs, drug d, facilities f, districts di, counties c
+WHERE fs.facility_code = f.facility_code
+AND f.district = di.id
+AND fs.availability =  '1'
+AND c.id = $county_id
+AND fs.kemsa_code = $commodity_filter
+AND YEAR( fs.date_issued ) =$year_filter
+AND d.id = fs.kemsa_code
+GROUP BY MONTH( fs.date_issued )  ");		
+
+
+ return $inserttransaction ;
+		 }elseif ($district_filter > 0 ||$facilities_filter > 0) {
+	
+	$inserttransaction = Doctrine_Manager::getInstance()->getCurrentConnection()
+		->fetchAll("SELECT MONTH( fs.date_issued )as monthno , $computation
+FROM facility_issues fs, drug d, facilities f, districts di, counties c
+WHERE fs.facility_code = f.facility_code
+AND f.district = di.id
+AND fs.availability =  '1'
+AND fs.facility_code =$facilities_filter
+AND c.id = $county_id
+AND fs.kemsa_code = $commodity_filter
+AND YEAR( fs.date_issued ) =$year_filter
+AND d.id = fs.kemsa_code
+GROUP BY MONTH( fs.date_issued )  ");		
+
+
+ return $inserttransaction ;
+		 }
+
+
+ }    
         
         /////getting cost of exipries 
             public static function get_district_cost_of_exipries($distict){
