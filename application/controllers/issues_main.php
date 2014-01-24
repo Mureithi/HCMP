@@ -58,7 +58,6 @@ class Issues_main extends auto_sms {
 									
 			}
 
-		
 		$data['service']=Service::getall($facility);		
 		$data['drugs'] = Facility_Stock::getAllStock($facility);
 		$data['link'] = "IssuesnReceipts";
@@ -67,8 +66,7 @@ class Issues_main extends auto_sms {
 	}
 	public function Insert_test()
 	{
-       
-		
+
 		$ids=$_POST['kemsaCode'];		
 	    $Available=$_POST['AvStck'];
 		$batchN=$_POST['batchNo'];
@@ -81,8 +79,6 @@ class Issues_main extends auto_sms {
 		
        $count=0;
 
-
-
         $facilityCode=$facility_c=$this -> session -> userdata('news');	
 		$usernow=$this -> session -> userdata('identity');
 
@@ -90,9 +86,6 @@ class Issues_main extends auto_sms {
         	        	
 			if ($qty[$me]>0) {
 				$count++;
-
-
-
 				$mydata = array('facility_code' => $facilityCode,	'kemsa_code' => $ids[$me], 's11_No'=>"internal issue", 'batch_no' => $batchN[$me] ,
 				'expiry_date' => $Expiry[$me] ,'qty_issued'=> $qty[$me] ,
 				'issued_to'=>$serviceP,'balanceAsof'=>$Available[$me], 'date_issued'=>date('y-m-d',strtotime($thedate[$me])),'issued_by'=>$usernow);
@@ -126,8 +119,6 @@ class Issues_main extends auto_sms {
 			 FROM facility_stock WHERE kemsa_code = '$ids[$me]' and availability='1' and facility_code='$facilityCode')
                                           WHERE `kemsa_code`= '$ids[$me]' and availability='1' and facility_code ='$facilityCode'; ");
 			}
-
-
 			$data['title'] = "Stock";
 			$data['drugs'] = Drug::getAll();
 			$data['popout'] = "You have issued $count item(s)";
@@ -138,9 +129,6 @@ class Issues_main extends auto_sms {
 			$this -> load -> view("template", $data);
 
 		}
-        
-        
-
 
 	}
 	
