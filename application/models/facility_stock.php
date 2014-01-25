@@ -262,11 +262,49 @@ ORDER BY d.drug_name ASC ");
         return $inserttransaction ;}  
 	 
 	       ////////////// getting county stock level
-     public static function get_county_drug_stock_level($county_id,$category_id=NULL,$commodity_id=NULL,$district_id=null,$option=null){
+public static function get_county_drug_stock_level_new($county_id,$category_id=NULL,$commodity_id=NULL,$district_id=null,$option=null,$facility_code=null){
      	
      $and_data=(isset($category_id)&& ($category_id>0)) ?"AND d.drug_category = '$category_id'" : null;
      $and_data .=(isset($commodity_id)&& ($commodity_id>0)) ?"AND d.id = '$commodity_id'" : null;
 	 $and_data .=(isset($district_id)&& ($district_id>0)) ?"AND di.id = '$district_id'" : null;
+	 $and_data .=(isset($facility_code)&& ($facility_code>0)) ?"AND f.facility_code = '$facility_code'" : null;
+     
+     switch ($option) :
+         case 'ksh':
+           $computation ="ifnull(CEIL( (SUM( fs.balance / d.total_units ))*d.unit_cost ),0) AS total";
+             break;
+         case 'units':
+           $computation ="ifnull(CEIL( SUM( fs.balance ) ),0) AS total" ;
+             break;
+             case 'packs':
+           $computation ="ifnull(CEIL( SUM( fs.balance/ d.total_units ) ),0) AS total" ;
+             break;
+         default:
+               $computation ="ifnull(CEIL(SUM(fs.balance/d.total_units)),0) AS total" ;
+             break;
+     endswitch;
+	 
+	 //echo ; exit;
+     	
+	$inserttransaction = Doctrine_Manager::getInstance()->getCurrentConnection()
+->fetchAll("SELECT $computation
+FROM facility_stock fs, drug d, facilities f, districts di
+WHERE fs.facility_code = f.facility_code
+AND f.district = di.id
+AND fs.STATUS ='1'
+AND di.county =  '$county_id'
+   $and_data
+AND d.id = fs.kemsa_code
+");		
+
+return $inserttransaction ;
+}  
+     public static function get_county_drug_stock_level($county_id,$category_id=NULL,$commodity_id=NULL,$district_id=null,$option=null,$facility_code=null){
+     	
+     $and_data=(isset($category_id)&& ($category_id>0)) ?"AND d.drug_category = '$category_id'" : null;
+     $and_data .=(isset($commodity_id)&& ($commodity_id>0)) ?"AND d.id = '$commodity_id'" : null;
+	 $and_data .=(isset($district_id)&& ($district_id>0)) ?"AND di.id = '$district_id'" : null;
+	 $and_data .=(isset($facility_code)&& ($facility_code>0)) ?"AND f.facility_code = '$facility_code'" : null;
      
      switch ($option) :
          case 'ksh':
@@ -286,12 +324,11 @@ ORDER BY d.drug_name ASC ");
      	
 	$inserttransaction = Doctrine_Manager::getInstance()->getCurrentConnection()
 ->fetchAll("SELECT d.drug_name, $computation
-FROM facility_stock fs, drug d, facilities f, districts di, counties c
+FROM facility_stock fs, drug d, facilities f, districts di
 WHERE fs.facility_code = f.facility_code
 AND f.district = di.id
 AND fs.STATUS ='1'
-AND di.county = c.id
-AND c.id =  '$county_id'
+AND di.county =  '$county_id'
    $and_data
 AND d.id = fs.kemsa_code
 GROUP BY fs.kemsa_code
@@ -360,13 +397,64 @@ GROUP BY month( expiry_date ) asc");
 			public static function get_county_stock_out_trend($county_id,$year=NULL){
      $year=isset($year)? $year: date("Y");
 $inserttransaction = Doctrine_Manager::getInstance()->getCurrentConnection()
-		->fetchAll("SELECT count(distinct f_t.facility_id) as total,date_format( `start_date`, '%b' ) as month, month(`start_date`) as checker from facility_stock_out_tracker f_t, facilities f, districts d
+		->fetchAll("SELECT count(distinct f_t.facility_id) as total,date_format( `start_date`, '%b' ) as month, 
+		month(`start_date`) as checker from facility_stock_out_tracker f_t, facilities f, districts d
 where f.facility_code=f_t.`facility_id` and f.district=d.id and d.county=1 and year(`start_date`)=$year
  GROUP BY month( `start_date`) asc");
 
        return $inserttransaction ;
 			}
       /////getting cost of exipries county
+public static function get_county_cost_of_exipries_new($county_id,$year=null,
+                  $month=null,$district_id=null,
+                  $commodity_id=null,$option=null,
+                  $facility_code=null){  	
+
+     $and_data =(isset($commodity_id)&& ($commodity_id>0)) ?"AND d.id = '$commodity_id'" : null;
+	 $and_data .=(isset($district_id)&& ($district_id>0)) ?"AND di.id = '$district_id'" : null;
+	 $and_data .=(isset($facility_code)&& ($facility_code>0)) ?"AND f.facility_code = '$facility_code'" : null;
+     
+     switch ($option) :
+         case 'ksh':
+           $computation ="ifnull(CEIL( (SUM(fs.balance/ d.total_units ))*d.unit_cost ),0) AS total";
+             break;
+         case 'units':
+           $computation ="ifnull(CEIL( SUM(fs.balance)),0) AS total" ;
+             break;
+             case 'packs':
+           $computation ="ifnull(CEIL( SUM(fs.balance/ d.total_units ) ),0) AS total" ;
+             break;
+         default:
+               $computation ="ifnull(CEIL( (SUM(fs.balance/ d.total_units ))*d.unit_cost ),0)  AS total" ;
+             break;
+     endswitch;
+	 $string="AND date_format( fs.expiry_date, '%m')=$month" ;
+	 $group_by =(($district_id=='all')) ?"GROUP BY month(expiry_date) asc" : null;
+	 $group_by .=(($district_id=='facility')) ?"GROUP BY fs.kemsa_code" : null;
+     $select_option=($district_id=='facility') ?"d.drug_name," : 
+     ($facility_code=='null')? null : "date_format( fs.expiry_date, '%b' ) as cal_month," ; ;
+	 
+     $select_option_special=($district_id=='facility') ? $string: null;
+//echo;
+//exit;
+	 
+$inserttransaction = Doctrine_Manager::getInstance()->getCurrentConnection()
+->fetchAll( "SELECT $select_option $computation
+FROM facility_stock fs, facilities f, drug d, counties c, districts di
+WHERE fs.facility_code = f.facility_code
+AND `expiry_date` <= NOW( )
+AND DATE_FORMAT( fs.expiry_date,'%Y') =$year
+$select_option_special
+AND f.district =di.id
+AND di.county=c.id
+AND c.id='$county_id'
+$and_data
+AND d.id = fs.kemsa_code
+ $group_by
+");
+        return  $inserttransaction ;
+			
+			} 	
             public static function get_county_cost_of_exipries($county_id,$year=null,$district_id=null,$commodity_id=null,$option=null){  	
      //$year=isset($year)? $year: date("Y");
      $and_data =(isset($commodity_id)&& ($commodity_id>0)) ?"AND d.id = '$commodity_id'" : null;

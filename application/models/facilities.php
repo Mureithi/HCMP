@@ -28,6 +28,16 @@ class Facilities extends Doctrine_Record {
 		$drugs = $query -> execute();
 		return $drugs;
 	}
+	// getting facilities which are using the system
+	public static function get_facilities_which_are_online($county_id){
+$q = Doctrine_Manager::getInstance()->getCurrentConnection()->fetchAll("SELECT facility_code, facility_name,f.district
+FROM facilities f, districts d
+WHERE f.district = d.id
+AND d.id =$county_id
+AND UNIX_TIMESTAMP(  `date_of_activation` ) >0
+ORDER BY  `facility_name` ASC ");
+return $q;	
+}
 	public static function get_facility_name_($facility_code){
 				
 	if($facility_code!=NULL){
@@ -72,12 +82,13 @@ GROUP BY user.facility");
 	public static function get_facility_name($facility_code){
 	$query=Doctrine_Query::create()->select('*')->from('facilities')->where("facility_code='$facility_code'");
 	$result=$query->execute();
-	return $result[0];
+	return $result;
 	}
 	
 	/********************getting the facility owners  count*************/
 	public static function get_owner_count() {
-		$query = Doctrine_Query::create() -> select("COUNT(facility_code) as count , owner ") -> from("facilities")->where("owner !=''")->groupby("owner")->ORDERBY ('count ASC' );
+		$query = Doctrine_Query::create() -> select("COUNT(facility_code) as count , owner ") 
+		-> from("facilities")->where("owner !=''")->groupby("owner")->ORDERBY ('count ASC' );
 		$drugs = $query -> execute();
 		return $drugs;
 	}
@@ -344,7 +355,8 @@ WHERE u.facility ="'.$facility_code.'"
 return $q;
 }
 public static function get_dates_facility_went_online($county_id){
-$q = Doctrine_Manager::getInstance()->getCurrentConnection()->fetchAll("SELECT DISTINCT DATE_FORMAT(  `date_of_activation` ,  '%M %Y' ) AS date_when_facility_went_online
+$q = Doctrine_Manager::getInstance()->getCurrentConnection()->fetchAll("SELECT 
+DISTINCT DATE_FORMAT(  `date_of_activation` ,  '%M %Y' ) AS date_when_facility_went_online
 FROM facilities f, districts d
 WHERE f.district = d.id
 AND d.county =$county_id
