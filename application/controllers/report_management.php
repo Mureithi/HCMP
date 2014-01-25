@@ -2363,7 +2363,7 @@ public function facility_settings(){
 		$plot_value_filter = $_POST['plot_value_filter'];
 		$montharray = array('1' => 'January', '2' => 'Febuary', '3' => 'March', '4'=> 'April', '5' => 'May', '6'=> 'June' ,'7' => 'July', '8' => 'August', '9' => 'September', '10' => 'October', '11' => 'November', '12' => 'December' );
 			$consumption_data = Facility_stock::get_county_drug_consumption_level2($facilities_filter,$county_id,$district_filter,$commodity_filter,$year_filter,$plot_value_filter);
-
+			$mycount=count(Facility_stock::get_county_drug_consumption_level2($facilities_filter,$county_id,$district_filter,$commodity_filter,$year_filter,$plot_value_filter));
 			$monthnos = array();
 			$totals = array();
 
@@ -2396,11 +2396,15 @@ public function facility_settings(){
 			 {
 			$mymontharray[] = $montharray[$key];
 				}
+			 if ($mycount==0) {
+			echo "<div style='margin-left:50%;margin-top:5%;font-size:22px'>No Record for $month $year_from</>";
+		} elseif($mycount>0) {
 			$data['plot_value_filter'] = json_encode($plot_value_filter);
 			$data['arrayto_graph'] = json_encode($arrayto_graph);
 			$data['montharray'] = json_encode($mymontharray);
 			$this -> load -> view("county/ajax_view/consumption_v", $data);
 			
+			}
 			}
 			public function get_facility_json_data($district_id){
 				

@@ -23,7 +23,7 @@
 	<h2>
 		
 
-	<select id="district_filter" style="width: 10.4em;">
+	<select id="district_filter" style="width: 11em;">
 <option value="">Select Sub-county</option>
 <option value="0">All</option>
 <?php
@@ -44,7 +44,7 @@ margin-left: 0.2em;margin-right: 0.2em">
 </div>
 
 
-<select id="commodity_filter" style="width: 10.4em;">
+<select id="commodity_filter" style="width: 10.8em;">
 	<option value="0">Select Commodity</option>
 	
 	<?php
@@ -56,7 +56,7 @@ endforeach;
 ?>
 </select>
 
-	<select name="year" id="year_filter" style="width: 7.4em;">
+	<select name="year" id="year_filter" style="width: 7.8em;">
 		<option value="0">Select Year</option>
 <option value="2014">2014</option>
 <option value="2013">2013</option>
