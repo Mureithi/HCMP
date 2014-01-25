@@ -2311,6 +2311,15 @@ public function facility_settings(){
 	    $data['data']=$this->get_county_facility_mapping_ajax_request("on_load");	
 	    $this -> load -> view("county/ajax_view/facility_roll_out_at_a_glance_v",$data);
 	}
+public function get_facility_json_data($district_id){
+	echo json_encode(facilities::get_facilities_which_are_online($district_id));
+}
+	public function load_county_consumption_graph_view(){
+	$county_id=$this -> session -> userdata('county_id');	
+	$data['c_data']=drug::getAll_2();
+	$data['district_data']=districts::getDistrict($county_id);
+	 $this -> load -> view("county/ajax_view/county_stock_level_filter_v",$data);	
+	}
 	
 	public function get_county_consumption_level_new($year=null,$month=null,$commodity_id=null,$category_id=null,$district_id=null,$option=null){
 
@@ -2333,8 +2342,7 @@ public function facility_settings(){
 	$series_data=array_merge($series_data, array((int) $commodity_detail['total']));	
 	endforeach;
 	
-	$data['c_data']=drug::getAll_2();
-	$data['district_data']=districts::getDistrict($county_id);
+	
 	$data['category_data']=stripslashes(json_encode($category_data));
 	$data['series_data']=stripslashes(json_encode($series_data));
 	$data['year']=$year;
@@ -2372,6 +2380,7 @@ public function facility_settings(){
 			$monthnos[] = $value['monthno'];
 			$totals[] = (double)$value['total'];
 
+
 			}
 			$combined = array_combine($monthnos, $totals);
 
@@ -2396,21 +2405,15 @@ public function facility_settings(){
 			 {
 			$mymontharray[] = $montharray[$key];
 				}
-			 if ($mycount==0) {
-			echo "<div style='margin-left:50%;margin-top:5%;font-size:22px'>No Record for $month $year_from</>";
-		} elseif($mycount>0) {
+			 
 			$data['plot_value_filter'] = json_encode($plot_value_filter);
 			$data['arrayto_graph'] = json_encode($arrayto_graph);
 			$data['montharray'] = json_encode($mymontharray);
 			$this -> load -> view("county/ajax_view/consumption_v", $data);
 			
+			
 			}
-			}
-			public function get_facility_json_data($district_id){
-				
-				echo json_encode(facilities::get_facilities_which_are_online($district_id));
-				}
-
+			
 			public function get_county_stock_level_new($commodity_id=null,$category_id=null,$district_id=null,$option=null){
 
 			$county_id=$this -> session -> userdata(
@@ -2423,23 +2426,43 @@ public function facility_settings(){
 	$category_data=array();
 	$series_data=array();
 		
-	$option_new=(isset($option)) ?$option : "packs";
+	$option_new=isset($option) ? $option : "packs";
 	$district_data=(isset($district_id)&& ($district_id>0)) ? districts::get_district_name($district_id)->toArray() : null;
-	$district_name=(isset($district_data))? " :".$district_data[0]['district']." subcounty": null ;
+	$district_name=(isset($district_data))? " :".$district_data[0]['district']." subcounty": null;
+	$facility_code=(isset($facility_code)&&($facility_code>0) )? facilities::get_facility_name($facility_code)->toArray() 
+	: facilities::get_facilities_which_are_online($county_id);
 
-	//get the data from the db
-	 $stock_data=facility_stock::get_county_drug_stock_level($county_id,$category_id,$commodity_id,$district_id,$option);
+	$district_id=(isset($district_id)&& ($district_id>0)) ? array('id'=>$district_id):districts::getDistrict($county_id)->toArray();
 	
-	foreach($stock_data as $commodity_detail):
+	
+	foreach ($district_id as $district_):
+	
+	if(count($district_id)>1){
+     $category_data =array_merge($category_data, array($district_["district"]));
+	 $stock_data=facility_stock::get_county_drug_stock_level_new($county_id,$category_id,$commodity_id,$district_["id"],$option,'');
+	 
+	 //foreach($stock_data as $stock_data_):
+	 $series_data=array_merge($series_data,array(array((int) $stock_data[0]['total'])));
 		
-    $category_data =array_merge($category_data, array(preg_replace("/[^A-Za-z0-9 ]/", "", $commodity_detail['drug_name'])));
-	$series_data=array_merge($series_data, array((int) $commodity_detail['total']));	
-	endforeach;
+	//endforeach;	
 	
-	$data['c_data']=drug::getAll_2();
-	$data['district_data']=districts::getDistrict($county_id);
+	}
+	else{
+	
+	foreach($facility_code as $facility_):
+		
+	$category_data =array_merge($category_data, array($facility_['facility_name']));	
+	$stock_data=facility_stock::get_county_drug_stock_level_new($county_id,$category_id,$commodity_id,$district_id,$option,$facility_['facility_code']);
+	
+	$series_data=array_merge($series_data,array(array((int) $stock_data[0]['total'])));
+	
+	endforeach;	
+		
+	}
+	endforeach;
+
 	$data['category_data']=stripslashes(json_encode($category_data));
-	$data['series_data']=stripslashes(json_encode($series_data));
+	$data['series_data']=(json_encode($series_data));;
 	$data['year']=$year;
 	$data['month']=date("F",strtotime(date($year."-".$month)));
 	$data['county']=$county_name[0]['county'].$district_name;
@@ -2447,75 +2470,114 @@ public function facility_settings(){
 	
 	$this -> load -> view("county/ajax_view/county_stock_level_graphical_data_v",$data);
 	}
-
-   public function get_county_cost_of_expiries_new($year=null,$district_id=null,$commodity_id=null,$option=null){
-   	
+	public function load_county_cost_of_expiries_graph_view(){
 	$county_id=$this -> session -> userdata('county_id');	
+	$data['c_data']=drug::getAll_2();
+	$data['district_data']=districts::getDistrict($county_id);
+	 $this -> load -> view("county/ajax_view/county_expiry_filter_v",$data);	
+	}
+   public function get_county_cost_of_expiries_new($year=null,$month=null,
+   $district_id=null,$commodity_id=null,$option=null,$facility_code=null){
+  
+	$county_id=$this -> session -> userdata('county_id');
 	$county_name=counties::get_county_name($county_id);
-	
-	$year=isset($year)?$year: date("Y");
-	
-	$option_new=(isset($option)) ?$option : "ksh";
 
-	$category_data=array();
-	
+	$category_data=array();	
 	$series_data=array();
-	$series_data_total=array();
-	$total=0;
+	$temp_array=array();
 	
+	$months=array('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec');
 	
 	$district_data=(isset($district_id)&& ($district_id>0)) ? districts::get_district_name($district_id)->toArray() : null;
+	
 	$district_name_=(isset($district_data))? " :".$district_data[0]['district']." subcounty": null ;
 	
-	  
-	    $district_data=districts::getDistrict($county_id,$district_id);
-		$category_data=array_merge($category_data,array('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'));
-		
-		foreach($district_data as $district_):
-        $district_total=0;
-		$temp_array=array();
-		
-		$district_id=$district_->id;
-		$district_name=$district_->district;	
-      
-	    $commodity_array=Facility_Stock::get_county_cost_of_exipries($county_id,$year,$district_id,$commodity_id,$option_new);
+	$year=isset($year)?$year: date("Y");	
+	$month=isset($month)?$month: date("m");
+	$option_new=(isset($option)) ?$option : "ksh";
+	$facility_code=(isset($facility_code)&&($facility_code>0) )? facilities::get_facility_name($facility_code)->toArray() 
+	: facilities::get_facilities_which_are_online($county_id);
+	$district_id=(isset($district_id)&& ($district_id>0)) ? array('id'=>$district_id):districts::getDistrict($county_id)->toArray();
 	
-	
-	    foreach($commodity_array as $data):
-		
-	    $temp_array=array_merge($temp_array,array($data["cal_month"]=>$data['total']))	;
-	
-	    endforeach;
-		
-		
-		
-		foreach($category_data as $key=>$data):
-				
-		$val=(array_key_exists($data,$temp_array))?(int) $temp_array[$data] :(int) 0;
-		
-		($key==0)?$series_data= array_merge($series_data,array($district_name=>array($val))): 
-		$series_data[$district_name]=array_merge($series_data[$district_name],array($val)) ;
-		
-		$district_total=$district_total+$val;
-		$total=$total+$district_total;
-		
-		endforeach;
 
-		$series_data_total=array_merge($series_data_total,array($district_name=>(int) $district_total));
-		
-		endforeach;
-		
-		$data=array();
-		$data['c_data']=drug::getAll_2();
-	    $data['district_data']=districts::getDistrict($county_id);
-	    $data['category_data']=stripslashes(json_encode($category_data));
-	    $data['series_data_monthly']=$series_data;
-	    $data['series_data_monthly_total']=$series_data_total;
-	    $data['county']=$county_name[0]['county'].$district_name_;
-	    $data['expiry_option']=$option_new;
-		$data['year']=$year;
-		$data['total']=$total;
 	
+	if(count($district_id)>1 && $commodity_id !="null"){
+
+	$category_data =array_merge($category_data, $months);
+
+	$commodity_array=Facility_Stock::get_county_cost_of_exipries_new($county_id,$year,$month,"all",$commodity_id,$option_new,null);
+	
+	 foreach($commodity_array as $data):
+		
+	 $temp_array=array_merge($temp_array,array($data["cal_month"]=>$data['total']))	;
+	
+	 endforeach;
+
+   
+	 foreach($months as $key=>$data):
+				
+	  $val=(array_key_exists($data,$temp_array))?(int) $temp_array[$data] :(int) 0;
+		
+	  $series_data= array_merge($series_data,array($val));
+
+	 endforeach;
+
+	}
+	
+	if(count($facility_code)==1  && $commodity_id !="null"){
+	
+	$commodity_array=Facility_Stock::get_county_cost_of_exipries_new($county_id,$year,$month,
+	'facility',$commodity_id,$option_new,$facility_code[0]['facility_code']);	
+	
+	foreach($commodity_array as $facility_data):
+		
+	$category_data =array_merge($category_data, array($facility_data['drug_name']));
+
+	$series_data=array_merge($series_data,array(array((int) $commodity_array[0]['total'])));
+	
+	endforeach;	
+	
+	}
+	if(count($district_id)==1 && count($facility_code)>1 && $commodity_id !="null"){
+	
+	foreach($facility_code as $facility_):
+		
+	$category_data =array_merge($category_data, array($facility_['facility_name']));
+				
+	$commodity_array=Facility_Stock::get_county_cost_of_exipries_new($county_id,$year,$month,
+	$facility_['district'],$commodity_id,$option_new,$facility_['facility_code']);	
+
+	$series_data=array_merge($series_data,array(array((int) $category_data[0]['total'])));
+	
+	endforeach;	
+	
+	}
+	
+	if($commodity_id =='null' && isset($month)){
+		
+	$district_=districts::getDistrict($county_id)->toArray();
+		
+		foreach($district_ as $data):
+		$category_data =array_merge($category_data, array($data['district']));	
+		$commodity_array=Facility_Stock::get_county_cost_of_exipries_new($county_id,$year,$month,
+	$data['id'],$commodity_id,$option_new,"null");
+	
+	$series_data=array_merge($series_data,array(array((int) $commodity_array[0]['total'])));
+			endforeach;
+	
+	
+	}
+
+	$data=array();
+	$data['category_data']=stripslashes(json_encode($category_data));
+	$data['series_data']=(json_encode($series_data));;
+	$data['year']=$year;
+	
+	$data['month']=date("F",strtotime(date($year."-".$month)));
+	$data['total']=2;
+	$data['expiry_option']=$option_new;
+	$data['county']=$county_name[0]['county'];
+	$data['consumption_option']=$option_new;
 	$this -> load -> view("county/ajax_view/county_expiries_graphical_data_v",$data);
    	
    }

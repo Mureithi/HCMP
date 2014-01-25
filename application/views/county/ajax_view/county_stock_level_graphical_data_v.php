@@ -1,9 +1,10 @@
 <script>
 	$(document).ready(function() {
+
 		<?php $data_response=count(json_decode($category_data));  if($data_response>0): ?>
 	   $('#graph_div').highcharts({
             chart: {
-                type: 'bar'
+                type: 'column'
             },
             title: {
                 text: 'Commodity stock level for <?php $header=""; echo $month." ".$year." ".$county;?>',
@@ -42,40 +43,10 @@
 		 $header="<br><div align='center' class='label label-info '>Commodity stock level for  $month $year $county</div>" ?>";
 		 $("#graph_div").html("<img style='margin-left:20%;' src="+loading_icon+">")
 		  <?php endif; ?>
+		  
+		  
  });
 	
 </script>
-<div  class='label label-info'>Below is the stock level in the county</div><br>
-<div class="label label-info">Select filter Options</div>
-
-<div class="label label-info">Commodity</div>
-<select id="commodity_filter">
-<option value="null">All</option>
-<?php
-foreach($c_data as $data):
-		$commodity_name=$data['drug_name'];	
-		$commodity_id=$data['id'];
-		echo "<option value='$commodity_id'>$commodity_name</option>";
-endforeach;
-?>
-</select>
-<div class="label label-info">District</div>
-<select id="district_filter">
-<option value="null">All</option>
-<?php
-foreach($district_data as $district_):
-		$district_id=$district_->id;
-		$district_name=$district_->district;	
-		echo "<option value='$district_id'>$district_name</option>";
-endforeach;
-?>
-</select>
-<div class="label label-info">Plot Value</div>
-<select id="plot_value_filter">
-<option value="packs">Packs</option>
-<option value="units">Units</option>
-<option value="ksh">KSH</option>
-</select>
-<a id="filter_stock_level" href="#"><span class="label label-success">Filter</span></a>
 <?php echo $header; ?>
 <div id="graph_div"  style="height:100%; width: 100%; margin: 0 auto; float: left"></div>

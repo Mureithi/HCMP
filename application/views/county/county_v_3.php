@@ -51,12 +51,12 @@
 	    });
 	    
 	     $("#stock_level").click(function(){
-		var url = "<?php echo base_url().'report_management/get_county_stock_level_new/'?>";	
+		var url = "<?php echo base_url().'report_management/load_county_consumption_graph_view/'?>";	
 		ajax_request_special(url,'.rightpanel','','stock_level');	
 	    });
 	    
 	     $("#expiries").click(function(){
-		var url = "<?php echo base_url().'report_management/get_county_cost_of_expiries_new/'?>";	
+		var url = "<?php echo base_url().'report_management/load_county_cost_of_expiries_graph_view/'?>";	
 		ajax_request_special(url,'.rightpanel','','expiries');	
 	    });
 	    
@@ -72,12 +72,7 @@
 		
           });
           
-         $("#filter_stock_level").live( "click", function() {
-        var url = "<?php echo base_url().'report_management/get_county_stock_level_new/'?>"+
-        $("#commodity_filter").val()+"/null/"+$("#district_filter").val()+"/"+$("#plot_value_filter").val();	
-		ajax_request_special(url,'.rightpanel','','stock_level');
-		
-          });
+        
           
            $("#filter_expiries").live( "click", function() {
         var url = "<?php echo base_url().'report_management/get_county_cost_of_expiries_new/'?>"+
