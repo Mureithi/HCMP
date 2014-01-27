@@ -2430,7 +2430,7 @@ public function get_facility_json_data($district_id){
 	$district_data=(isset($district_id)&& ($district_id>0)) ? districts::get_district_name($district_id)->toArray() : null;
 	$district_name=(isset($district_data))? " :".$district_data[0]['district']." subcounty": null;
 	$facility_code=(isset($facility_code)&&($facility_code>0) )? facilities::get_facility_name($facility_code)->toArray() 
-	: facilities::get_facilities_which_are_online($county_id);
+	: facilities::get_facilities_which_are_online($district_id);
 
 	$district_id=(isset($district_id)&& ($district_id>0)) ? array('id'=>$district_id):districts::getDistrict($county_id)->toArray();
 	
