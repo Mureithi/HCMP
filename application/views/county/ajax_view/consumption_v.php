@@ -10,7 +10,7 @@
                 marginBottom: 25
             },
             title: {
-                text: 'Commodity Consumption',
+                text: 'Commodity Consumption for <?php echo $facilityname ?> ',
                 x: -20 //center
             },
             subtitle: {

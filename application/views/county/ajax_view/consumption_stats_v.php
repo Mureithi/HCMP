@@ -5,16 +5,10 @@
 	/*border: 1px solid black;*/
 	margin:auto;	
 	}
-	.filter h2{
-		background: #b4cbe2; /* Old browsers */
-		color: #fff;
-		padding: 4px;
-		
-	}
 	.graph_content{
 	width: 99%;
 	height:400px;
-	/*border: 1px solid black;*/
+	border-top: 1px solid black;
 	margin:auto;	
 	}
 </style>
@@ -114,8 +108,10 @@ endforeach;
 		
 				ajax_supply (url,div);
 		
-				
+			 
 		});
+		
+		
 		
 		function ajax_supply (url,div){
 			//alert (div);
@@ -124,7 +120,7 @@ endforeach;
 	var loading_icon="<?php echo base_url().'Images/loading.gif' ?>";
 	 $.ajax({
           type: "POST",
-           data: {facilities: $("#facilities").val(),district_filter: $("#district_filter").val(),commodity_filter: $("#commodity_filter").val(),year_filter: $("#year_filter").val(),plot_value_filter: $("#plot_value_filter").val()},
+           data: {facilityname:$('#commodity_filter option:selected').html(),facilities: $("#facilities").val(),district_filter: $("#district_filter").val(),commodity_filter: $("#commodity_filter").val(),year_filter: $("#year_filter").val(),plot_value_filter: $("#plot_value_filter").val()},
           url: url,
           beforeSend: function() {
             $(div).html("");
