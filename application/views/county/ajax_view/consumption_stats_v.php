@@ -32,8 +32,7 @@ endforeach;
 display: inline-block; white-space: nowrap; position:inherit;
 margin-left: 0.2em;margin-right: 0.2em">
 <select id="facility_filter" >
-<option value="">Select Facility</option>
-<option value="0" selected="selected">All</option>
+<option value="0">Select Facility</option>
 </select>	
 </div>
 
@@ -120,7 +119,7 @@ endforeach;
 	var loading_icon="<?php echo base_url().'Images/loading.gif' ?>";
 	 $.ajax({
           type: "POST",
-           data: {facilityname:$('#commodity_filter option:selected').html(),facilities: $("#facilities").val(),district_filter: $("#district_filter").val(),commodity_filter: $("#commodity_filter").val(),year_filter: $("#year_filter").val(),plot_value_filter: $("#plot_value_filter").val()},
+           data: {facilityname:$('#commodity_filter option:selected').html(),facilities: $("#facility_filter").val(),district_filter: $("#district_filter").val(),commodity_filter: $("#commodity_filter").val(),year_filter: $("#year_filter").val(),plot_value_filter: $("#plot_value_filter").val()},
           url: url,
           beforeSend: function() {
             $(div).html("");
@@ -146,7 +145,7 @@ endforeach;
   var drop_down='';
   var hcmp_facility_api = "<?php echo base_url(); ?>report_management/get_facility_json_data/"+$("#district_filter").val();
   $.getJSON( hcmp_facility_api ,function( json ) {
-     $("#facility_filter").html('<option value="null" selected="selected">Select Facility</option>');
+     $("#facility_filter").html('<option value="0" selected="selected">Select Facility</option>');
       $.each(json, function( key, val ) {
       	drop_down +="<option value='"+json[key]["facility_code"]+"'>"+json[key]["facility_name"]+"</option>";	
       });

@@ -396,7 +396,7 @@ ORDER BY d.drug_name ASC ");
              break;
      endswitch;
      
-		if ($district_filter == 0) {
+		if ($district_filter == 0 ||$facilities_filter == 0) {
 	$inserttransaction = Doctrine_Manager::getInstance()->getCurrentConnection()
 		->fetchAll("SELECT MONTH( fs.date_issued ) as monthno, $computation 
 FROM facility_issues fs, drug d, facilities f, districts di, counties c
@@ -404,6 +404,7 @@ WHERE fs.facility_code = f.facility_code
 AND f.district = di.id
 AND fs.availability =  '1'
 AND c.id = $county_id
+AND di.id= $district_filter
 AND fs.kemsa_code = $commodity_filter
 AND YEAR( fs.date_issued ) =$year_filter
 AND d.id = fs.kemsa_code
@@ -412,7 +413,7 @@ GROUP BY MONTH( fs.date_issued ) ");
 
  return $inserttransaction ;
 	
-		}elseif ($district_filter > 0 ||$facilities_filter ==0) {
+		}elseif ($district_filter > 0 ||$facilities_filter > 0) {
 	
 	$inserttransaction = Doctrine_Manager::getInstance()->getCurrentConnection()
 		->fetchAll("SELECT MONTH( fs.date_issued )as monthno , $computation
@@ -421,24 +422,9 @@ WHERE fs.facility_code = f.facility_code
 AND f.district = di.id
 AND fs.availability =  '1'
 AND c.id = $county_id
+AND di.id= $district_filter
 AND fs.kemsa_code = $commodity_filter
-AND YEAR( fs.date_issued ) =$year_filter
-AND d.id = fs.kemsa_code
-GROUP BY MONTH( fs.date_issued )  ");		
-
-
- return $inserttransaction ;
-		 }elseif ($district_filter > 0 ||$facilities_filter > 0) {
-	
-	$inserttransaction = Doctrine_Manager::getInstance()->getCurrentConnection()
-		->fetchAll("SELECT MONTH( fs.date_issued )as monthno , $computation
-FROM facility_issues fs, drug d, facilities f, districts di, counties c
-WHERE fs.facility_code = f.facility_code
-AND f.district = di.id
-AND fs.availability =  '1'
-AND fs.facility_code =$facilities_filter
-AND c.id = $county_id
-AND fs.kemsa_code = $commodity_filter
+AND fs.facility_code = $facilities_filter
 AND YEAR( fs.date_issued ) =$year_filter
 AND d.id = fs.kemsa_code
 GROUP BY MONTH( fs.date_issued )  ");		
