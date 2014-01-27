@@ -392,5 +392,6 @@ order by d.district asc,f.`date_of_activation` asc
 return $q;	
 	
 }
-
+// getting facilities which are using the system
+	
 }

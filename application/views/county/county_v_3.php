@@ -31,7 +31,7 @@
             </div>
 </div>
 
-<div class="rightpanel" style="overflow: scroll; "></div>
+<div class="rightpanel" ></div>
 
 </div>
 <script type="text/javascript">
@@ -46,7 +46,7 @@
 	    });
 	    
 	    $("#consumption").click(function(){
-		var url = "<?php echo base_url().'report_management/get_county_consumption_level_new/'?>";	
+		var url = "<?php echo base_url().'report_management/cons_new/'?>";	
 		ajax_request_special(url,'.rightpanel','','consumption');	
 	    });
 	    
