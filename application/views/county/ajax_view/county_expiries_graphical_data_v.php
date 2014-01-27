@@ -8,6 +8,10 @@ $(function () {
                 text: 'stock expiring in <?php $header=""; echo $county." ".$year;?>',
                 x: -20 //center
             },
+             subtitle: {
+                text: 'Source: HCMP',
+                x: -20
+            },
             credits: { enabled:false},
             xAxis: {
                 categories: <?php echo $category_data; ?>
@@ -22,6 +26,7 @@ $(function () {
                     color: '#808080'
                 }]
             },
+            
             tooltip: {
                 valueSuffix: '<?php echo $consumption_option; ?>'
             },

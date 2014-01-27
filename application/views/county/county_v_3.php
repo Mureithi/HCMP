@@ -37,43 +37,36 @@
 <script type="text/javascript">
 	$(document).ready(function() {
 
-		$('#system_usage').focus();
-		var url = "<?php echo base_url().'report_management/get_county_facility_mapping_data/'?>";	
+		$('#consumption').focus();
+		var url = "<?php echo base_url().'report_management/cons_new/'?>";	
 		ajax_request_special(url,'.rightpanel','','system_usage');	
 		$("#system_usage").click(function(){	
 		var url = "<?php echo base_url().'report_management/get_county_facility_mapping_data/'?>";	
 		ajax_request_special(url,'.rightpanel','','system_usage');	
-	    });
-	    
+	    });	    
 	    $("#consumption").click(function(){
 		var url = "<?php echo base_url().'report_management/cons_new/'?>";	
 		ajax_request_special(url,'.rightpanel','','consumption');	
-	    });
-	    
+	    });	    
 	     $("#stock_level").click(function(){
 		var url = "<?php echo base_url().'report_management/load_county_consumption_graph_view/'?>";	
 		ajax_request_special(url,'.rightpanel','','stock_level');	
-	    });
-	    
+	    });	    
 	     $("#expiries").click(function(){
 		var url = "<?php echo base_url().'report_management/load_county_cost_of_expiries_graph_view/'?>";	
 		ajax_request_special(url,'.rightpanel','','expiries');	
 	    });
-	    
-	    $("#filter_system_usage").live( "click", function() {
+	 	$("#filter_system_usage").live( "click", function() {
         var url = "<?php echo base_url().'report_management/get_county_facility_mapping_data/'?>"+$("#year_filter").val()+"/"+$("#month_filter").val();	
 		ajax_request_special(url,'.rightpanel','','system_usage');
-          });
-		
+          });		
 	    $("#filter_consumption").live( "click", function() {
         var url = "<?php echo base_url().'report_management/get_county_consumption_level_new/'?>"+
         $("#year_filter").val()+"/"+$("#month_filter").val()+"/"+$("#commodity_filter").val()+"/null/"+$("#district_filter").val()+"/"+$("#plot_value_filter").val();	
 		ajax_request_special(url,'.rightpanel','','consumption');
 		
           });
-          
-        
-          
+
            $("#filter_expiries").live( "click", function() {
         var url = "<?php echo base_url().'report_management/get_county_cost_of_expiries_new/'?>"+
          $("#year_filter").val()+"/"+$("#district_filter").val()+"/"+$("#commodity_filter").val()+"/"+$("#plot_value_filter").val();	

@@ -478,11 +478,11 @@ where f.facility_code=f_t.`facility_id` and f.district=d.id and d.county=1 and y
       /////getting cost of exipries county
 public static function get_county_cost_of_exipries_new($county_id,$year=null,
                   $month=null,$district_id=null,
-                  $commodity_id=null,$option=null,
+                 $option=null,
                   $facility_code=null){  	
 
-     $and_data =(isset($commodity_id)&& ($commodity_id>0)) ?"AND d.id = '$commodity_id'" : null;
-	 $and_data .=(isset($district_id)&& ($district_id>0)) ?"AND di.id = '$district_id'" : null;
+  
+	 $and_data =(isset($district_id)&& ($district_id>0)) ?"AND di.id = '$district_id'" : null;
 	 $and_data .=(isset($facility_code)&& ($facility_code>0)) ?"AND f.facility_code = '$facility_code'" : null;
      
      switch ($option) :
@@ -502,15 +502,15 @@ public static function get_county_cost_of_exipries_new($county_id,$year=null,
 	 $string="AND date_format( fs.expiry_date, '%m')=$month" ;
 	 $group_by =(($district_id=='all')) ?"GROUP BY month(expiry_date) asc" : null;
 	 $group_by .=(($district_id=='facility')) ?"GROUP BY fs.kemsa_code" : null;
-     $select_option=($district_id=='facility') ?"d.drug_name," : 
-     ($facility_code=='null')? null : "date_format( fs.expiry_date, '%b' ) as cal_month," ; ;
+     $select_option=($district_id=='facility') ?"d.drug_name," : null;
+     $select_option .=($district_id=='all')?  "date_format( fs.expiry_date, '%b' ) as cal_month,": null;
 	 
-     $select_option_special=($district_id=='facility') ? $string: null;
-//echo;
+     $select_option_special=($district_id=='facility' || $month!="null") ? $string: null;
+//echo ;
 //exit;
 	 
 $inserttransaction = Doctrine_Manager::getInstance()->getCurrentConnection()
-->fetchAll( "SELECT $select_option $computation
+->fetchAll("SELECT $select_option $computation
 FROM facility_stock fs, facilities f, drug d, counties c, districts di
 WHERE fs.facility_code = f.facility_code
 AND `expiry_date` <= NOW( )
@@ -522,7 +522,7 @@ AND c.id='$county_id'
 $and_data
 AND d.id = fs.kemsa_code
  $group_by
-");
+" );
         return  $inserttransaction ;
 			
 			} 	

@@ -10,6 +10,10 @@
                 text: 'Commodity stock level for <?php $header=""; echo $month." ".$year." ".$county;?>',
                 x: -20 //center
             },
+             subtitle: {
+                text: 'Source: HCMP',
+                x: -20
+            },
             credits: { enabled:false},
             xAxis: {
                 categories: <?php echo $category_data; ?>
