@@ -2410,12 +2410,11 @@ public function get_facility_json_data($district_id){
 	}
 	public function load_county_cost_of_expiries_graph_view(){
 	$county_id=$this -> session -> userdata('county_id');	
-	$data['c_data']=drug::getAll_2();
 	$data['district_data']=districts::getDistrict($county_id);
-	 $this -> load -> view("county/ajax_view/county_expiry_filter_v",$data);	
+	$this -> load -> view("county/ajax_view/county_expiry_filter_v",$data);	
 	}
    public function get_county_cost_of_expiries_new($year=null,$month=null,
-   $district_id=null,$commodity_id=null,$option=null,$facility_code=null){
+   $district_id=null,$option=null,$facility_code=null){
   
 	$county_id=$this -> session -> userdata('county_id');
 	$county_name=counties::get_county_name($county_id);
@@ -2430,20 +2429,20 @@ public function get_facility_json_data($district_id){
 	
 	$district_name_=(isset($district_data))? " :".$district_data[0]['district']." subcounty": null ;
 	
-	$year=isset($year)?$year: date("Y");	
+	$year=($year!="null")?$year: date("Y");	
 	$month=isset($month)?$month: date("m");
-	$option_new=(isset($option)) ?$option : "ksh";
-	$facility_code=(isset($facility_code)&&($facility_code>0) )? facilities::get_facility_name($facility_code)->toArray() 
-	: facilities::get_facilities_which_are_online($county_id);
+	$option_new=(isset($option) && $option!='null' ) ?$option : "ksh";
+	$facility_code=((int) $facility_code>0) ? facilities::get_facility_name($facility_code)->toArray() : 
+	facilities::get_facilities_which_are_online($district_id); 
+	 
 	$district_id=(isset($district_id)&& ($district_id>0)) ? array('id'=>$district_id):districts::getDistrict($county_id)->toArray();
 	
-
-	
-	if(count($district_id)>1 && $commodity_id !="null"){
+ 
+	if(count($district_id)>1 &&  $month=="null"){
 
 	$category_data =array_merge($category_data, $months);
 
-	$commodity_array=Facility_Stock::get_county_cost_of_exipries_new($county_id,$year,$month,"all",$commodity_id,$option_new,null);
+	$commodity_array=Facility_Stock::get_county_cost_of_exipries_new($county_id,$year,$month,"all",$option_new,null);
 	
 	 foreach($commodity_array as $data):
 		
@@ -2462,10 +2461,10 @@ public function get_facility_json_data($district_id){
 
 	}
 	
-	if(count($facility_code)==1  && $commodity_id !="null"){
+	if(count($facility_code)==1 && count($district_id)==1){
 	
 	$commodity_array=Facility_Stock::get_county_cost_of_exipries_new($county_id,$year,$month,
-	'facility',$commodity_id,$option_new,$facility_code[0]['facility_code']);	
+	'facility',$option_new,$facility_code[0]['facility_code']);	
 	
 	foreach($commodity_array as $facility_data):
 		
@@ -2476,31 +2475,32 @@ public function get_facility_json_data($district_id){
 	endforeach;	
 	
 	}
-	if(count($district_id)==1 && count($facility_code)>1 && $commodity_id !="null"){
+	
+	if(count($district_id)==1 && count($facility_code)>=1 && count($category_data)==0){
 	
 	foreach($facility_code as $facility_):
 		
 	$category_data =array_merge($category_data, array($facility_['facility_name']));
 				
 	$commodity_array=Facility_Stock::get_county_cost_of_exipries_new($county_id,$year,$month,
-	$facility_['district'],$commodity_id,$option_new,$facility_['facility_code']);	
+	$facility_['district'],$option_new,$facility_['facility_code']);	
 
-	$series_data=array_merge($series_data,array(array((int) $category_data[0]['total'])));
+	$series_data=array_merge($series_data,array(array((int) $commodity_array[0]['total'])));
 	
 	endforeach;	
 	
 	}
 	
-	if($commodity_id =='null' && isset($month)){
+	if( count($district_id)>1 && $month!="null"){
 		
 	$district_=districts::getDistrict($county_id)->toArray();
 		
 		foreach($district_ as $data):
 		$category_data =array_merge($category_data, array($data['district']));	
 		$commodity_array=Facility_Stock::get_county_cost_of_exipries_new($county_id,$year,$month,
-	$data['id'],$commodity_id,$option_new,"null");
+	    $data['id'],$option_new,"null");
 	
-	$series_data=array_merge($series_data,array(array((int) $commodity_array[0]['total'])));
+	     $series_data=array_merge($series_data,array(array((int) $commodity_array[0]['total'])));
 			endforeach;
 	
 	

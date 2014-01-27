@@ -21,25 +21,16 @@
 <div  class='label label-info'>Below are the expiries in the county :Select filter Options</div
 <div class="filter">
 	<h2>
-<select id="commodity_filter">
-<option value="null">--select commodity--</option>
-<?php
-foreach($c_data as $data):
-		$commodity_name=$data['drug_name'];	
-		$commodity_id=$data['id'];
-		echo "<option value='$commodity_id'>$commodity_name</option>";
-endforeach;
-?>
-</select>	
-<select id="year_filter" class="input-small">
-	<option value="2014" selected="selected">--select year--</option>
+
+<select id="year_filter" >
+	<option value="null" selected="selected">--select year--</option>
 	<option value="2014">2014</option>
 	<option value="2013">2013</option>
 
 </select>	
 
-<select name="month" id="month_filter" class="input-small">
-<option value="01" selected="selected">--select month--</option>
+<select name="month" id="month_filter" >
+<option value="null" selected="selected">--select month--</option>
 <option value="01">Jan</option>
 <option value="02">Feb</option>
 <option value="03">Mar</option>
@@ -68,13 +59,12 @@ endforeach;
 display: inline-block; white-space: nowrap; position:inherit;
 margin-left: 0.2em;margin-right: 0.2em">
 <select id="facility_filter">
-<option value="0">--select facility--</option>
-<option value="null" selected="selected">All</option>
+<option value="null">--select facility--</option>
 </select>	
 </div>
 
 <select id="plot_value_filter">
-<option selected="selected" value="packs">Select Plot value</option>
+<option selected="selected" value="null">Select Plot value</option>
 <option value="packs">Packs</option>
 <option value="units">Units</option>
 <option value="ksh">KSH</option>
@@ -124,7 +114,6 @@ margin-left: 0.2em;margin-right: 0.2em">
         $("#year_filter").val()+
         "/"+$("#month_filter").val()+      
          "/"+$("#district_filter").val()+
-        "/"+$("#commodity_filter").val()+
         "/"+$("#plot_value_filter").val()+    
           "/"+ $("#facility_filter").val();
         
@@ -142,7 +131,7 @@ margin-left: 0.2em;margin-right: 0.2em">
           url: url,
           beforeSend: function() {
              $(div).html("");           
-             $(div).html("<img style='margin-left:45%;margin-top:10%;' src="+loading_icon+">");
+             $(div).html("<img style='margin-top:10%;' src="+loading_icon+">");
            
           },
           success: function(msg) {
