@@ -2365,6 +2365,7 @@ public function get_facility_json_data($district_id){
 	{
 		$county_id=$this -> session -> userdata('county_id');
 		$district_filter= $_POST['district_filter'];
+		$facilityname= $_POST['facilityname'];
 		$commodity_filter = $_POST['commodity_filter'];
 		$year_filter = $_POST['year_filter'];
 		$facilities_filter = $_POST['facilities'];
@@ -2406,6 +2407,7 @@ public function get_facility_json_data($district_id){
 			$mymontharray[] = $montharray[$key];
 				}
 			 
+			$data['facilityname'] = $facilityname;
 			$data['plot_value_filter'] = json_encode($plot_value_filter);
 			$data['arrayto_graph'] = json_encode($arrayto_graph);
 			$data['montharray'] = json_encode($mymontharray);
