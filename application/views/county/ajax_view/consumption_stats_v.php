@@ -8,11 +8,15 @@
 	.graph_content{
 	width: 99%;
 	height:400px;
-	border-top: 1px solid black;
+	-webkit-box-shadow: 1px 1px 1px 1px #DDD3ED;
+box-shadow: 1px 1px 1px 1px #DDD3ED;
 	margin:auto;	
 	}
 </style>
-<div class="label label-info">Please Select filter Options Below</div>
+
+<div class="alert alert-info" style="font-size: 1.6em ; width: 40em; ">
+  <b>Please Select filter Options Below</b>
+</div>
 <div class="filter">
 	<h2>
 		
@@ -67,7 +71,7 @@ endforeach;
 	</h2>
 </div>
 
-<div class="graph_content">
+<div class="graph_content ">
 	
 </div>
 

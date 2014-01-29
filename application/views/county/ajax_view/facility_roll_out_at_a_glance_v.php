@@ -165,7 +165,10 @@ $(document).ready(function() {
 });
 	</script>
 	<div id="dialog"></div>
-	<div class='label label-info'>Below is the project status in the county</div> <div id="temp"></div>
+	<div class="alert alert-info" style="font-size: 1.6em ; width: 40em; ">
+  <b>Below is the project status in the county</b>
+</div>
+	 <div id="temp"></div>
 	<?php echo $data ?>
 	<div>
 	<?php echo $header ?>
