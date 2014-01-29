@@ -2244,9 +2244,11 @@ public function facility_settings(){
 	$series_data_monthly=array();
 	$category_data_monthly=array();
 	
-	$interval = $date_1->diff($date_2);
+	         $seconds_diff = strtotime($last_day_of_the_month) - strtotime($first_day_of_the_month);
+			 $date_diff=floor($seconds_diff/3600/24);
+			
 
-	for($i=0;$i<=$interval->d;$i++):
+	for($i=0;$i<=$date_diff;$i++):
 	
 	$day=1+$i;
 	
@@ -2434,7 +2436,7 @@ public function get_facility_json_data($district_id){
 	$facility_code=(isset($facility_code)&&($facility_code>0) )? facilities::get_facility_name($facility_code)->toArray() 
 	: facilities::get_facilities_which_are_online($district_id);
 
-	$district_id=(isset($district_id)&& ($district_id>0)) ? array('id'=>$district_id):districts::getDistrict($county_id)->toArray();
+	$district_id=(isset($district_id)&& ($district_id>0)) ? districts::get_district_name($district_id)->toArray() :districts::getDistrict($county_id)->toArray();
 	
 	
 	foreach ($district_id as $district_):
@@ -2454,7 +2456,7 @@ public function get_facility_json_data($district_id){
 	foreach($facility_code as $facility_):
 		
 	$category_data =array_merge($category_data, array($facility_['facility_name']));	
-	$stock_data=facility_stock::get_county_drug_stock_level_new($county_id,$category_id,$commodity_id,$district_id,$option,$facility_['facility_code']);
+	$stock_data=facility_stock::get_county_drug_stock_level_new($county_id,$category_id,$commodity_id,$district_["id"],$option,$facility_['facility_code']);
 	
 	$series_data=array_merge($series_data,array(array((int) $stock_data[0]['total'])));
 	
@@ -2534,7 +2536,7 @@ public function get_facility_json_data($district_id){
 		
 	$category_data =array_merge($category_data, array($facility_data['drug_name']));
 
-	$series_data=array_merge($series_data,array(array((int) $commodity_array[0]['total'])));
+	$series_data=array_merge($series_data,array(array((int) $facility_data['total'])));
 	
 	endforeach;	
 	
@@ -2565,9 +2567,8 @@ public function get_facility_json_data($district_id){
 	    $data['id'],$option_new,"null");
 	
 	     $series_data=array_merge($series_data,array(array((int) $commodity_array[0]['total'])));
-			endforeach;
-	
-	
+		endforeach;
+
 	}
 
 	$data=array();

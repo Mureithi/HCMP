@@ -175,6 +175,7 @@ html, body {
 	background: #29527b;
 	display: block;
 	text-shadow: 0 -1px 0 #000;
+	font-size: 0.8em;
 }
 #navigate ul li ul li:hover {
 	background: #289909;

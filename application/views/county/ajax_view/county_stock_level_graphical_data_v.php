@@ -1,6 +1,5 @@
 <script>
 	$(document).ready(function() {
-
 		<?php $data_response=count(json_decode($category_data));  if($data_response>0): ?>
 	   $('#graph_div').highcharts({
             chart: {

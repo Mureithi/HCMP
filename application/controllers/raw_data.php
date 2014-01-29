@@ -34,22 +34,17 @@ class Raw_data extends MY_Controller {
 		$id=$this -> session -> userdata('identity');
 		$req_data = array('from'=>$from,'to'=>$to,'desc'=>$desc,'drugname'=>$drugname);
 		$this -> session -> set_userdata($req_data);
-		//echo $from;
-		//$data['title'] = "Stock Control Card";
 		$data['report'] = Facility_Issues::getAll();
 		$mycount= count(Facility_Issues::getAll());
+		
 		if ($mycount>0) {
-			$data['names'] = User::getsome($id);
+		
 			$this -> load -> view("stockchtml", $data);
 			
 		} else {
 			echo '<div class="norecord"></div>';
 		}
-				
-		
-		
-		
-		
+
 }
 public function commoditieshtml()
 {

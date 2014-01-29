@@ -124,7 +124,7 @@ var drop_down='';
           url: url,
           beforeSend: function() {
              $(div).html("");           
-             $(div).html("<img style='margin-top:10%;' src="+loading_icon+">");
+             $(div).html("<img style='margin-left:20%;' src="+loading_icon+">");
            
           },
           success: function(msg) {

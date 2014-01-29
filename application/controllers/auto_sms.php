@@ -2,7 +2,7 @@
 ob_start();
 class auto_sms extends MY_Controller {
 	
-	var $test_mode=false;
+	var $test_mode=true;
 	
 	
 public function update_stock_out_table(){
@@ -225,9 +225,7 @@ $cc_email=($this->test_mode)?'kariukijackson@gmail.com': 'anganga.pmo@gmail.com,
 }
 
 public function send_email($email_address,$message,$subject,$attach_file=NULL,$bcc_email=NULL,$cc_email=NULL){
-        	return true;
-			
-			
+
 			$mail_list=($this->test_mode)?'kariukijackson@gmail.com,kariukijackson@ymail.com': 'rkihoto@clintonhealthaccess.org,
   		eunicew2000@yahoo.com,
   		gmacharia@clintonhealthaccess.org,
@@ -282,6 +280,8 @@ return TRUE;
  else
 {
  return FALSE;
+ //echo $this->email->print_debugger();
+ 
 }
 
 

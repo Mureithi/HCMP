@@ -14,6 +14,7 @@ class Facility_Issues extends Doctrine_Record {
 		$this -> hasColumn('date_issued', 'date'); 
 		$this -> hasColumn('issued_to', 'varchar', 12);
 		$this -> hasColumn('issued_by', 'int', 12);
+		$this -> hasColumn('receipts', 'int', 12);
 		
 			
 	}

@@ -7,13 +7,14 @@ class Drug extends Doctrine_Record {
 		$this -> hasColumn('Unit_Cost', 'varchar',20);
 		$this -> hasColumn('Drug_Category', 'varchar',10); 
 		$this -> hasColumn('total_units', 'int',11);
+		$this -> hasColumn('source', 'int',11);
 	}
 
 	public function setUp() {
 		$this -> setTableName('drug');
-		$this -> hasOne('Drug_Category as Category', array('local' => 'Drug_Category', 'foreign' => 'id'));
+		$this -> hasMany('Drug_Category as Category', array('local' => 'Drug_Category', 'foreign' => 'id'));		
 		$this -> hasOne('id as Code', array('local' => 'id', 'foreign' => 'kemsa_code'));
-		//$this -> hasOne('id as Code1', array('local' => 'id', 'foreign' => 'kemsa_ode'));
+		$this -> hasMany('commodity_source as CommoditySourceName', array('local' => 'source','foreign' => 'id'));		
 		$this -> hasOne('Facility_Stock as facility', array('local' => 'id', 'foreign' => 'kemsa_code'));
 		
 		

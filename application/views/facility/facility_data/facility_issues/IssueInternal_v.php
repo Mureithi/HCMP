@@ -1,17 +1,20 @@
+<div  class='label label-info' style="font-size: 1.8em">To Issue commodities i) select commodity to issue 
+	ii) enter the service point and quanitity you wish to issue and select the batch no
+	iii) to add more issues press add row</div
  <?php $att=array("name"=>'myform','id'=>'myform'); echo form_open('Issues_main/Insert',$att); ?>
 <table   class="table table-hover table-bordered table-update" id="example" width="100%" >
 					<thead>
 					<tr>
 						<th style="text-align:center; font-size: 14px"><b>Service Point</b></th>
 						<th style="text-align:center; font-size: 14px"><b>Description</b></th>
-						<th style="text-align:center; font-size: 14px"><b>KEMSA Code</b></th>
+						<th style="text-align:center; font-size: 14px"><b>Source</b></th>
 						<th style="text-align:center; font-size: 14px"><b>Unit Size</b></th>
 						<th style="text-align:center; font-size: 14px"><b>Batch No</b></th>
 						<th style="text-align:center; font-size: 14px"><b>Expiry Date</b></th>
 						<th style="text-align:center; font-size: 14px"><b>Available Stock</b></th>
 						<th style="text-align:center; font-size: 14px"><b>Issued Quantity</b></th>
 					    <th style="text-align:center; font-size: 14px"><b>Issue Date </b></th>
-						<th style="text-align:center; font-size: 14px"><b>Remove</b></th> 				    
+						<th style="text-align:center; font-size: 14px"><b>Action</b></th> 				    
 					</tr>
 					</thead>
 					<tbody>
@@ -36,14 +39,17 @@
     <option title="0" value="0" selected="selected">-Select Commodity -</option>
 		<?php 
 		foreach ($drugs as $drugs) :			
-			foreach ($drugs->Code as $d):
-			$drugname=$d->Drug_Name;
-			$code=$d->id;
-			$unit=$d->Unit_Size;
-			$kemsa_code=$d->Kemsa_Code;
 			
-			 echo "<option title='$code^$unit^$kemsa_code' value='$code'> $drugname</option>";?> 
-		<?php endforeach;endforeach;?>
+			$drugname=$drugs['drug_name'];
+			$code=$drugs['id'];
+			$unit=$drugs['unit_size'];
+			$kemsa_code=$drugs['source_name'];
+			
+		echo "<option title='$code^$unit^$kemsa_code' value='$code'> $drugname</option>";
+		
+		endforeach;
+		?> 
+		
 	</select>
 						</td>
 						<td>

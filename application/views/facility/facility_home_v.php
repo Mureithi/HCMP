@@ -171,7 +171,7 @@ $(document).ready(function(){
 		<a href="<?php echo site_url('Issues_main/Index/Internal/'.$facility);?>"><h2>Issue Commodities to Sevice Points</h2></a>
 		</div>
 		<div class="activity ext">
-		<a href="<?php echo site_url('Issues_main/Index/External/'.$facility);?>"><h2>Donate Commodities</h2></a>
+		<a href="<?php echo site_url('Issues_main/Index/External/'.$facility);?>"><h2>Redistribute Commodities to other facilities</h2></a>
 		</div>	
 
 		<div class="activity ext">
