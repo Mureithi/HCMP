@@ -1,76 +1,133 @@
 <style>
- 
-.leftpanel{
-        width: 15%;
-    	height:auto;
+	
+	.sub-menu{
+		width: 15%;
+		height:300px;
     	float: left;
     	margin-right: 0%;
+    	font-family: "Segoe UI", "Segoe WP", "Helvetica Neue", sans-serif;
+    	/*border: 1px solid black;*/
+    	
+	}
+	.graph-section{
+		width: 84%;
+		height:500px;
+    	min-height:100%;
+    	float: left;
+    	margin-left:0.4%;
+    	margin-bottom:1em;
+    	-webkit-box-shadow: -1px 1px 5px 0px rgba(0,0,0,0.75);
+		-moz-box-shadow: -1px 1px 5px 0px rgba(0,0,0,0.75);
+		box-shadow: -1px 1px 5px 0px rgba(0,0,0,0.75);
+    	/*border: 1px solid black;*/
+	}
+	#list_headers {
+
+	margin-right: 0.3em;
+	font-size:1em;
 }
-.rightpanel{
-    width: 84%;
-    min-height:100%;
-    float: left;
-    -webkit-box-shadow: 2px 2px 6px #888;
-	box-shadow: 2px 2px 6px 2px #888; 
-    margin-left:1.5em;
-    margin-bottom:1em;
-}
-</style>
-<div class="page_lay_out">
-<div class="leftpanel">
-<div class="dropdown">
 	
-              <ul class="dropdown-menu" 
-              role="menu" aria-labelledby="dropdownMenu" 
-              style="display: block; position: static; margin-bottom: 5px; width: 100%; height:50%; ">
-                <li><a tabindex="-1" href="#" id="consumption"><h3>Consumption</h3></a></li>                
-                <li><a tabindex="-1" href="#" id="stock_level"><h3>Stock Levels</h3></a></li>              
-                <li><a tabindex="-1" href="#" id='expiries'><h3>Expiries</h3></a></li>
-                <li><a tabindex="-1" href="#" id="system_usage"><h3>System Up take</h3></a></li>
+	#list_headers ul{
+	text-align: left;
+	display: inline;
+	margin: 0;
+	
+	list-style: none;
+	}
+	#list_headers ul li{
+	display: block;
+	line-height: 40px;
+	position: relative;
+	background: #29527b; /* Old browsers */
+	cursor: pointer;
+	
+   }
+   #list_headers ul li a{
+   	color:white;
+   	text-decoration: none;
+   }
+   h3{
+	margin: 1px;
+	font-size: 1.5em;
+	padding-left:6%;
+	font-weight: 200;
+}
+#list_headers ul li :hover {
+	background: #289909;
+}
+#list_headers ul li:hover ul {
+	display: block;
+	opacity: 1;
+	visibility: visible;
+}
+
+</style>
+
+
+<div class="sub-menu">
+	
+			<nav id="list_headers">
+	
+              <ul>
+                <li ><a  href="#" id="consumption"><h3>Consumption</h3></a></li>                
+                <li><a  href="#" id="stock_level"><h3>Stock Levels</h3></a></li>              
+                <li><a  href="#" id='expiries'><h3>Expiries</h3></a></li>
+                <li><a  href="#" id="system_usage"><h3>System Up take</h3></a></li>
               </ul>
-            </div>
+            </nav>
 </div>
 
-<div class="rightpanel" ></div>
-
+<div class="graph-section">
+	
+	
 </div>
-<script type="text/javascript">
+
+<script>
 	$(document).ready(function() {
+		$( "#consumption" ).css( "background-color", "#29527b" );
+	$(function() {
+		
+	$( "#list_headers li" ).click(function() {
+		
+		$( "#list_headers li" ).css( "background-color", "#29527b" );
+ 		$( this ).css( "background-color", "#289909" );
+ 		
+});
 
 		$('#consumption').focus();
 		var url = "<?php echo base_url().'report_management/cons_new/'?>";	
-		ajax_request_special(url,'.rightpanel','','system_usage');	
+		ajax_request_special(url,'.graph-section','','system_usage');	
 		$("#system_usage").click(function(){	
 		var url = "<?php echo base_url().'report_management/get_county_facility_mapping_data/'?>";	
-		ajax_request_special(url,'.rightpanel','','system_usage');	
+		ajax_request_special(url,'.graph-section','','system_usage');	
 	    });	    
 	    $("#consumption").click(function(){
 		var url = "<?php echo base_url().'report_management/cons_new/'?>";	
-		ajax_request_special(url,'.rightpanel','','consumption');	
+		ajax_request_special(url,'.graph-section','','consumption');	
 	    });	    
 	     $("#stock_level").click(function(){
 		var url = "<?php echo base_url().'report_management/load_county_consumption_graph_view/'?>";	
-		ajax_request_special(url,'.rightpanel','','stock_level');	
+		ajax_request_special(url,'.graph-section','','stock_level');	
 	    });	    
 	     $("#expiries").click(function(){
 		var url = "<?php echo base_url().'report_management/load_county_cost_of_expiries_graph_view/'?>";	
-		ajax_request_special(url,'.rightpanel','','expiries');	
+		ajax_request_special(url,'.graph-section','','expiries');	
 	    });
 	 	$("#filter_system_usage").live( "click", function() {
         var url = "<?php echo base_url().'report_management/get_county_facility_mapping_data/'?>"+$("#year_filter").val()+"/"+$("#month_filter").val();	
-		ajax_request_special(url,'.rightpanel','','system_usage');
+		ajax_request_special(url,'.graph-section','','system_usage');
           });		
 	    $("#filter_consumption").live( "click", function() {
         var url = "<?php echo base_url().'report_management/get_county_consumption_level_new/'?>"+
         $("#year_filter").val()+"/"+$("#month_filter").val()+"/"+$("#commodity_filter").val()+"/null/"+$("#district_filter").val()+"/"+$("#plot_value_filter").val();	
-		ajax_request_special(url,'.rightpanel','','consumption');
+		ajax_request_special(url,'.graph-section','','consumption');
 		
           });
 
            $("#filter_expiries").live( "click", function() {
         var url = "<?php echo base_url().'report_management/get_county_cost_of_expiries_new/'?>"+
          $("#year_filter").val()+"/"+$("#district_filter").val()+"/"+$("#commodity_filter").val()+"/"+$("#plot_value_filter").val();	
-		ajax_request_special(url,'.rightpanel','','expiries');
+		ajax_request_special(url,'.graph-section','','expiries');
 		
           });
 		
@@ -84,18 +141,18 @@
           url: url,
           beforeSend: function() {
           	
-          	if(checker==".rightpanel"){
-          	 $(".rightpanel").html("<img style='margin-left:20%;' src="+loading_icon+">");	
+          	if(checker==".graph-section"){
+          	 $(".graph-section").html("<img style='margin-left:20%;' src="+loading_icon+">");	
           	}else{
-          	 $('.rightpanel').html("");	
+          	 $('.graph-section').html("");	
           	}
 
           },
           success: function(msg) {
-          	if(checker==".rightpanel"){	
+          	if(checker==".graph-section"){	
           		
-          $(".rightpanel").html(""); 	
-          $(".rightpanel").html(msg); 
+          $(".graph-section").html(""); 	
+          $(".graph-section").html(msg); 
           
           }
           else{
@@ -103,8 +160,7 @@
           }
 
         if(option=='system_usage'){
-        	$("#temp").prepend('<div class="label label-info">Select filter Options</div>'+
-'<select name="year" id="year_filter">'+
+        	$("#temp").prepend('<select name="year" id="year_filter">'+ '<option value="0">Select Year</option>'+
 '<option value="2014">2014</option>'+
 '<option value="2013">2013</option></select>'+
 '<select name="month" id="month_filter">'+
@@ -121,13 +177,11 @@
 '<option value="11">Nov</option>'+
 '<option value="12">Dec</option>'+
 '</select>'+
-'<a id="filter_system_usage" href="#"><span class="label label-success">Filter</span></a>');
+'<button class="btn btn-small btn-success" id="filter_system_usage" style="margin-left: 1em;" >Filter</button>');
         }
           }
         }); 
 }
-		
-	});
+});
+});
 </script>
-
-

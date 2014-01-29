@@ -6,7 +6,7 @@
 	margin:auto;	
 	}
 	.filter h2{
-		background: #b4cbe2; /* Old browsers */
+		
 		color: #fff;
 		padding: 4px;
 		
@@ -14,23 +14,26 @@
 	.graph_content{
 	width: 99%;
 	height:400px;
-	border: 1px solid black;
+	-webkit-box-shadow: 1px 1px 1px 1px #DDD3ED;
+box-shadow: 1px 1px 1px 1px #DDD3ED;
 	margin:auto;	
 	}
 </style>
-<div  class='label label-info'>Below are the expiries in the county :Select filter Options</div
+<div class="alert alert-info" style="font-size: 1.6em ; width: 40em; ">
+  <b>Below are the expiries in the County </b> :Select filter Options
+</div>
 <div class="filter">
 	<h2>
 
 <select id="year_filter" >
-	<option value="null" selected="selected">--select year--</option>
+	<option value="null" selected="selected">Select year</option>
 	<option value="2014">2014</option>
 	<option value="2013">2013</option>
 
 </select>	
 
 <select name="month" id="month_filter" >
-<option value="null" selected="selected">--select month--</option>
+<option value="null" selected="selected">Select month</option>
 <option value="01">Jan</option>
 <option value="02">Feb</option>
 <option value="03">Mar</option>
@@ -59,7 +62,7 @@ endforeach;
 display: inline-block; white-space: nowrap; position:inherit;
 margin-left: 0.2em;margin-right: 0.2em">
 <select id="facility_filter">
-<option value="null">--select facility--</option>
+<option value="null">Select facility</option>
 </select>	
 </div>
 

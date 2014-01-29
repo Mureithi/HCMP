@@ -6,7 +6,7 @@
 	margin:auto;	
 	}
 	.filter h2{
-		background: #b4cbe2; /* Old browsers */
+		
 		color: #fff;
 		padding: 4px;
 		
@@ -14,15 +14,18 @@
 	.graph_content{
 	width: 99%;
 	height:400px;
-	border: 1px solid black;
+	-webkit-box-shadow: 1px 1px 1px 1px #DDD3ED;
+box-shadow: 1px 1px 1px 1px #DDD3ED;
 	margin:auto;	
 	}
 </style>
-<div  class='label label-info'>Below is the stock level in the county :Select filter Options</div
+<div class="alert alert-info" style="font-size: 1.6em ; width: 40em; ">
+  <b>Below are the expiries in the County </b> :Select filter Options
+</div>
 <div class="filter">
 	<h2>
 <select id="commodity_filter">
-<option value="0">--select commodity--</option>
+<option value="0">Select Commodity</option>
 <?php
 foreach($c_data as $data):
 		$commodity_name=$data['drug_name'];	
@@ -48,7 +51,7 @@ display: inline-block; white-space: nowrap; position:inherit;
 margin-left: 0.2em;margin-right: 0.2em">
 
 <select id="facility_filter">
-<option value="0">--select facility--</option>
+<option value="0">Select facility</option>
 <option value="null" selected="selected">All</option>
 </select>	
 </div>

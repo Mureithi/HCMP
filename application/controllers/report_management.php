@@ -2366,15 +2366,15 @@ public function get_facility_json_data($district_id){
 	public function consumption_stats_graph()
 	{
 		$county_id=$this -> session -> userdata('county_id');
-		$district_filter= $_POST['district_filter'];
+	 	$district_filter= $_POST['district_filter'];
 		$facilityname= $_POST['facilityname'];
-		$commodity_filter = $_POST['commodity_filter'];
-		$year_filter = $_POST['year_filter'];
+		 $commodity_filter = $_POST['commodity_filter'];
+		 $year_filter = $_POST['year_filter'];
 		$facilities_filter = $_POST['facilities'];
 		$plot_value_filter = $_POST['plot_value_filter'];
+	
 		$montharray = array('1' => 'January', '2' => 'Febuary', '3' => 'March', '4'=> 'April', '5' => 'May', '6'=> 'June' ,'7' => 'July', '8' => 'August', '9' => 'September', '10' => 'October', '11' => 'November', '12' => 'December' );
 			$consumption_data = Facility_stock::get_county_drug_consumption_level2($facilities_filter,$county_id,$district_filter,$commodity_filter,$year_filter,$plot_value_filter);
-			$mycount=count(Facility_stock::get_county_drug_consumption_level2($facilities_filter,$county_id,$district_filter,$commodity_filter,$year_filter,$plot_value_filter));
 			$monthnos = array();
 			$totals = array();
 

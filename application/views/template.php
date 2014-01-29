@@ -209,6 +209,10 @@ if (@@$current == "Issues_main") {echo "active";
 	if ($quick_link == "dispatched_listing_v") {echo " top_menu_active ";
 	}
 	?>">Deliveries</a>-->
+=======
+?>">Issues </a></li>	
+			
+>>>>>>> 0d24af41f8970f9efa6b1a174c0e35813d7c04c8
 <li><a  href="<?php echo base_url(); ?>report_management/reports_Home"  class="<?php
 if (@@$current == "report_management") {echo "active";
 }

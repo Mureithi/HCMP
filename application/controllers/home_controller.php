@@ -557,7 +557,7 @@ $data['strXML_e1']=$strXML_e1;
 			$data['facilities']=Facilities::getFacilities($district);
 		    $data['active_facilities']=Facility_Issues::get_active_facilities_in_district($district);
 			$data['inactive_facilities']=Facility_Issues::get_inactive_facilities_in_district($district);
-			$data['content_view'] = "district/district_dash";
+			$data['content_view'] = "district/district_home_v";
 		}
 		
 		$data['banner_text'] = "Home";
