@@ -193,10 +193,7 @@ if (@@$current == "home_controller") {echo "active";
 if (@@$current == "Issues_main") {echo "active";
 }
 ?>">Issues </a></li>	
-<!--<a href="<?php echo base_url();?>order_management/all_deliveries/<?php echo $facility?>" class="top_menu_link<?php
-	if ($quick_link == "dispatched_listing_v") {echo " top_menu_active ";
-	}
-	?>">Deliveries</a>-->
+			
 <li><a  href="<?php echo base_url(); ?>report_management/reports_Home"  class="<?php
 if (@@$current == "report_management") {echo "active";
 }
