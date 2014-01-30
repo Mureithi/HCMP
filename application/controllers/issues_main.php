@@ -31,18 +31,18 @@ class Issues_main extends auto_sms {
 						//$data['content_view'] = "IssueExternal_v";						
 						$county=districts::get_county_id($this -> session -> userdata('district1'));
 						$data['district']=districts::getAll();
-						$data['banner_text'] = "Donate";
-						$data['title'] = "Stock";
+						$data['banner_text'] = "Redistribute Commodities";
+						$data['title'] = "Redistribute Commodities";
 						$data['quick_link'] = "IssueExternal_v";
 						
 					break;
 					
 					case 'Donation':
 										   
-		        $data['title'] = "Update Stock Level: Donation";
-     	        $data['content_view'] = "facility/update_stock_donation_v";
-		        $data['banner_text'] = "Update Stock Level: Donation";
-		        $data['drug_categories'] = Drug_Category::getAll();
+		        $data['title'] = "Update Stock Level: External source";
+     	        $data['content_view'] = "facility/facility_data/facility_issues/update_stock_donation_v";
+		        $data['banner_text'] = "Update Stock Level: External source";
+		        $data['drug_categories'] = Drug::getAll();
 		        $data['quick_link'] = "update_stock_level";
 		
 	   
@@ -60,7 +60,7 @@ class Issues_main extends auto_sms {
 
 		$data['service']=Service::getall($facility);		
 		$data['drugs'] = Facility_Stock::getAllStock($facility);
-		$data['link'] = "IssuesnReceipts";
+
      	$this -> load -> view("template", $data);
 
 	}
@@ -204,7 +204,7 @@ public function InsertExt()
         $qty=$_POST['Qtyissued'];
 		$thedate=$_POST['date_issue'];
         $j=sizeof ($ids);
-		
+	
        $count=0;
 	   $facilityCode=$facility_c=$this -> session -> userdata('news');
        $usernow=$this -> session -> userdata('identity'); 
@@ -214,20 +214,27 @@ public function InsertExt()
         	        	
 			if ($qty[$me]>0) {
 				///update the donating facility details
-				$facility_name=Facilities::get_facility_name($mfl[$me]);
-				$facility_details=$facility_name['facility_name']." ".$mfl[$me];
-		        $sNo="inter-facility donation: ".$mfl[$me];
+				$facility_name=Facilities::get_facility_name($mfl[$me])->toArray();
+		
+				
+				$facility_details="inter-facility donation: MFL NO ".$mfl[$me];
+		        $sNo="(-ve Adj) Stock Deduction";
 				$count++;
+				
+				$issues=$qty[$me]*-1;
 				
 				////checking if the facilility receiving the commodities is using HCMP
 				$users_array=user::getUsers($mfl[$me]);
 				$user_in_donated_facility=count($users_array);
-				
+
 				//inserting in the facility issues 
-				$mydata = array('facility_code' => $facilityCode,'kemsa_code' => $ids[$me],
-				 's11_No'=>$sNo, 'batch_no' => $batchN[$me] ,'expiry_date' => date('y-m-d',strtotime($Expiry[$me])) ,'qty_issued'=> $qty[$me] ,
+				$mydata = array('facility_code' => $facilityCode,
+				'kemsa_code' => $ids[$me],
+				 's11_No'=>$sNo, 'batch_no' => $batchN[$me] 
+				 ,'expiry_date' => date('y-m-d',strtotime($Expiry[$me])) ,'qty_issued'=> $qty[$me] ,
 				 'balanceAsof'=>$Available[$me],
-				 'date_issued'=>date('y-m-d',strtotime($thedate[$me])),'issued_to'=>$facility_details,'issued_by'=>$usernow);
+				 'date_issued'=>date('y-m-d',strtotime($thedate[$me]))
+				 ,'issued_to'=>$facility_details,'issued_by'=>$usernow,'receipts'=>$issues);
 				
 				$u = new Facility_Issues();
 
@@ -341,13 +348,14 @@ public function donation()
 		$facility_c=$this -> session -> userdata('news');
 		$usernow=$this -> session -> userdata('identity'); 
 		
-		$kemsa_code=$_POST['kemsa_code'];
+		$kemsa_code=$_POST['drug_id'];
 		$expiry_date=$_POST['expiry_date'];
-		$batch_no=$_POST['batch_no'];
+		$batch_no=$_POST['batchNo'];
 		$manuf=$_POST['manuf'];
 		$a_stock=$_POST['qreceived'];
-		$count=count($kemsa_code);
 		$source=$_POST['source'];
+		$count=count($kemsa_code);
+		
 		$orderDate=date('y-m-d H:i:s');
 				;
 		
@@ -367,20 +375,18 @@ public function donation()
 			'source'=>$source[$i]
 			);
 			
+			////get the current balance of the same commodity before adding new stock level
+		   $current_bal=Facility_Stock::getAll($kemsa_code[$i],$facility_c);
+			
 			
 			///updating the facility stock with the new data from the donation 
 			Facility_Stock::update_facility_stock($mydata);
-			
-			///getting facility stock level for this specific commodity
-			$data=Facility_Stock::get_facility_commodity_stock_balance($kemsa_code[$i],$facility_c);
-		
-		
-			
+	
 			//adding data to issues table
 			
-				$mydata = array('facility_code' => $facility_c,'kemsa_code' => $kemsa_code[$i], 's11_No'=>"Stock Addition", 
+				$mydata = array('facility_code' => $facility_c,'kemsa_code' => $kemsa_code[$i], 's11_No'=>"(+ve Adj) Stock Addition", 
 				'batch_no' => $batch_no[$i] ,'expiry_date' => date('y-m-d',strtotime($expiry_date[$i])) ,
-				'qty_issued'=> 0,'balanceAsof'=>$data['total'],'receipts'=>$a_stock[$i],
+				'qty_issued'=> 0,'balanceAsof'=>$current_bal[0]['total_balance'],'receipts'=>$a_stock[$i],
 				 'date_issued'=>date('y-m-d'),
 				 'issued_to'=>"Source :".$source[$i],'issued_by'=>$usernow);
 				
@@ -389,8 +395,6 @@ public function donation()
     			$u->fromArray($mydata);
 
     			$u->save();
-				
-				
 
 			}
 		}
@@ -406,7 +410,7 @@ public function donation()
 		   $facility_has_commodity=Facility_Transaction_Table::get_if_drug_is_in_table($facility_c,$kemsa_code_);
 		   
 		   if($facility_has_commodity>0){
-		   	$inserttransaction_1 = Doctrine_Manager::getInstance()->getCurrentConnection()->fetchAll("select   `adj` from `facility_transaction_table`
+		   	$inserttransaction_1 = Doctrine_Manager::getInstance()->getCurrentConnection()->fetchAll("select  `adj` from `facility_transaction_table`
                                           WHERE `kemsa_code`= '$kemsa_code_' and availability='1' and facility_code=$facility_c; ");
 		
 			
@@ -440,8 +444,7 @@ public function donation()
 		   
 		
 			}
-			
-          $inserttransaction1 = Doctrine_Manager::getInstance()->getCurrentConnection();
+
 			
          $this->send_stock_update_sms();
          $this->session->set_flashdata('system_success_message', "You have received $count item(s)");

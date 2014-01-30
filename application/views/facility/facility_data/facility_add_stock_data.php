@@ -1,22 +1,12 @@
 <script type="text/javascript" language="javascript" src="<?php echo base_url();  ?>Scripts/unit_size.js"></script>
-<style>
-p.padding
-{
-padding-top:20px;
-
-}
-input[type="text"]{
-	padding: 4px 4px;
-}
-</style>
-
+<div  class='label label-info' style="font-size: 1.8em">To update facility stock data, first do physical stock count</div>
 <?php $att=array("name"=>'myform','id'=>'myform');
 echo form_open('stock_management/add_stock_level',$att); ?>
 <table border="0" class="table table-hover table-bordered table-update" width="100%" id="order_table">
 	<thead>
 		<tr>
 			<th style="text-align:center; font-size: 14px"><b>Description</b></th>
-			<th style="text-align:center; font-size: 14px"><b>KEMSA Code</b></th>
+			<th style="text-align:center; font-size: 14px"><b>Source</b></th>
 			<th style="text-align:center; font-size: 14px"><b>Unit Size</b></th>
 			<th style="text-align:center; font-size: 14px"><b>Unit of Issue</b></th>
 			<th style="text-align:center; font-size: 14px"><b>Batch No</b></th>
@@ -36,9 +26,14 @@ echo form_open('stock_management/add_stock_level',$att); ?>
 				<?php
 				foreach ($drugs as $drug) {
 					$id=$drug->id;
-					$id1=$drug->Kemsa_Code;
+					//$id1=$drug->Kemsa_Code;
 					$drug_name=$drug->Drug_Name;
 					$unit_size=$drug->Unit_Size;
+					
+					foreach($drug->CommoditySourceName as $test):
+					$id1=$test->source_name;
+					endforeach;
+					
 					echo "<option title='" . $id."^".$id1."^".$drug."^".$unit_size . "' value='$id'>" .$drug->Drug_Name ;
 				}
 				?>
@@ -154,6 +149,30 @@ echo form_open('stock_management/add_stock_level',$att); ?>
 			var stock_level=$(this).closest("tr").find('.a_stock').val();
 			var unit_count=$(this).closest("tr").find('.qreceived').val();
 			var unitissue=$(this).closest("tr").find('.unitissue').val();
+			
+			var alert_message='';
+			
+			if(data==0){
+				alert_message +="- Select a commodity first\n";
+			}
+			
+			if(batchNo==""){
+				alert_message +="- Indicate batch No of the commodity\n";
+			}
+			if(manuf==""){
+				alert_message +="-Indicate Manufacturer of the commodity\n";
+			}
+			if(expiry_date==''){
+				alert_message +="-Indicate the expiry date of the commodity\n";
+			}
+			if(stock_level==''){
+				alert_message +="-Indicate the stock level of the commodity\n";
+			}
+			if(isNaN(alert_message)){
+				alert(alert_message+' before adding a new row\n');
+				return;
+			}
+						
 						
              if(batchNo!='' && stock_level!=''){
 									

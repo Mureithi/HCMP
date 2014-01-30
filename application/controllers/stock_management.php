@@ -51,11 +51,10 @@ class Stock_Management extends auto_sms {
 	
 	//the facility is meant to update their stock level when they first run the system
 	public function facility_first_run(){
-	    $facility_code=$this -> session -> userdata('news');
-		
+
 		$data['title'] = "Update Stock Level on First Run";
      	$data['content_view'] = "facility/facility_data/update_stock_first_run";
-		$data['banner_text'] = "Update Stock Level";
+		$data['banner_text'] = "Update Stock Level on First Run";
 		$data['drugs'] = Drug::getAll();
 		$data['quick_link'] = "update_stock_level";
 		$this -> load -> view("template", $data);
@@ -70,7 +69,7 @@ class Stock_Management extends auto_sms {
 		$batch_no=$_POST['batchNo'];
 		$manuf=$_POST['manuf'];
 		$a_stock=$_POST['qreceived'];
-		//$drug_id=$_POST['drug_id'];
+
 		$count=count($kemsa_code);
 		
 		
@@ -129,10 +128,10 @@ class Stock_Management extends auto_sms {
 }
 
     public function facility_add_stock_data(){
-    	$facility_code=$this -> session -> userdata('news');		
-		$data['title'] = "Update Stock Level";
+    			
+		$data['title'] = "Update Facility Stock data";
      	$data['content_view'] = "facility/facility_data/facility_add_stock_data";
-		$data['banner_text'] = "Update Stock Level";
+		$data['banner_text'] = "Update Facility Stock data";
 		$data['drugs'] = Drug::getAll();
 		$this -> load -> view("template", $data);	
     }
