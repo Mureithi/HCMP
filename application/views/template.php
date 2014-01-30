@@ -196,10 +196,14 @@ if (@@$current == "home_controller") {echo "active";
 <li><a  href="<?php echo base_url(); ?>Issues_main" class="<?php
 if (@@$current == "Issues_main") {echo "active";
 }
+<<<<<<< HEAD
 
 ?>">Issues </a></li>	
 			
  <b class="caret"></b></a>
+=======
+?>">Issues <b class="caret"></b></a>
+>>>>>>> 0575dc204d618ce8eb639693a4d3604983418707
 <ul>
                   <li><a href="<?php echo site_url('Issues_main/Index/Internal/'.$facility);?>">Issue to Service Point</a></li>
                   <li><a href="<?php echo site_url('Issues_main/Index/External/'.$facility);?>">Redistribute Commodities</a></li>
@@ -212,7 +216,14 @@ if (@@$current == "Issues_main") {echo "active";
 	if ($quick_link == "dispatched_listing_v") {echo " top_menu_active ";
 	}
 	?>">Deliveries</a>-->
+<<<<<<< HEAD
 
+=======
+=======
+?>">Issues </a></li>	
+			
+>>>>>>> 0d24af41f8970f9efa6b1a174c0e35813d7c04c8
+>>>>>>> 0575dc204d618ce8eb639693a4d3604983418707
 <li><a  href="<?php echo base_url(); ?>report_management/reports_Home"  class="<?php
 if (@@$current == "report_management") {echo "active";
 }
