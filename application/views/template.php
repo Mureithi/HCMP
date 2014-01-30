@@ -197,6 +197,7 @@ if (@@$current == "Issues_main") {echo "active";
 	if ($quick_link == "dispatched_listing_v") {echo " top_menu_active ";
 	}
 	?>">Deliveries</a>-->
+
 <li><a  href="<?php echo base_url(); ?>report_management/reports_Home"  class="<?php
 if (@@$current == "report_management") {echo "active";
 }
@@ -322,7 +323,7 @@ if (@@$current == "home_controller") {echo "active";
 	?>
 	<li class="active"><a data-clone="Home" href="<?php echo base_url(); ?>home_controller">Home </a></li>
 	<!--<li class="active"><a data-clone="Orders" href="<?php echo base_url();?>rtk_management/rtk_orders">Orders</a></li>-->
-	<li class="active"><a data-clone="Deliveries" href="<?php echo base_url(); ?>stock_expiry_management/county_deliveries">Deliveries</a></li>
+	<li class="active"><a data-clone="County Orders" href="<?php echo base_url(); ?>stock_expiry_management/county_deliveries">County Orders</a></li>
 	<li class="active"><a data-clone="Expiries" href="<?php echo base_url(); ?>stock_expiry_management/county_expiries">Expiries</a></li>
 	<li><a data-clone="Commodity List" href="<?php echo base_url(); ?>report_management/get_county_evaluation_form_results" class="<?php
 	if ($quick_link == "commodity_list") {echo "active";
