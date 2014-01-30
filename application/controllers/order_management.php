@@ -298,18 +298,16 @@ public function kemsa_approve_order(){
 	public function listing($tab,$status) {
 		 $facility_c=$this -> session -> userdata('news');
 		// echo $facility_c;
-		$data['myClass'] = $this;
-		$data['pending'] = Ordertbl::getPending($facility_c);
-		$data['pending_d'] = Ordertbl::getPending_d($facility_c);
-		$data['dispatched'] = Ordertbl::getDispatched($facility_c);
-		$data['received']=Ordertbl::get_received($facility_c);
-		$data['rejected']=Ordertbl::get_rejected($facility_c);
-		$data['title'] = "All Orders";
-		$data['status']=$status;
-		$data['quick_link'] = "order_listing";
-		$data['content_view'] = "facility/facility_data/facility_orders/orders_listing_v$tab";
-		$data['banner_text'] = "All Orders";
-		$data['link'] = "order_management"; 
+		
+        $data['order_counts']=Counties::get_county_order_details("","", $facility_c);
+		$data['delivered']=Counties::get_county_received("","", $facility_c);
+		$data['pending']=Counties::get_pending_county("","", $facility_c);
+		$data['approved']=Counties::get_approved_county("","", $facility_c);
+		$data['rejected']=Counties::get_rejected_county("","", $facility_c);
+		$data['title'] = "Facility Orders";
+		$data['content_view'] = "facility/facility_data/facility_orders/orders_listing_v";
+		$data['banner_text'] = "Facility Orders";
+
 		$this -> load -> view("template", $data);
 	}
 	public function get_delivered_orders_ajax(){

@@ -55,8 +55,10 @@ return $q;
 			AND d.id='$district' GROUP BY d.district");
 		return $query;
 	}
-	public static function get_county_order_details($county_id,$district_id=NUll){
-		$and_data =(isset($district_id)&& ($district_id>0)) ?"AND d.id = '$district_id'" : "AND d.county =$county_id";
+	public static function get_county_order_details($county_id,$district_id=NUll,$facility_code=null){
+		
+		$and_data =(isset($district_id)&& ($district_id>0)) ?"AND d.id = '$district_id'" : 
+		(isset($facility_code)&& ($facility_code>0)) ? "AND f.facility_code =$facility_code": "AND d.county =$county_id" ;
 		
 		
 		$query=Doctrine_Manager::getInstance()->getCurrentConnection()->fetchAll("SELECT 
@@ -149,9 +151,9 @@ and temp.total>0
 group by f.facility_code");	
 		return $query;
 	}
-	public static function get_county_received($county_id,$district_id=NUll){
-	
-	 $and_data =(isset($district_id)&& ($district_id>0)) ?"AND d.id = '$district_id'" : "AND d.county =$county_id";
+	public static function get_county_received($county_id,$district_id=NUll,$facility_code=null){
+$and_data =(isset($district_id)&& ($district_id>0)) ?" AND d.id = '$district_id'" : 
+		(isset($facility_code)&& ($facility_code>0)) ? " AND f.facility_code =$facility_code": " AND d.county =$county_id" ;
 				
 			
 		
@@ -177,8 +179,11 @@ group by f.facility_code having temp.id>0");
 		   return $query;
    
 	}
-	public static function get_pending_county($county_id,$district_id=NUll){
-			$and_data =(isset($district_id)&& ($district_id>0)) ?"AND d.id = '$district_id'" : "AND d.county =$county_id";
+	public static function get_pending_county($county_id,$district_id=NUll,$facility_code=null){
+$and_data =(isset($district_id)&& ($district_id>0)) ?" AND d.id = '$district_id'" : 
+		(isset($facility_code)&& ($facility_code>0)) ? " AND f.facility_code =$facility_code": " AND d.county =$county_id" ;
+		
+
 				$query=Doctrine_Manager::getInstance()->getCurrentConnection()->fetchAll("
 SELECT o.id, d.district, f.facility_name, f.facility_code, o.orderDate, date_format( o.orderDate, '%b %Y' ) AS mwaka, o.orderTotal
 FROM districts d, facilities f, ordertbl o
@@ -189,8 +194,11 @@ $and_data");
 		 
 		   return $query;
 	}
-		public static function get_rejected_county($county_id,$district_id=NUll){
-			$and_data =(isset($district_id)&& ($district_id>0)) ?"AND d.id = '$district_id'" : "AND d.county =$county_id";
+		public static function get_rejected_county($county_id,$district_id=NUll,$facility_code=null){
+$and_data =(isset($district_id)&& ($district_id>0)) ?"AND d.id = '$district_id'" : 
+		(isset($facility_code)&& ($facility_code>0)) ? "AND f.facility_code =$facility_code": "AND d.county =$county_id" ;
+		
+	
 				$query=Doctrine_Manager::getInstance()->getCurrentConnection()->fetchAll("
 SELECT o.id, d.district, f.facility_name, f.facility_code, o.orderDate, date_format( o.orderDate, '%b %Y' ) AS mwaka, o.orderTotal
 FROM districts d, facilities f, ordertbl o
@@ -202,8 +210,11 @@ $and_data");
 		   return $query;
 	}
 	
-		public static function get_approved_county($county_id,$district_id=NUll){ //'%approved%'
-		$and_data =(isset($district_id)&& ($district_id>0)) ?"AND d.id = '$district_id'" : "AND d.county =$county_id";
+		public static function get_approved_county($county_id,$district_id=NUll,$facility_code=null){
+$and_data =(isset($district_id)&& ($district_id>0)) ?"AND d.id = '$district_id'" : 
+		(isset($facility_code)&& ($facility_code>0)) ? "AND f.facility_code =$facility_code": "AND d.county =$county_id" ;
+		//'%approved%'
+
 				$query=Doctrine_Manager::getInstance()->getCurrentConnection()->fetchAll("
 SELECT o.id, d.district, f.facility_name, f.facility_code, o.orderDate, date_format( o.orderDate, '%b %Y' ) AS mwaka, o.orderTotal
 FROM districts d, facilities f, ordertbl o

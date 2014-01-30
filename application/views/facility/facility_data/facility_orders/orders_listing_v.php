@@ -1,19 +1,60 @@
+<script type="text/javascript" language="javascript" src="<?php echo base_url(); ?>Scripts/jquery.dataTables.js"></script>
+<style type="text/css" title="currentStyle">  
+      @import "<?php echo base_url(); ?>DataTables-1.9.3 /media/css/jquery.dataTables.css";
+.leftpanel{
+width: 17%;
+height:auto;
+float: left;
+padding-left: 1em;
+}
+ .dash_main{
+    width: 80%;
+    min-height:100%;
+    height:600px;
+    float: left;
+       -webkit-box-shadow: 2px 2px 6px #888;
+	box-shadow: 2px 2px 6px 2px #888; 
+    margin-left:0.75em;
+    margin-bottom:0em;
+    
+    }
+.accordion {
+margin: 0;
+padding:5%;
+height:15px;
+border-top:#f0f0f0 1px solid;
+background: #cccccc;
+font:normal 1.3em 'Trebuchet MS',Arial,Sans-Serif;
+text-decoration:none;
+text-transform:uppercase;
+background: #29527b; /* Old browsers */
+border-radius: 0.5em;
+color: #fff; }
+table.data-table {
+  margin: 10px auto;
+  }
+  
+table.data-table th {
+  color:#036;
+  text-align:center;
+  font-size: 13.5px;
+  max-width: 600px;
+  }
+table.data-table td, table th {
+  padding: 4px;
+  }
+table.data-table td {
+  height: 30px;
+  width: 130px;
+  font-size: 12.5px;
+  margin: 0px;
+  }
+</style>
+
 <script type="text/javascript">
 	$(function() {
-
-		// Accordion
-		$("#accordion").accordion({
-			header : "h3"
-		});
-		//tabs
-		$('#tabs').tabs();
-		
-		//popout
-		  $( "#dialog" ).dialog();
-		  
-		  
-		  	//button to post the order
-			$( ".delete" )
+						//button to post the order
+		$( ".delete" )
 			.button()
 			.click(function() {
 				
@@ -37,282 +78,268 @@
 			});	
 			
 			 $( "#dialog-confirm" ).dialog( {autoOpen: false} );
-	});
 
+$("#dialog1").dialog({
+					height : 140,
+					modal : true
+				});
+		$('#rejected,#delivered,#pending,#approved').dataTable( {
+					"bJQueryUI": true,
+					"bPaginate": false
+				} );
+		
+  } );
 </script>
+
+<div class="leftpanel">
 	<div id="dialog-confirm" title="Delete facility data?">
   <p><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>
   	<h3 class="text-error">The order will be deleted and cannot be recovered!. Are you sure?</h3></p>
 </div>
-<div id="tabs">
-
-	<!--tabs!-->
-	<ul>
-		<li>
-			<a href="#tabs-0">Rejected Orders</a>
-		</li>
-		<li>
-			<a href="#tabs-1">Pending Approval </a>
-		</li>
-		<li>
-			<a href="#tabs-2">Pending Dispatch</a>
-		</li>
-		<!--<li>
-			<a href="#tabs-4">Dispatched From KEMSA</a>
-		</li>-->
-		<li>
-			<a href="#tabs-5">Received by Facility</a>
-		</li>
-	</ul>
-	<div id="tabs-0">
-		<!--tab1 content!-->
-		<?php if(count($rejected)>0) :?>
-		<table class="table-update">
-			<tr>
-				<th><strong>Facility Order No </strong></th>
-				<th><strong>Order Total Ksh</strong></th> 
-				<th><strong>Date Ordered</strong></th> 
-				<th><strong>Days Pending </strong></th>
-				<th>Action</th>
-			</tr>
-			<?php foreach($rejected as $rows):?>
-			<tr>
-				<td><?php echo $rows->id;?></td>
-				<td><?php echo number_format($rows->orderTotal, 2, '.', ',');?></td>
-				<td><?php 
-		$datea= $rows->orderDate;
-		$fechaa = new DateTime($datea);
-		$today=new DateTime();
-        $datea= $fechaa->format(' d  M Y');
-		echo $datea;?></td> 
-				<td><?php 
-		$days1=$myClass->getWorkingDays($fechaa,$today,0);
-        	echo $days1;
-?></td> 
-
-				<td>
-<a href="<?php echo site_url('order_management/moh_order_details/'.$rows->id.'/'.$rows->kemsaOrderid)?>"class="link">View |</a>
-<a href="<?php echo site_url('order_approval/district_order_details/'.$rows->id.'/'.$this -> session -> userdata('news').'/true/true')?>"class="link">Edit </a>|
-<a id="<?php echo $rows->id;?>" href="#"class="delete link">DELETE</a>
-
-</td>
-			</tr>
-			<?php
- endforeach;
-	?>	 
-		</table>
+<h3 class="accordion" id="leftpanel">Orders Summary<span></span></h3>
+<div id="details">
+	<table  class="data-table">
+		<thead>
+<tr>
+	    <th>Order Status</th>
+		<th>No. of Orders</th>
+	</tr>
+	</thead>
+	<tbody>
+		
 		<?php 
-else :
-	echo '<p id="notification">No Records Found </p>';
-endif; ?>
-		<div class="pagination"></div>
-	</div><!--tab1!-->
-	<div id="tabs-1">
-		<!--tab1 content!-->
-		<?php if(count($pending)>0) :?>
-		<table class="table-update">
-			<tr>
-				<th><strong>Facility Order No </strong></th>
-				<th><strong>Order Total Ksh</strong></th> 
-				<th><strong>Date Ordered</strong></th> 
-				<th><strong>Days Pending </strong></th>
-				<th>Action</th>
-			</tr>
-			<?php foreach($pending as $rows):?>
-			<tr>
-				<td><?php echo $rows->id;?></td>
-				<td><?php echo number_format($rows->orderTotal, 2, '.', ',');?></td>
-				<td><?php 
-		$datea= $rows->orderDate;
-		$fechaa = new DateTime($datea);
-		$today=new DateTime();
-        $datea= $fechaa->format(' d  M Y');
-		echo $datea;?></td> 
-				<td><?php 
-		$days1=$myClass->getWorkingDays($fechaa,$today,0);
-        	echo $days1;
-?></td> 
-
-				<td>
-<a href="<?php echo site_url('order_management/moh_order_details/'.$rows->id.'/'.$rows->kemsaOrderid)?>"class="link">View |</a>
-<a href="<?php echo site_url('order_approval/district_order_details/'.$rows->id.'/'.$this -> session -> userdata('news').'/true')?>"class="link">Edit</a> |
-<a id="<?php echo $rows->id;?>" href="#"class="delete link">DELETE</a>
-
-</td>
-			</tr>
-			<?php
- endforeach;
-	?>	 
-		</table>
-		<?php 
-else :
-	echo '<p id="notification">No Records Found </p>';
-endif; ?>
-		<div class="pagination"></div>
-	</div><!--tab1!-->
-		<div id="tabs-2">
-		<!--tab1 content!-->
-		<?php if(count($pending_d)>0) :?>
-		<table  class="table-update">
-			<tr>
-				<th><strong>Facility Order No </strong></th>
-				<th><strong>Order Value (Ksh)</strong></th> 
-				<th><strong>Drawing Rights Balance (Ksh)</strong></th> 
-				<th><strong>Date Ordered</strong></th>
-				<th><strong>Date Approved</strong></th>
-				<th><strong>Days Pending Delivery</strong></th>
-				<th>Action</th>
-			</tr>
-			<?php foreach($pending_d as $rows_d):?>
-			<tr>
-				<?php echo "<td>$rows_d->id</td>
-				<td>".number_format($rows_d->orderTotal, 2, '.', ',')."</td>
-				 <td>".number_format($rows_d->drawing_rights-$rows_d->orderTotal, 2, '.', ',')."</td>";
+		//$year=date("Y");
+		$rejected_data='';
+		$delivery_data='';
+		$pending_data='';
+		$approved_data='';
 				
-		$datea= $rows_d->orderDate;
-		$fechaa = new DateTime($datea);
-		$today=new DateTime();
-        $datea= $fechaa->format(' d  M Y');
-		
-		
-		$date_1= $rows_d->approvalDate;
-		$fecha_1 = new DateTime($datea);
-        $date_1= $fechaa->format(' d  M Y');
-        echo "<td>".$date_1."</td>"; 
-		echo "<td>".$datea."</td>"; 
+		foreach($delivered as $delivered_details):
 			
-		$days1=$myClass->getWorkingDays($fechaa,$today,0);
-        	echo "<td>".$days1."</td>";
-?></td> 
-
-				<td><a href="<?php echo site_url('order_management/moh_order_details/'.$rows_d->id.'/'.$rows_d->kemsaOrderid)?>"class="link">View</a>|<a href="<?php echo site_url('stock_management/new_update/'.$rows_d->id.'/'.$rows_d->kemsaOrderid)?>" class="link">Update</a?</a></td>
-			</tr>
-			<?php
- endforeach;
-	?>	 
-		</table>
-		<?php 
-else :
-	echo '<p id="notification">No Records Found </p>';
-endif; ?>
-		<div class="pagination"></div>
-	</div><!--tab1!-->
-	<!--
-	<div id="tabs-4">
-		<!--tab 4 content
-		<?php if(count($dispatched)>0) :?>
-		<table class="data-table">
-			<tr>
-				<th><strong>Facility Order No </strong></th>
-				<th><strong>KEMSA Order No </strong></th>
-				<th><strong>Order Total Ksh</strong></th>
-				<th><strong>Date Ordered</strong></th> 
-				<th><strong>Date Reviewed</strong></th> 
-				<th><strong>Date Received(kemsa)</strong></th>
-				<th><strong>Date Dispatched</strong></th> 
-				<th>Action</th>
-			</tr>
-			<?php foreach($dispatched as $d):?>
-			<tr>
-				<td><?php echo $d->id;?></td>
-				<td><?php echo $d->kemsaOrderid;?></td>
-				<td><?php echo number_format($d->orderTotal, 2, '.', ',');?></td>
-				<td><?php 
-		$datead= $d->orderDate;
-		$fechaad = new DateTime($datead);
-        $dated= $fechaad->format(' d  M Y');
-		echo $dated;?></td> 
-				<td><?php 
-		if($d->approvalDate!=NULL){
-		$date_approval = new DateTime($d->approvalDate);
-        $dateb_approval= $date_approval->format(' d  M Y');
-		echo $dateb_approval;}
-		?></td> 
-		<td><?php echo $dateb_approval; ?></td>
-				<td><?php 
-		$datebd= $d->dispatchDate;
-		if($d->dispatchDate!=NULL){
-		$fechabd = new DateTime($datebd);
-		$today=new DateTime();
-        $datebd= $fechabd->format(' d  M Y');
-		echo $datebd;}?></td>
-				<td><a href="<?php echo site_url('order_management/moh_order_details/'.$d->id.'/'.$d->kemsaOrderid)?>"class="link">View</a></td>
-			</tr>
-	<?php
-endforeach;
-	?>
+			$mfl=$delivered_details['facility_code'];
+			$name=$delivered_details['facility_name'];
+			$order_date=$delivered_details['orderDate'];
+			$district=$delivered_details['district'];
+			$year=$delivered_details['mwaka'];
+			$order_total=$delivered_details['orderTotal'];
+			$order_total=number_format($order_total, 2, '.', ',');
+			$delivery_total=$delivered_details['total_delivered'];
+			$delivery_total=number_format($delivery_total, 2, '.', ',');
+			$fill_rate=$delivered_details['fill_rate'];
+			$link=base_url().'order_management/moh_order_details/'.$delivered_details['id'];
+			$link2=base_url().'order_management/update_order/'.$delivered_details['id'];
 			
-		</table>
-		<?php 
-else :
-	echo '<p id="notification">No Records Found </p>';
-endif; ?>
-	</div><!--tab 3!-->
-	<div id="tabs-5">
-		<!--tab 4 content!-->
-		<?php if(count($received)>0) :?>
-		<table  class="table-update">
-			<tr>
-				<th><strong>Facility Order No </strong></th>
-				<th><strong>KEMSA Order No </strong></th>
-				<th><strong>Order Total Ksh</strong></th>
-				<th><strong>Date Ordered</strong></th> 
-				<th><strong>Date Reviewed (DPF) </strong></th> 
-				<th><strong>Lead Time</strong></th>
-				<th><strong>Date Dispatched(KEMSA)</strong></th> 
-				<th><strong>Date Received(facility)</strong></th>
-				<th><strong>Lead Time</strong></th>
-				<th><strong>Average Lead Time</strong></th>
-				<th>Action</th>
-			</tr>
-			<?php foreach($received as $d1):?>
-			<tr>
-				<?php echo "<td>$d1->id</td>
-				<td>$d1->kemsaOrderid</td>
-				<td>$d1->orderTotal</td>";
-				 
-	
-		$orderDate = new DateTime(date($d1->orderDate));
-        $dated= $orderDate->format('d  M Y');
-		echo "<td>".$dated."</td>";
-				
-		$date_approval = new DateTime(date($d1->approvalDate));
-        $dateb_approval= $date_approval->format('d  M Y');
-		echo "<td>".$dateb_approval."</td>";
-		
-		//$date_diff=$myClass->getWorkingDays($orderDate,$date_approval,0);
-         $dDiff = $orderDate->diff($date_approval);
-         $date_diff= $dDiff->days;
-        echo "<td>".$date_diff." day(s)"."</td>";
+		    $delivery_data .= <<<HTML_DATA
+            <tr>
+           <td>$district</td>
+           <td>$name</td>
+           <td>$mfl</td>
+           <td>$year</td>
+           <td>$order_total</td>
+           <td>$delivery_total</td>
+           <td>$fill_rate %</td>
+           <td></td>
+           <td><span ><a href='$link' class="label label-success" >Download</a></span>|
+           <span ><a href='$link'>View</a></span></td>
+           </tr>
+HTML_DATA;
+			
+			endforeach;
+			
+			foreach($pending as $delivered_details):
+			
+			$mfl=$delivered_details['facility_code'];
+			$name=$delivered_details['facility_name'];
+			$order_date=$delivered_details['orderDate'];
+			$district=$delivered_details['district'];
+			$year=$delivered_details['mwaka'];
+			$order_total=$delivered_details['orderTotal'];
+			$order_total=number_format($order_total, 2, '.', ',');
+			$link=base_url().'order_management/update_order/'.$delivered_details['id'];
+			$link2=base_url().'order_approval/district_order_details/'.$delivered_details['id'];
+			
+		    $pending_data .= <<<HTML_DATA
+            <tr>
+           <td>$district</td>
+           <td>$name</td>
+           <td>$mfl</td>
+           <td>$year</td>
+           <td>$order_total</td>          
+           <td><span ><a href='$link' class="label label-success" >Download</a></span>|
+           <span ><a href='$link2' class="label label-inverse" >View</a></span>|
+           <a id="$delivered_details[id]" href="#"class="delete"> 
+		<span  class='label label-danger'>
+		DELETE</span></a></td>
+           </tr>
+HTML_DATA;
+			
+			endforeach;
+			
+			foreach($rejected as $delivered_details):
+			
+			$mfl=$delivered_details['facility_code'];
+			$name=$delivered_details['facility_name'];
+			$order_date=$delivered_details['orderDate'];
+			$district=$delivered_details['district'];
+			$year=$delivered_details['mwaka'];
+			$order_total=$delivered_details['orderTotal'];
+			$order_total=number_format($order_total, 2, '.', ',');
+			$link=base_url().'order_management/update_order/'.$delivered_details['id'];
+			$link2=base_url().'order_approval/district_order_details/'.$delivered_details['id'];
+		    $rejected_data .= <<<HTML_DATA
+            <tr>
+           <td>$district</td>
+           <td>$name</td>
+           <td>$mfl</td>
+           <td>$year</td>
+           <td>$order_total</td>          
+          <td><span ><a href='$link' class="label label-success" >Download</a></span>|
+           <span ><a href='$link2' class="label label-inverse" >View</a></span>|<a id="$delivered_details[id]" href="#"class="delete"> 
+		<span  class='label label-danger'>
+		DELETE</span></a></td>
+           </tr>
+HTML_DATA;
+			
+			endforeach;
+			
+				foreach($approved as $delivered_details):
+			
+			$mfl=$delivered_details['facility_code'];
+			$name=$delivered_details['facility_name'];
+			$order_date=$delivered_details['orderDate'];
+			$district=$delivered_details['district'];
+			$year=$delivered_details['mwaka'];
+			$order_total=$delivered_details['orderTotal'];
+			$order_total=number_format($order_total, 2, '.', ',');
+			$link=base_url().'order_management/update_order/'.$delivered_details['id']; 
+			$link2=base_url().'order_approval/district_order_details/'.$delivered_details['id'];
+			
+		    $approved_data .= <<<HTML_DATA
+            <tr>
+           <td>$district</td>
+           <td>$name</td>
+           <td>$mfl</td>
+           <td>$year</td>
+           <td>$order_total</td>
+           <td><span ><a href='$link' class="label label-success" >Download</a></span>|
+           <span><a href='$link2' class="label label-inverse" >View</a></span>|
+           <a id="$delivered_details[id]" href="#"class="delete"> 
+		<span  class='label label-danger'>
+		DELETE</span></a>
+           </td>
+           </tr>
+HTML_DATA;
+			
+			endforeach;
+		$rejected_orders=0;
+		$pending_orders=0;
+		$approved_orders=0;
+		$delivered_orders=0;
+	//	foreach ($order_counts as $item) {
+		    $rejected_orders=$order_counts[0]['rejected_orders'];
+			$pending_orders=$order_counts[0]['pending_orders'];
+			$approved_orders=$order_counts[0]['approved_orders'];
+			$delivered_orders=$order_counts[0]['delivered_orders'];
 
-		$dispatchDate = new DateTime(date($d1->dispatchDate));
-        $datebd= $dispatchDate->format(' d  M Y');
-		echo "<td>".$datebd."</td>";
-	
-		$deliverDate = new DateTime(date($d1->deliverDate));
-        $datebd1= $deliverDate->format(' d  M Y');
-		echo "<td>".$datebd1."</td>";
-		
-	    //$date_diff=$myClass->getWorkingDays($dispatchDate,$deliverDate,0);
-	     $dDiff = $dispatchDate->diff($deliverDate);
-         $date_diff= $dDiff->days;
-        echo "<td>".$date_diff." day(s)"."</td>";
-        
-       // $date_diff=$myClass->getWorkingDays($orderDate,$deliverDate,0);
-       	  $dDiff = $orderDate->diff($deliverDate);
-         $date_diff= $dDiff->days;
-        echo "<td>".$date_diff." day(s)"; ?></td>
-		<td><a href="<?php echo site_url('order_management/moh_order_details/'.$d1->id.'/'.$d1->kemsaOrderid)?>"class="link">View</a></td>
-		
-			</tr>
-	<?php
-endforeach;
-	?>
-		</table>
-		<?php 
-else :
-	echo '<p id="notification">No Records Found </p>';
-endif; ?>
-	</div><!--tab 3!-->
+		//} 
+		?>
+        <tr><td>Rejected Orders</td><td><?php echo $rejected_orders; ?></td></tr>
+		<tr><td>Pending Approval</td><td><?php echo $pending_orders; ?></td></tr>
+		<tr><td>Pending Delivery</td><td><?php echo $approved_orders; ?></td></tr>
+		<tr><td>Delivered</td><td><?php echo $delivered_orders; ?></td></tr></tbody></table>
+
 </div>
-<!--tabs!-->
+
+</div>
+<div class="dash_main" style="overflow: auto">
+<div class='label label-info'> Below are orders made in the sub-county</div>
+<div class="tabbable tabs-left">
+              <div class="tab-content">
+              	 <ul class="nav nav-tabs">
+              	 <li class=""><a href="#D" data-toggle="tab"><h3>Rejected Orders</h3></a></li>
+                <li class=""><a href="#A" data-toggle="tab"><h3>Pending Approval</h3></a></li>
+                <li class=""><a href="#B" data-toggle="tab"><h3>Pending Delivery</h3></a></li>
+                <li class="active"><a href="#C" data-toggle="tab"><h3>Delivered</h3></a></li>
+              </ul>
+              <div class="tab-pane" id="D">
+                        <table width="100%" id="rejected">
+		<thead>
+		<tr>
+			<th>District</th>
+			<th>Health Facility</th>
+			<th>MLF No.</th>
+			<th>Year</th>
+			<th>Order Value (KSH)</th>
+			<th>Action</th>
+		</tr>
+		</thead>
+		<tbody>
+		<?php echo $rejected_data; ?>
+			</tbody>
+		
+	</table>
+                </div>
+                <div class="tab-pane" id="A">
+                        <table width="100%" id="delivered">
+		<thead>
+		<tr>
+			<th>District</th>
+			<th>Health Facility</th>
+			<th>MLF No.</th>
+			<th>Year</th>
+			<th>Order Value (KSH)</th>
+			<th>Action</th>
+		</tr>
+		</thead>
+		<tbody>
+		<?php echo $pending_data; ?>
+			</tbody>
+		
+	</table>
+                </div>
+                <div class="tab-pane" id="B">
+                       <table width="100%" id="approved">
+		<thead>
+		<tr>
+			<th>District</th>
+			<th>Health Facility</th>
+			<th>MLF No.</th>
+			<th>Year</th>
+			<th>Order Value (KSH)</th>
+			<th>Action</th>
+		</tr>
+		</thead>
+		<tbody>
+		<?php echo $approved_data; ?>
+			</tbody>
+		
+	</table>
+                </div>
+                <div class="tab-pane active" id="C">
+                  <table width="100%" id="delivered">
+		<thead>
+		<tr>
+			<th>District</th>
+			<th>Health Facility</th>
+			<th>MLF No.</th>
+			<th>Year</th>
+			<th>Order Value (KSH)</th>
+			<th>Received Value (KSH)</th>
+			<th>Fill Rate %</th>
+			<th>Lead Time</th>
+			<th>Action</th>
+		</tr>
+		</thead>
+		<tbody>
+		<?php echo $delivery_data; ?>
+			</tbody>
+		
+	</table>
+                </div>
+              </div>
+             
+            </div>
+
+
+</div>
+

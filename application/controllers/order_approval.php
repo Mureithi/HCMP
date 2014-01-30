@@ -22,17 +22,15 @@ include_once('auto_sms.php');
 		$district_id=$this -> session -> userdata('district');
 		$district_id=$this -> session -> userdata('district1');
 		
-		$data['title'] = "Orders";
+		$data['title'] = "Subcounty Orders";
 		$data['content_view'] = "district/district_orders_v";
-		$data['banner_text'] = "Orders";
+		$data['banner_text'] = "Subcounty Orders";
 		$data['order_counts']=Counties::get_county_order_details("",$district_id);
 		$data['delivered']=Counties::get_county_received("",$district_id);
 		$data['pending']=Counties::get_pending_county("",$district_id);
 		$data['approved']=Counties::get_approved_county("",$district_id);
 		$data['rejected']=Counties::get_rejected_county("",$district_id);
 
-		$data['link'] = "order_appoval";
-		$data['quick_link'] = "new_order";
 		$this -> load -> view("template", $data);
 		
 	}
