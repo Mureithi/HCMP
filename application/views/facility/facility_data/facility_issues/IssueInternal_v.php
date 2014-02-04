@@ -1,6 +1,6 @@
 <div  class='label label-info' style="font-size: 1.8em">To Issue commodities i) select commodity to issue 
 	ii) enter the service point and quanitity you wish to issue and select the batch no
-	iii) to add more issues press add row</div
+	iii) to add more issues press add row</div>
  <?php $att=array("name"=>'myform','id'=>'myform'); echo form_open('Issues_main/Insert',$att); ?>
 <table   class="table table-hover table-bordered table-update" id="example" width="100%" >
 					<thead>
