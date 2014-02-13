@@ -153,7 +153,7 @@ SUM( f_s.balance ) / d.total_units ) * d.unit_cost, 1) AS total")
 	public static function get_facility_expired_stuff($date,$facility){
 	$inserttransaction = Doctrine_Manager::getInstance()->getCurrentConnection()
 ->fetchAll("SELECT d.id as drug_id,d.kemsa_code,d.unit_size,d.drug_name,d.unit_cost,f_s.batch_no,f_s.manufacture,
-sum(f_s.balance) as balance ,f_s.expiry_date 
+sum(f_s.balance) as balance ,f_s.expiry_date ,d.total_units
 from facility_stock f_s, drug d 
 where f_s.kemsa_code=d.id and 
 f_s.facility_code='$facility' and f_s.expiry_date<='$date' 
