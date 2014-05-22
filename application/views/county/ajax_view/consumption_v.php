@@ -1,3 +1,5 @@
+<script src="<?php echo base_url();?>Scripts/HighCharts/highcharts.js"></script>
+<script src="<?php echo base_url();?>Scripts/HighCharts/modules/exporting.js"></script>
 <script>
 
 		$(document).ready(function() {

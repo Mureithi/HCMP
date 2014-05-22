@@ -42,14 +42,16 @@ WHERE facility_code = '$facility_code' ");
 		$from=$_POST['from'];
 		$to=$_POST['to'];
 		$facility_Code=$_POST['facilitycode'];		
-		$convertfrom=date('y-m-d',strtotime($from ));
-		$convertto=date('y-m-d',strtotime($to ));
+		$convertfrom=date('Y-m-d',strtotime($from ));
+		$convertto=date('Y-m-d',strtotime($to ));
 		
 		$query = Doctrine_Query::create() -> select("s11_No,kemsa_code,batch_no,qty_issued,balanceAsof,date_issued ,(`balanceAsof` +  `qty_issued`) AS SumColumn") 
 		-> from("Facility_Issues")-> where(" date_issued between '$convertfrom' AND '$convertto'")->andwhere("kemsa_code='$desc'")->andwhere("facility_code='$facility_Code'");
 		$stocktake = $query ->execute();
 		return $stocktake;
+		
 	}
+	
 	public static function getcissues() {
 		
 		$from=$_POST['fromcommodity'];
@@ -63,6 +65,7 @@ WHERE facility_code = '$facility_code' ");
 		$stocktake = $query ->execute();
 		return $stocktake;
 	}
+	
 	public static function getyears() {
 		
 		$query = Doctrine_Query::create() -> select(" DISTINCT YEAR(date_issued) AS theyear") 

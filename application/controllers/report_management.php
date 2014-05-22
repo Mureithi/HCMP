@@ -2334,8 +2334,14 @@ Balance(Drawing rights - Order Total):' . $bal . ' </p></span></td></tr>
 		$consumption_data = Facility_stock::get_county_drug_consumption_level2($facilities_filter, $county_id, $district_filter, $commodity_filter, $year_filter, $plot_value_filter);
 		$monthnos = array();
 		$totals = array();
+		
+		
+		$get_size= sizeof($consumption_data);
+		
+		
+		
 
-		foreach ($consumption_data as $value) {
+	   foreach ($consumption_data as $value) {
 
 			$monthnos[] = $value['monthno'];
 			$totals[] = (double)$value['total'];
@@ -2363,6 +2369,7 @@ Balance(Drawing rights - Order Total):' . $bal . ' </p></span></td></tr>
 		foreach ($montharray as $key => $value) {
 			$mymontharray[] = $montharray[$key];
 		}
+		
 
 		$data['facilityname'] = $facilityname;
 		$data['plot_value_filter'] = json_encode($plot_value_filter);

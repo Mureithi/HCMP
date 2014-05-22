@@ -142,10 +142,10 @@ padding: 5px;
 				foreach ($expired as $drug ) { 
 				foreach($drug->Code as $d){
 						        $total_units=$d->total_units ;
-								$name=$d->Drug_Name;
-								$code1=$d->Kemsa_Code;
-					            $unitS=$d->Unit_Size; 
-								$unitC=$d->Unit_Cost;
+								$name=$d->commodity_name;
+								$code1=$d->commodity_code;
+					            $unitS=$d->unit_size; 
+								$unitC=$d->unit_cost;
 								$calc=$drug->balance;
 								$balance=round($calc/$total_units);
 								$total_expired=$drug->total;
